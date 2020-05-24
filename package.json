@@ -7,7 +7,10 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@amcharts/amcharts4": "^4.9.19",
     "@mdi/font": "^3.6.95",
+    "anychart": "^8.7.1",
+    "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "roboto-fontface": "*",
     "vue": "^2.6.11",

@@ -1,22 +1,59 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import ClassroomView from '../views/ClassroomView.vue'
+import ConfigurationView from '../views/ConfigurationView.vue'
+import TestView from '../views/TestView.vue'
+import OldView from '../views/OldView.vue'
+import store from '../store'
+import axios from 'axios'
 
 Vue.use(VueRouter)
+
+async function isInit(to, from, next){
+  await axios
+  .get(`${process.env.VUE_APP_API_URL}/ifsession`)
+  .then(response => {
+    if(response.data.status){
+      store.commit("setMetrics", {
+        configuration: {
+          limit: response.data.limit,
+          metrics: response.data.metrics,
+          option: response.data.option,
+          principal: response.data.principal
+        }
+      })
+      next('/old')
+      //next('/classroom')
+    }
+    else{
+      next('/')
+    }
+  })
+  .catch(error => {
+    next('/')
+  })
+}
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: ConfigurationView,
+    beforeEnter: isInit
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/classroom',
+    name: 'Classroom',
+    component: ClassroomView
+  },
+  {
+    path: '/test',
+    name: 'Test',
+    component: TestView
+  },{
+    path: '/old',
+    name: 'Old',
+    component: OldView
   }
 ]
 
@@ -26,4 +63,4 @@ const router = new VueRouter({
   routes
 })
 
-export default router
+export default router;
