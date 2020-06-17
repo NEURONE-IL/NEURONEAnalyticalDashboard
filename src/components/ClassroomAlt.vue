@@ -1,9 +1,0 @@
-<template>
-	<v-icon 
-		x-large
-		color="success"
-		right
-	>
-		mdi-account-circle
-	</v-icon>
-</template>

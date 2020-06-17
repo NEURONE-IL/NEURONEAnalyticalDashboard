@@ -1,20 +1,20 @@
 <template>
 	<v-container>
+		<h3 class="title">Seleccione la(s) métrica(s) a evaluar:</h3>
     <v-row no-gutters justify="center">
 			<v-col 
 				v-for="(metric, i) in metrics" :key="i"
-				sm="4"
+				:sm="colsSize"
 				xs="12"
 			>
-				<v-checkbox
+				<v-switch
 					v-model="checkedMetrics"
 					:label="metric"
 					:value="metric"
 				>
-				</v-checkbox>
+				</v-switch>
 			</v-col>
 		</v-row>
-		
 	</v-container>
 	
 </template>
@@ -24,6 +24,10 @@
 export default {
 	name: 'Metrics',
 	
+	props: {
+		colsSize: Number
+	},
+
 	data (){
 		return {
 			metrics: [
@@ -59,5 +63,10 @@ export default {
 		}
 	}
 }
-
 </script>
+
+<style>
+.title{
+	text-align: left;
+}
+</style>

@@ -1,11 +1,6 @@
 <template>
   <v-app id="app">
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-    </v-app-bar>
+    <Layout/>
     <v-content>
       <router-view/>
     </v-content>    
@@ -13,16 +8,28 @@
 </template>
 
 <script>
+import Layout from './components/Layout.vue';
 
 export default {
   name: 'App',
 
   components: {
-    //
+    Layout
   },
 
   data: () => ({
     //
   }),
+
+  computed: {
+    drawer: {
+      get () {
+        return this.$store.state.drawer
+      },
+      set (payload) {
+        this.$store.commit('setDrawer', payload);
+      },
+    },
+  },  
 };
 </script>

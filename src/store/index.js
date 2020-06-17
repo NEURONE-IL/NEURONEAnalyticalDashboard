@@ -6,7 +6,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     configuration: {},
-    initTime: null
+    initTime: null,
+    drawer: null
   },
 
   mutations: {
@@ -18,7 +19,11 @@ export default new Vuex.Store({
     setMetrics(state, payload){
       let configuration = payload.configuration;
       state.configuration = configuration;
-    }
+    },
+
+    setDrawer(state, payload) {
+      state.drawer = payload;
+    },    
   },
 
   getters:{

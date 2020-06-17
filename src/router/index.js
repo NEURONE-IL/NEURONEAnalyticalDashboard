@@ -1,11 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import ClassroomView from '../views/ClassroomView.vue'
-import ConfigurationView from '../views/ConfigurationView.vue'
-import TestView from '../views/TestView.vue'
-import OldView from '../views/OldView.vue'
 import store from '../store'
 import axios from 'axios'
+/*Views*/
+import ClassroomView from '../views/ClassroomView.vue'
+import ConfigurationView from '../views/ConfigurationView.vue'
 
 Vue.use(VueRouter)
 
@@ -22,8 +21,7 @@ async function isInit(to, from, next){
           principal: response.data.principal
         }
       })
-      next('/old')
-      //next('/classroom')
+      next('/classroom')
     }
     else{
       next('/')
@@ -39,21 +37,12 @@ const routes = [
     path: '/',
     name: 'Home',
     component: ConfigurationView,
-    beforeEnter: isInit
+    //beforeEnter: isInit
   },
   {
     path: '/classroom',
     name: 'Classroom',
     component: ClassroomView
-  },
-  {
-    path: '/test',
-    name: 'Test',
-    component: TestView
-  },{
-    path: '/old',
-    name: 'Old',
-    component: OldView
   }
 ]
 
