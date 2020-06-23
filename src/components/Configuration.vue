@@ -25,7 +25,6 @@
 								:rules="selectRules"								
 							></v-select>
 						</v-col>
-
 						<v-col cols="5" class="text-center ml-12 mr-12">
 							<v-select
 								v-model="interval"
@@ -75,7 +74,6 @@
 				<br>
 				<v-divider></v-divider>	
 				<br>	
-				
 				<v-btn
 					class="mt-4 mb-4"
 					color="success"
@@ -87,17 +85,12 @@
 						mdi-check
 					</v-icon>
 				</v-btn>		
-
-				<div class="classrooms" ref="chartdiv">
-				</div>
-
       </v-col>
 		</v-row>
 	</v-container>
 </template>
 
 <script>
-
 import Metrics from '../components/Metrics';
 import axios from 'axios';
 
@@ -155,7 +148,6 @@ export default {
 				option,
 				principal
 			};
-
 			await axios
 				.post(`${process.env.VUE_APP_API_URL}/configure`, configuration)
 				.then(response => {
@@ -185,11 +177,10 @@ export default {
 				}
 			}
 		}
-
 }
 </script>
 
-<style>
+<style scoped>
 .theme--light.v-divider {
   border-color: rgba(33,150,243,0.5) !important; 
 }

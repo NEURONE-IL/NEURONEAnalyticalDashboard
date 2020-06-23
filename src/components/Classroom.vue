@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-    <v-row no-gutters class="mt-4">
+    <v-row class="mt-4">
       <v-col sm="12" class="text-center">
 				<v-form
 					ref="configurationForm"
@@ -15,35 +15,35 @@
 						prepend-icon="mdi-format-list-bulleted"
 						required
 						:rules="selectRules"
-					></v-select>	
-
+					>
+					</v-select>	
 					<v-select
 						class="mt-4"
-						:items= setValueOptions()
+						:items="setValueOptions()"
 						v-model="rows"
 						v-if="this.classroomConfiguration === 2"
 						label="Cantidad de filas"
 						prepend-icon="mdi-view-sequential"
 						required
 						:rules="selectRules"						
-					></v-select>
-
+					>
+					</v-select>
 					<v-select
 						class="mt-4"
-						:items= setValueOptions()
+						:items="setValueOptions()"
 						v-model="columns"
 						v-if="this.classroomConfiguration === 3"
 						label="Cantidad de columnas"
 						prepend-icon="mdi-view-column"
 						required
 						:rules="selectRules"						
-					></v-select>										
+					>
+					</v-select>										
 				</v-form>		
-
 				<v-btn
 					class="mb-4"
 					color="success"
-					:disabled="!validConfiguration || this.participants.length === 0"
+					:disabled="!validConfiguration || this.users === 0"
 					@click="setClassroom(classroomConfiguration)"
 				>
 					Aceptar	
@@ -51,7 +51,6 @@
 						mdi-check
 					</v-icon>
 				</v-btn>		
-
 				<v-btn
 					class="mb-4"
 					color="error"
@@ -63,23 +62,14 @@
 						mdi-print
 					</v-icon>
 				</v-btn>					
-
 				<!--Gráfico-->
 				<div class="classrooms" ref="chartdiv"></div>
-
-      </v-col>
-<!--			<v-col sm="4" class="text-center">
-				<Metrics :colsSize=6 @updateFunction="updateSelectedMetrics"/>
-			</v-col>	-->
-			<v-col sm="4" class="text-center">
-<!--				<Lateral :participants="selectedParticipants"/>	-->
-			</v-col>			
+      </v-col>		
 		</v-row>
 	</v-container>
 </template>
 
 <script>
-import Lateral from '../components/Lateral';
 import Metrics from '../components/Metrics';
 import { mapActions, mapState } from 'vuex';
 import axios from 'axios';
@@ -93,7 +83,6 @@ export default {
 	name: 'Classroom',
 
 	components: {
-		Lateral,
 		Metrics
 	},	
 
@@ -119,6 +108,7 @@ export default {
 				{ id: 3, name: 'En columnas' },
 				{ id: 4, name: 'Personalizada' }
 			],
+			valueOptions: [],
 			selectRules: [
         v => v && v != null || 'Debe seleccionar una opción',
 			],
@@ -156,15 +146,11 @@ export default {
 		this.fontsize = 10;
 		this.maxRadius = 15;
 		this.separation = 50;
+		this.selectedParticipants = [];
 	},
 
 	methods: {
-		updateSelectedMetrics(checkedMetrics){
-			this.metrics = [...checkedMetrics]
-		},
-
-		setClassroom(index){
-			this.users = this.participants.length;		
+		setClassroom(index){		
 			var data = [];
 			switch(index){
 				case 1:
@@ -186,13 +172,13 @@ export default {
 
 		setCircleClassroom(data){
 			for(var i = 0; i < this.users; i++){
-				var value1 = this.participants[i].results[this.principal];
-				var color = this.setColor(value1);
+				var value = this.participants[i].results[this.principal];
+				var color = this.setColor(value);
 				data.push(
 					{
 						id: i,
 						name: this.participants[i].username,
-						principal: this.principal + ': ' + value1,
+						principal: this.principal + ': ' + value,
 						path: this.userIcoPath,
 						color: color,
 						fixed: true, 
@@ -265,16 +251,7 @@ export default {
 					break;
 				/*Per Columns*/
 				case 3:
-					this.height = Math.round(this.users/this.columns)*65;	
-					break;
-				/*Custom*/
-				case 4:
-					if(this.users <= 13){
-						this.height = 200;
-					}
-					else{
-						this.height = this.users*16;
-					}					
+					this.height = Math.round(this.users/this.columns)*50;	
 					break;
 			}
 		},
@@ -286,10 +263,8 @@ export default {
 			this.chart.background.fill = "#2196F3";
 			this.chart.background.opacity = 0.1;
 			this.chart.logo.height = -15000;
-
 			var networkSeries = this.chart.series.push(new am4plugins_forceDirected.ForceDirectedSeries());
-			networkSeries.data = data;			
-			
+			networkSeries.data = data;
 			networkSeries.dataFields.fixed = "fixed";
 			networkSeries.dataFields.name = "name";
 			networkSeries.dataFields.value = "value";
@@ -297,19 +272,15 @@ export default {
 			networkSeries.fontSize = this.fontsize;
 			networkSeries.maxRadius = this.maxRadius;
 			networkSeries.nodes.template.fillOpacity = 1;
-			
 			networkSeries.nodes.template.label.text = "{id}"
 			networkSeries.nodes.template.label.fill = "#000000";
 			//networkSeries.nodes.template.label.dx = 15;
 			//networkSeries.nodes.template.label.dy = 20;
-
 			networkSeries.nodes.template.propertyFields.x = "x";
 			networkSeries.nodes.template.propertyFields.y = "y";
 			networkSeries.nodes.template.tooltipText = "{name} \n {principal} \n color: {color}";
-			/*Uncomment to fill completly the node*/
 			networkSeries.nodes.template.circle.disabled = true;
 			networkSeries.nodes.template.outerCircle.disabled = true;			
-
 			/*Icon*/ 
 			let icon = networkSeries.nodes.template.createChild(am4core.Sprite);
 			icon.propertyFields.path = "path";
@@ -318,7 +289,6 @@ export default {
 			icon.width = this.maxRadius;
 			icon.height = this.maxRadius;
 			icon.scale = 0.5;
-			
 			/*Events*/
 			networkSeries.events.on("inited", function() {
 				networkSeries.animate({
@@ -326,7 +296,6 @@ export default {
 					to: 1
 				}, 3000);
 			});
-
 			/*Selection*/
 			var selectedNodes = [];
 			networkSeries.nodes.template.events.on("up", function (event) {
@@ -334,6 +303,7 @@ export default {
 				if (selectedNodes.indexOf(node) === -1) {
 					node.outerCircle.disabled = false;
 					selectedNodes.push(node);
+					this.selectedParticipants.push(this.participants[node.index]);
 				}
 				else {
 					node.outerCircle.disabled = true;
@@ -341,6 +311,7 @@ export default {
 						var index = selectedNodes.indexOf(node);
 						if(index > -1){
 							selectedNodes.splice(index, 1);
+							this.selectedParticipants.splice(index, 1);
 						}
 					});
 				}
@@ -364,16 +335,17 @@ export default {
 			else if(this.users < 10){
 				return Math.ceil(this.users/2);
 			}else{
-				return Math.ceil(this.users/(Math.ceil(this.users/10)));
+				return 10;
 			}
 		},
 
 		setValueOptions(){
-			var values = [];
+			var values = []
 			for(var i=2; i<=this.setMaxValue(); i++){
 				var value = Math.ceil(this.users/i);
-				if(values.indexOf(value) === -1){
+				if(values.indexOf(value) === -1 && value <= 10){
 					values.push(value);
+					console.log(value)
 				}
 			}
 			function compare ( a, b ){ return a - b; }
@@ -382,7 +354,8 @@ export default {
 
     updateMetrics(newMetrics, metric) {
       if (this.participants.length === 0) {
-        this.participants = [...newMetrics];
+				this.participants = [...newMetrics];
+				this.users = this.participants.length;
       } else {
         newMetrics.map((metric, i) => {
           this.participants[i].results = Object.assign(
@@ -416,6 +389,7 @@ export default {
 			}
 		},
 
+		/*Debug*/
 		print(){
 			console.log(this.chart);
 		},
@@ -424,7 +398,7 @@ export default {
 			await axios
 				.get(`${process.env.VUE_APP_API_URL}/inittime`)
 				.then(response => {
-					this.$store.commit("setInitTime", {
+					this.$store.commit('setInitTime', {
 						initTime: response.data.initTime
 					});
 				})
@@ -463,39 +437,35 @@ export default {
 			}
 		}
 	},		
-/*
-	watch: {
-		users: function(){
-			if(this.users <= 20){
-				this.separation = 100;
-			}
-			else{
-				this.separation = 45;			
-			}
-		},
 
+	watch: {
 		classroomConfiguration: function(){
 			if(this.classroomConfiguration !== '' && this.users > 1 && (this.classroomConfiguration === 1 || this.classroomConfiguration === 4)){
-				this.setChart([], this.classroomConfiguration);
+				this.setHeight(this.classroomConfiguration);
 			}
 		},
 
 		rows: function(){
 			if(this.classroomConfiguration !== '' && this.users > 1 && this.rows !== ''){
-				this.setChart([], this.classroomConfiguration);
+				this.setHeight(this.classroomConfiguration);
 			}
 		},
 
 		columns: function(){
 			if(this.classroomConfiguration !== '' && this.users > 1 && this.columns !== ''){
-				this.setChart([], this.classroomConfiguration);
+				this.setHeight(this.classroomConfiguration);
 			}
-		}	
-	}*/
+		},
+		
+		selectedParticipants: function(){
+			this.$store.commit('setParticipants', this.selectedParticipants)
+			console.log(this.selectedParticipants)
+		}
+	}
 }
 </script>
 
-<style>
+<style scoped>
 .classrooms {
   width: 100%;
 }

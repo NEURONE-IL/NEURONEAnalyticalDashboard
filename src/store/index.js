@@ -7,7 +7,9 @@ export default new Vuex.Store({
   state: {
     configuration: {},
     initTime: null,
-    drawer: null
+    leftDrawer: null,
+    rightDrawer: null,
+    participants: []
   },
 
   mutations: {
@@ -21,9 +23,18 @@ export default new Vuex.Store({
       state.configuration = configuration;
     },
 
-    setDrawer(state, payload) {
-      state.drawer = payload;
+    setLeftDrawer(state, payload){
+      state.leftDrawer = payload;
     },    
+
+    setRightDrawer(state, payload){
+      state.rightDrawer = payload;
+    },    
+
+    setParticipants(state, payload){
+      state.participants = payload;
+    }
+    
   },
 
   getters:{
@@ -33,6 +44,18 @@ export default new Vuex.Store({
 
     getInitTime(state){
       return state.initTime;
+    },
+
+    getLeftDrawer(state){
+      return state.leftDrawer;
+    },
+
+    getRightDrawer(state){
+      return state.rightDrawer;
+    },
+
+    getParticipants(state){
+      return state.participants;
     }
 
   }

@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <Layout/>
+    <LeftDrawer/>
     <v-content>
       <router-view/>
     </v-content>    
@@ -8,28 +8,17 @@
 </template>
 
 <script>
-import Layout from './components/Layout.vue';
+import LeftDrawer from './components/LeftDrawer.vue';
 
 export default {
   name: 'App',
 
   components: {
-    Layout
+    LeftDrawer
   },
 
   data: () => ({
     //
-  }),
-
-  computed: {
-    drawer: {
-      get () {
-        return this.$store.state.drawer
-      },
-      set (payload) {
-        this.$store.commit('setDrawer', payload);
-      },
-    },
-  },  
+  })
 };
 </script>
