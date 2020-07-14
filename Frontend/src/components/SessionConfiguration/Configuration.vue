@@ -15,7 +15,7 @@
 					<v-divider></v-divider>	
 					<br>				
 					<v-row no-gutters>
-						<v-col cols="5" class="text-center mr-12">
+						<v-col cols="12" md="5" class="text-center ms-12">
 							<v-select
 								v-model="select"
 								:disabled="metrics.length === 0"
@@ -25,7 +25,7 @@
 								:rules="selectRules"								
 							></v-select>
 						</v-col>
-						<v-col cols="5" class="text-center ml-12 mr-12">
+						<v-col cols="12" md="5" class="text-center ms-12">
 							<v-select
 								v-model="interval"
 								:items="timeOptions"
@@ -91,8 +91,9 @@
 </template>
 
 <script>
-import Metrics from '../components/Metrics';
+import Metrics from '../SessionConfiguration/Metrics';
 import axios from 'axios';
+import { mapMutations, mapState } from 'vuex';
 
 export default {
 	name: 'Configuration',
@@ -135,6 +136,7 @@ export default {
 			this.metrics = [...checkedMetrics]
 		},
 
+		/*NEURONE-AM*/
 		async sendConfiguration(){			
 			let interval = this.interval * 1000;
 			let limit = this.limit;

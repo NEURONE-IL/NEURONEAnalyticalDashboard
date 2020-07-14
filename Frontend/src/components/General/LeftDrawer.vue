@@ -3,7 +3,7 @@
 		v-model="leftDrawer"
 		:mini-variant.sync="miniVariant"
     disable-route-watcher
-    mobile-break-point="960"
+    mobile-breakpoint="960"
 		app
 		dark	
 		:color="color"
@@ -64,7 +64,11 @@ export default {
 			items: [
 				{ title: 'Sesión', icon: 'mdi-cogs', route: '/' },				
 				{ title: 'Aula', icon: 'mdi-google-classroom', route: '/classroom' },
-				{ title: 'Nueva configuración de aula', icon: 'mdi-file-plus', route: '/add'}
+				{ title: 'Configuraciones de aula', icon: 'mdi-toolbox', route: '/classroom-configurations'}
+				/*
+				{ title: 'Nueva configuración de aula', icon: 'mdi-file-plus', route: '/add-classroom-configuration'},
+				{ title: 'Adm. Configuraciones de aula', icon: 'mdi-toolbox', route: '/manage-classroom-configurations'},				
+				*/
 			],
 			miniVariant: true
 		}

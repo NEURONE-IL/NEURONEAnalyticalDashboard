@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex)
 
@@ -9,7 +10,9 @@ export default new Vuex.Store({
     initTime: null,
     leftDrawer: null,
     rightDrawer: null,
-    participants: []
+    participants: [],
+    NEURONE_AD_API_URL: 'http://localhost:4003',
+    classroomConfigurations: []
   },
 
   mutations: {
@@ -33,8 +36,7 @@ export default new Vuex.Store({
 
     setParticipants(state, payload){
       state.participants = payload;
-    }
-    
+    },
   },
 
   getters:{
@@ -56,8 +58,7 @@ export default new Vuex.Store({
 
     getParticipants(state){
       return state.participants;
-    }
-
+    },
   }
 
 })

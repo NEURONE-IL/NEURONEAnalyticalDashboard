@@ -3,7 +3,7 @@
 		v-model="rightDrawer"
 		:mini-variant.sync="miniVariant"
     disable-route-watcher
-    mobile-break-point="960"
+    mobile-breakpoint="960"
 		app
 		dark	
 		right
@@ -50,15 +50,15 @@
         </template>
         <v-card 
           shaped
-          class="mb-2"
-          :color="setColor(participant.results[principal])"
+          :color="setColor(participant.results[principal]) + ' lighten-3'"
         >
           <v-list-item
             v-for="(value, metric, index) in participant.results"
             :key="index"
+            v-bind:class="setColor(participant.results[principal]) + 'ItemDisplay'"
           >
             <v-icon left>mdi-circle-medium</v-icon>
-            <v-list-item-title>{{ metric }}: {{ value }}</v-list-item-title>          
+            <v-list-item-title class="metricDisplay">{{ metric }}: {{ value }}</v-list-item-title>          
           </v-list-item>
         </v-card>  
         <v-divider dark/>
@@ -92,28 +92,28 @@ export default {
 			switch(this.option){
 				case "1":
 					if(value > Number(this.limit)){
-						return '#F44336';
+						return 'red';
 					}
 					else if(value === Number(this.limit)){
-						return '#FF9800';
+						return 'orange';
 					}
 					else{
-						return '#4CAF50';
+						return 'green';
 					}	
 					break;				
 				case "2":
 					if(value < Number(this.limit)){
-						return '#F44336';
+						return 'red';
 					}
 					else if(value === Number(this.limit)){
-						return '#FF9800';
+						return 'orange';
 					}
 					else{
-						return '#4CAF50';
+						return 'green';
 					}	
 					break;				
 				default:
-					return '#2196F3';
+					return 'blue';
 					break;
 			}
 		}
@@ -169,5 +169,24 @@ export default {
 .theme--dark.v-card{
   margin-top: 5px;
   margin-bottom: 5px;
+}
+.metricDisplay{
+  color: #000000 !important;
+}
+.redItemDisplay{
+  border: 4px solid #F44336;
+  margin-bottom: 2px;
+}
+.orangeItemDisplay{
+  border: 4px solid #FF9800;
+  margin-bottom: 2px;  
+}
+.greenItemDisplay{
+  border: 4px solid #4CAF50;
+  margin-bottom: 2px;  
+}
+.blueItemDisplay{
+  border: 4px solid #2196F3;
+  margin-bottom: 2px;  
 }
 </style>

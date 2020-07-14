@@ -1,14 +1,14 @@
 <template>
   <v-app id="app">
     <LeftDrawer/>
-    <v-content>
+    <v-main>
       <router-view/>
-    </v-content>    
+    </v-main>    
   </v-app>
 </template>
 
 <script>
-import LeftDrawer from './components/LeftDrawer.vue';
+import LeftDrawer from './components/General/LeftDrawer.vue';
 
 export default {
   name: 'App',

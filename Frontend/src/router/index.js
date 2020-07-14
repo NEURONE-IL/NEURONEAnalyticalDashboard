@@ -5,6 +5,9 @@ import axios from 'axios'
 /*Views*/
 import ClassroomView from '../views/ClassroomView.vue'
 import ConfigurationView from '../views/ConfigurationView.vue'
+import AddClassroomConfigurationView from '../views/AddClassroomConfigurationView.vue'
+import ManageClassroomConfigurationsView from '../views/ManageClassroomConfigurationsView.vue'
+import ClassroomConfigurationsView from '../views/ClassroomConfigurationsView.vue'
 
 Vue.use(VueRouter)
 
@@ -43,7 +46,22 @@ const routes = [
     path: '/classroom',
     name: 'Classroom',
     component: ClassroomView
-  }
+  },
+  {
+    path: '/add-classroom-configuration',
+    name: 'AddClassroomConfiguration',
+    component: AddClassroomConfigurationView
+  },
+  {
+    path: '/manage-classroom-configurations',
+    name: 'ManageClassroomConfigurations',
+    component: ManageClassroomConfigurationsView
+  },
+  {
+    path: '/classroom-configurations',
+    name: 'ClassroomConfigurations',
+    component: ClassroomConfigurationsView    
+  }  
 ]
 
 const router = new VueRouter({
