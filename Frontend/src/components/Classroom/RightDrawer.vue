@@ -88,7 +88,6 @@ export default {
 
   methods:{
 		setColor(value){
-      console.log(this.participants[0].results[this.principal]);
 			switch(this.option){
 				case "1":
 					if(value > Number(this.limit)){

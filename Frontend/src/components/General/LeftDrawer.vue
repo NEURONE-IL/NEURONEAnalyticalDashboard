@@ -64,7 +64,8 @@ export default {
 			items: [
 				{ title: 'Sesión', icon: 'mdi-cogs', route: '/' },				
 				{ title: 'Aula', icon: 'mdi-google-classroom', route: '/classroom' },
-				{ title: 'Configuraciones de aula', icon: 'mdi-toolbox', route: '/classroom-configurations'}
+				{ title: 'Configuraciones de aula', icon: 'mdi-toolbox', route: '/classroom-configurations'},
+				{ title: 'Métricas', icon: 'mdi-chart-timeline-variant', route: '/metrics'}
 				/*
 				{ title: 'Nueva configuración de aula', icon: 'mdi-file-plus', route: '/add-classroom-configuration'},
 				{ title: 'Adm. Configuraciones de aula', icon: 'mdi-toolbox', route: '/manage-classroom-configurations'},				

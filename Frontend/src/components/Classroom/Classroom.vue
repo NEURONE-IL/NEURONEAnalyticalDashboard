@@ -198,7 +198,6 @@ export default {
 				var color = this.setColor(value);					
 				var x = this.separation + (((i)%nodesPer)*this.separation*0.75) + offset;
 				var y = this.separation + this.separation * Math.trunc(i/nodesPer) * 1.2;
-				console.log('pos', x, y);
 				data.push(
 					{
 						id: i,
@@ -279,6 +278,7 @@ export default {
 			var networkSeries = this.chart.series.push(new am4plugins_forceDirected.ForceDirectedSeries());
 			networkSeries.data = data;
 			networkSeries.dataFields.fixed = "fixed";
+			networkSeries.dataFields.id = "id";
 			networkSeries.dataFields.name = "name";
 			networkSeries.dataFields.value = "value";
 			networkSeries.dataFields.color = "color";
@@ -287,7 +287,10 @@ export default {
 			networkSeries.nodes.template.fillOpacity = 1;
 			networkSeries.nodes.template.label.text = "{id}"
 			networkSeries.nodes.template.label.fill = "#000000";
-
+			networkSeries.nodes.template.maxX = this.$refs.chartdiv.clientWidth;
+			networkSeries.nodes.template.maxY = this.$refs.chartdiv.clientHeight;
+			networkSeries.nodes.template.minX = 0;
+			networkSeries.nodes.template.minY = 0;			
 
 			networkSeries.dragFixedNodes = true;
 
@@ -296,7 +299,7 @@ export default {
 //			networkSeries.nodes.template.label.valign = "middle";
 			networkSeries.nodes.template.propertyFields.x = "x";
 			networkSeries.nodes.template.propertyFields.y = "y";
-			networkSeries.nodes.template.tooltipText = "{name} \n {principal}";
+			networkSeries.nodes.template.tooltipText = "{name} \n {principal} \n x: {x} \n y: {y}";
 			networkSeries.nodes.template.circle.disabled = true;
 			networkSeries.nodes.template.outerCircle.disabled = true;			
 			/*Icon*/ 
@@ -326,6 +329,8 @@ export default {
 			// disable physics for dragged nodes
 			networkSeries.dragFixedNodes = true;
 			networkSeries.nodes.template.events.on("dragstop", function(event) {
+				console.log(event)
+				//event.target.
 				event.target.dataItem.fixed = true;  
 			})
 
@@ -334,12 +339,23 @@ export default {
 			})
 			// end of disabling physics
 
+			networkSeries.nodes.template.events.on("dragged", function(event) {
+				console.log(event)
+				event.target.dataItem.fixed = false;  
+				console.log(event.target.dataItem.node.x);
+				console.log(event.target.dataItem.node.y);
+				//console.log(event.target.dataItem.node);
+				var id = event.target.dataItem.id;
+				this.chart.series.values[0].dataItems.values[id]._dataContext.x = event.target.dataItem.node.x; 
+				this.chart.series.values[0].dataItems.values[id]._dataContext.y = event.target.dataItem.node.y;
+			}, this)
 
 			//https://www.amcharts.com/demos/force-directed-adding-links/
 			/*Selection*/
 			var selectedNodes = [];
 			networkSeries.nodes.template.events.on("up", function (event) {
 				var node = event.target;
+				console.log(node)
 				if (selectedNodes.indexOf(node) === -1) {
 					node.outerCircle.disabled = false;
 					selectedNodes.push(node);
@@ -388,7 +404,6 @@ export default {
 				var value = Math.ceil(this.users/i);
 				if(values.indexOf(value) === -1 && value <= 10){
 					values.push(value);
-					console.log(value)
 				}
 			}
 			function compare ( a, b ){ return a - b; }
@@ -436,7 +451,6 @@ export default {
 		/*Debug*/
 		print(){
 			console.log(this.chart);
-			console.log(this.$refs);
 		},
 
 		/*NEURONE-AD Original*/
@@ -528,7 +542,6 @@ export default {
 		
 		selectedParticipants: function(){
 			this.$store.commit('setParticipants', this.selectedParticipants)
-			console.log(this.selectedParticipants)
 		}
 	}
 }

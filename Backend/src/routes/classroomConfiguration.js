@@ -8,6 +8,12 @@ router.get('/classroom-configurations', async (req, res) => {
   res.send(classroomConfigurations);
 });
 
+router.get('/classroom-configuration/:id', async (req, res) => {
+	const { id } = req.params;
+	const classroomConfiguration = await ClassroomConfiguration.findById({_id: id}, req.body);
+	res.send(classroomConfiguration);
+});
+
 router.post('/classroom-configuration', async (req, res) => {
 	const classroomConfiguration = new ClassroomConfiguration(req.body);
 	await classroomConfiguration.save();
@@ -22,7 +28,6 @@ router.put('/classroom-configuration/:id', async (req, res) => {
 
 router.delete('/classroom-configuration/:id', async (req, res) => {
 	const { id } = req.params;
-	console.log(id);
 	await ClassroomConfiguration.deleteOne({_id: id})
 	res.send('Deleted successfully');
 });

@@ -2,18 +2,18 @@
 	<v-container>
     <v-row no-gutters>
       <v-col cols="12" class="text-center">
-				<h2>Nueva configuración de aula</h2>
+				<h2>Actualizar configuración de aula</h2>
 				<br>
 				<v-divider></v-divider>	
 				<br>				
 				<v-form
-					ref="newConfigurationForm"
-					v-model="newValidConfiguration"
+					ref="editConfigurationForm"
+					v-model="editValidConfiguration"
 				>
 					<v-row no-gutters>
 						<v-col cols="12" md="5" class="text-center ms-12">
 							<v-text-field
-								v-model="name"
+								v-model="classroomConfiguration.name"
 								label="Nombre de la nueva configuración"
 								required
 								:rules="nameRequiredRules"
@@ -24,7 +24,7 @@
 						</v-col>
 						<v-col cols="12" md="5" class="text-center ms-12">
 							<v-slider
-								v-model="participants"
+								v-model="classroomConfiguration.participants"
 								thumb-label="always"
 								:thumb-size="16"              
 								thumb-color="primary"
@@ -45,9 +45,10 @@
 				<v-btn
 					class="mb-4 ms-4"
 					color="primary"
-					:disabled="!newValidConfiguration || this.participants === 0"
-					@click="setClassroom([])"
+					
+					@click="setClassroom()"
 				>
+					<!--:disabled="!editValidConfiguration || this.participants === 0"-->
 					Configurar ubicaciones	
 					<v-icon right>
 						mdi-cursor-default
@@ -57,14 +58,25 @@
 				<v-btn
 					class="mb-4 ms-4"
 					color="success"
-					:disabled="!newValidConfiguration || this.participants === 0 || this.chart === null"
-					@click="saveConfiguration()"
+					:disabled="!editValidConfiguration || classroomConfiguration.participants === 0 || this.chart === null"
+					@click="updateConfiguration(classroomConfigurationId)"
 				>
-					Guardar
+					Guardar cambios
 					<v-icon right>
 						mdi-content-save
 					</v-icon>
-				</v-btn>				
+				</v-btn>			
+				<v-btn
+					class="mb-4 ms-4"
+					color="error"
+					:disabled="!editValidConfiguration || classroomConfiguration.participants === 0"
+					@click="print()"
+				>
+					Print	
+					<v-icon right>
+						mdi-printer
+					</v-icon>
+				</v-btn>					
 				<!--Gráfico-->
 				<div v-show="this.height != 0" class="classrooms" ref="chartdiv"></div>
       </v-col>		
@@ -74,7 +86,7 @@
 
 <script>
 import axios from 'axios';
-import { mapMutations, mapState } from 'vuex';
+import { mapState } from 'vuex';
 /*Bibliotecas del gráfico*/
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
@@ -82,7 +94,11 @@ import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 import * as am4plugins_forceDirected from "@amcharts/amcharts4/plugins/forceDirected";
 
 export default {
-	name: 'AddClassroomConfiguration',
+	name: 'UpdateClassroomConfiguration',
+
+	props: {
+		classroomConfigurationId: String
+	},	
 
 	data (){
 		return {
@@ -92,7 +108,8 @@ export default {
 			createdBy: '',
 			participants: 0,
 			positions: [],
-			newValidConfiguration: true,
+			editValidConfiguration: true,
+			classroomConfiguration: {},
 			/*Node properties*/
 			fontsize: '',
 			maxRadius: '',
@@ -116,12 +133,11 @@ export default {
 		this.fontsize = 10;
 		this.maxRadius = 15;
 		this.separation = 50;
-		this.setClassroomConfigurations();
+		this.getClassroomConfiguration(this.classroomConfigurationId);
+		this.setClassroom();
 	},
 
 	methods: {
-
-		...mapMutations(['setClassroomConfigurations']),	
 
 		setClassroom(){		
 			var data = [];
@@ -131,31 +147,29 @@ export default {
 		},
 
 		setCustomClassroom(data){
-			for(var i = 0; i < this.participants; i++){
+			for(var i = 0; i < this.classroomConfiguration.participants; i++){
 				data.push(
-					{
+					{						
 						id: i+1,
 						path: this.userIcoPath,
 						color: '#2196F3',
 						value: 1,
+						fixed: true,
+						x: this.classroomConfiguration.positions[i][0],
+						y: this.classroomConfiguration.positions[i][1]
 					}
 				);
 			}
 		},
 
 		setHeight(){
-			if(this.participants <= 13){
-				this.height = 200;
-			}
-			else{
-				this.height = this.participants*16;
-			}
+			this.height = this.classroomConfiguration.height;
 		},
 
 		/*NEURONE-AD Original*/
-		setChart(data, index){
+		setChart(data){
 			this.chart = am4core.create(this.$refs.chartdiv, am4plugins_forceDirected.ForceDirectedTree);
-			this.setHeight(index);
+			this.setHeight();
 			this.chart.svgContainer.htmlElement.style.height = this.height + "px";
 			this.chart.background.fill = "#2196F3";
 			this.chart.background.opacity = 0.1;
@@ -163,6 +177,7 @@ export default {
 			var networkSeries = this.chart.series.push(new am4plugins_forceDirected.ForceDirectedSeries());
 			networkSeries.data = data;
 			networkSeries.dataFields.fixed = "fixed";
+			networkSeries.dataFields.id = "id";
 			networkSeries.dataFields.name = "name";
 			networkSeries.dataFields.value = "value";
 			networkSeries.dataFields.color = "color";
@@ -171,6 +186,10 @@ export default {
 			networkSeries.nodes.template.fillOpacity = 1;
 			networkSeries.nodes.template.label.text = "{id}"
 			networkSeries.nodes.template.label.fill = "#000000";
+			networkSeries.nodes.template.maxX = this.$refs.chartdiv.clientWidth;
+			networkSeries.nodes.template.maxY = this.$refs.chartdiv.clientHeight;
+			networkSeries.nodes.template.minX = 0;
+			networkSeries.nodes.template.minY = 0;				
 
 
 			networkSeries.dragFixedNodes = true;
@@ -210,6 +229,7 @@ export default {
 			// disable physics for dragged nodes
 			networkSeries.dragFixedNodes = true;
 			networkSeries.nodes.template.events.on("dragstop", function(event) {
+				event.target.outerCircle.disabled = true;
 				event.target.dataItem.fixed = true;  
 			})
 
@@ -218,29 +238,50 @@ export default {
 			})
 			// end of disabling physics
 
+			networkSeries.nodes.template.events.on("dragged", function(event) {
+				console.log(event)
+				event.target.dataItem.fixed = false;  
+//				console.log(event.target.dataItem.node.x);
+//				console.log(event.target.dataItem.node.y);
+				//console.log(event.target.dataItem.node);
+				var id = event.target.dataItem.id - 1;
+				this.chart.series.values[0].dataItems.values[id]._dataContext.x = event.target.dataItem.node.x; 
+				this.chart.series.values[0].dataItems.values[id]._dataContext.y = event.target.dataItem.node.y;
+			}, this)
+
+			networkSeries.nodes.template.events.on("dragstart", function(event) {
+				event.target.outerCircle.disabled = false;
+				event.target.dataItem.fixed = false;  
+			})
+
 
 			//https://www.amcharts.com/demos/force-directed-adding-links/
 			/*Selection*/
-/*			var selectedNodes = [];
+			/*
+			var selectedNode;
+
 			networkSeries.nodes.template.events.on("up", function (event) {
 				var node = event.target;
-				if (selectedNodes.indexOf(node) === -1) {
+				if(!selectedNode){
 					node.outerCircle.disabled = false;
-					selectedNodes.push(node);
-					this.selectedParticipants.push(this.participants[node.index]);
+					selectedNode = node;					
 				}
-				else {
+				else if(node === selectedNode){
 					node.outerCircle.disabled = true;
-					selectedNodes.forEach(element => {
-						var index = selectedNodes.indexOf(node);
-						if(index > -1){
-							selectedNodes.splice(index, 1);
-							this.selectedParticipants.splice(index, 1);
-						}
-					});
+					selectedNode = null;
 				}
-			}, this)*/
+				else{
+					selectedNode.outerCircle.disabled = true;
+					node.outerCircle.disabled = false;
+					selectedNode = node;					
+				}
+			})*/
 		},
+
+		/*Debug*/
+		print(){
+			console.log(this.chart);
+		},		
 
 		disposeChart(){
 			if(this.chart){
@@ -253,11 +294,25 @@ export default {
 			this.$refs.configurationForm.reset();
 		},
 
-		async saveConfiguration(){
+    async getClassroomConfiguration(payload){
+      await axios
+      .get(this.NEURONE_AD_API_URL + '/classroom-configuration/' + payload)
+      //.get(`${process.env.NEURONE_AD_API_URL}/classroom-configurations`)
+      .then(response => {
+				this.classroomConfiguration = response.data;
+				console.log(response.data);
+      })
+      .catch(e => {
+        console.log(e.response);
+      })
+		},
+
+		async updateConfiguration(payload){
 			var height = this.$refs.chartdiv.clientHeight;
 			var width = this.$refs.chartdiv.clientWidth;
-			for(var i = 0; i < this.participants; i++){
-				this.positions.push(
+			this.classroomConfiguration.positions = [];
+			for(var i = 0; i < this.classroomConfiguration.participants; i++){
+				this.classroomConfiguration.positions.push(
 					[
 						this.chart.series.values[0].dataItems.values[i].node.x,
 						this.chart.series.values[0].dataItems.values[i].node.y,
@@ -265,22 +320,29 @@ export default {
 				);
 			}			
 			await axios
-			.post(this.NEURONE_AD_API_URL + '/classroom-configuration', {
-				name: this.name,
-				createdBy: this.createdBy,
-				participants: this.participants,
-				positions: this.positions,
+			.put(this.NEURONE_AD_API_URL + '/classroom-configuration/' + payload, {
+				name: this.classroomConfiguration.name,
+				createdBy: this.classroomConfiguration.createdBy,
+				participants: this.classroomConfiguration.participants,
+				positions: this.classroomConfiguration.positions,
 				height: height,
 				width: width
 			})
 			.then(response => {
-				this.setClassroomConfigurations();
+				this.getClassroomConfigurations();
 			})
 			.catch(e => {
 				console.log(e.response);
 			})
 		},
-	},		
+	},
+	
+	watch: {
+		classroomConfigurationId: function(){
+			this.getClassroomConfiguration(this.classroomConfigurationId);
+			//this.setClassroom();
+		}
+	},
 
 	computed:{
     ...mapState(['NEURONE_AD_API_URL'])

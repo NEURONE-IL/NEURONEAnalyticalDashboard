@@ -1,12 +1,13 @@
 <template>
 	<v-container>
+		<!--Create Dialog-->
 		<v-dialog
 			v-model="createDialog"
 			max-width="80%"
 			persistent
 		>
 			<v-card>
-				<AddClassroomConfiguration ref="addConfiguration"/>
+				<CreateClassroomConfiguration ref="createConfiguration"/>
 				<v-card-actions>
 					<v-spacer></v-spacer>
 					<v-btn
@@ -22,6 +23,31 @@
 				</v-card-actions>					
 			</v-card>		
 		</v-dialog>
+
+		<!--Update Dialog-->
+		<v-dialog
+			v-model="updateDialog"
+			max-width="80%"
+			persistent
+		>
+			<v-card>
+				<UpdateClassroomConfiguration :classroomConfigurationId="this.classroomConfigurationId" ref="updateConfiguration"/>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn
+						color="error"
+						@click="resetUpdate()"
+						class="mb-4 mr-4"            
+					>
+						Cerrar					
+						<v-icon right>
+							mdi-close
+						</v-icon> 	
+					</v-btn>					
+				</v-card-actions>					
+			</v-card>		
+		</v-dialog>
+
     <v-row no-gutters>
       <v-col cols="12" class="text-center">
 				<h2>Configuraciones de aula</h2>
@@ -55,6 +81,7 @@
 							<v-btn
 								icon
 								small
+								@click="viewConfiguration(item._id)"
 							>
 								<v-icon
 									small
@@ -82,7 +109,8 @@
 </template>
 
 <script>
-import AddClassroomConfiguration from '../ClassroomConfigurations/AddClassroomConfiguration';
+import CreateClassroomConfiguration from '../ClassroomConfigurations/CreateClassroomConfiguration';
+import UpdateClassroomConfiguration from '../ClassroomConfigurations/UpdateClassroomConfiguration';
 import axios from 'axios';
 import { mapState } from 'vuex';
 
@@ -90,7 +118,8 @@ export default {
 	name: 'ClassroomConfigurations',
 
 	components: {
-		AddClassroomConfiguration
+		CreateClassroomConfiguration,
+		UpdateClassroomConfiguration
 	},
 
 	data (){
@@ -100,6 +129,7 @@ export default {
 			/*Dialog properties*/
 			createDialog: false,
 			updateDialog: false,
+			classroomConfigurationId: '',
 			/*Data table properties*/
 			search: '',
 			headers: [
@@ -122,17 +152,30 @@ export default {
 	methods: {
 		resetCreate(){
 			this.createDialog = false;
-			this.$refs.addConfiguration.$refs.newConfigurationForm.reset();
-			this.$refs.addConfiguration.disposeChart();
+			this.getClassroomConfigurations();
+			this.$refs.createConfiguration.$refs.newConfigurationForm.reset();
+			this.$refs.createConfiguration.disposeChart();
 		},
+
+		resetUpdate(){
+			//this.configurationId = null;
+			this.updateDialog = false;
+			this.$refs.updateConfiguration.$refs.editConfigurationForm.reset();
+			this.$refs.updateConfiguration.disposeChart();
+		},		
 
     confirmDelete(){
       return confirm('¿Está segur@ que desea borrar esta configuración de aula?')
-    },		
+		},
+		
+		viewConfiguration(payload){
+			this.classroomConfigurationId = payload;
+			this.updateDialog = true;
+		},
 
     async getClassroomConfigurations(){
       await axios
-      .get('http://localhost:4003/classroom-configurations')
+      .get(this.NEURONE_AD_API_URL + '/classroom-configurations')
       //.get(`${process.env.NEURONE_AD_API_URL}/classroom-configurations`)
       .then(response => {
         this.classroomConfigurations = response.data;
