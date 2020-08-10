@@ -2,6 +2,10 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
+/*
+@fvillarrealcespedes:
+ClassroomConfiguration model definition.
+*/
 const ClassroomConfiguration = new Schema({
 	name: String,
 	createdBy: String,

@@ -9,6 +9,7 @@ import CreateClassroomConfigurationView from '../views/CreateClassroomConfigurat
 import UpdateClassroomConfigurationView from '../views/UpdateClassroomConfigurationView.vue'
 import ClassroomConfigurationsView from '../views/ClassroomConfigurationsView.vue'
 import MetricsConfigurationView from '../views/MetricsConfigurationView.vue'
+import SessionStatsView from '../views/SessionStatsView.vue'
 
 Vue.use(VueRouter)
 
@@ -17,7 +18,8 @@ async function isInit(to, from, next){
   .get(`${process.env.VUE_APP_API_URL}/ifsession`)
   .then(response => {
     if(response.data.status){
-      store.commit("setMetrics", {
+      console.log('router response', response);
+      store.commit('setConfiguration', {
         configuration: {
           limit: response.data.limit,
           metrics: response.data.metrics,
@@ -28,11 +30,11 @@ async function isInit(to, from, next){
       next('/classroom')
     }
     else{
-      next('/')
+      next('/configuration')
     }
   })
   .catch(error => {
-    next('/')
+    next('/configuration')
   })
 }
 
@@ -41,8 +43,13 @@ const routes = [
     path: '/',
     name: 'Home',
     component: ConfigurationView,
-    //beforeEnter: isInit
+    beforeEnter: isInit
   },
+  {
+    path: '/configuration',
+    name: 'Configuration',
+    component: ConfigurationView,
+  },  
   {
     path: '/classroom',
     name: 'Classroom',
@@ -67,7 +74,12 @@ const routes = [
     path: '/metrics-configuration',
     name: 'MetricsConfiguration',
     component: MetricsConfigurationView    
-  }   
+  },
+  {
+    path: '/session-stats',
+    name: 'SessionStats',
+    component: SessionStatsView    
+  }
 ]
 
 const router = new VueRouter({

@@ -1,29 +1,44 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    /*NEURONE AM*/
     configuration: {},
     initTime: null,
+    /*Drawer visibility*/
     leftDrawer: null,
     rightDrawer: null,
-    participants: [],
+    /*Right Drawer */
+    allParticipants: [],
+    selectedParticipants: [],
+    /*NEURONE AD Backend URL*/
     NEURONE_AD_API_URL: 'http://localhost:4003',
-    classroomConfigurations: []
+    /*Line Chart*/
+    showLineChart: null,
+    username: null,
+    selectedMetric: null,
+    /*Left Drawer*/
+    tabs: [
+      { id: 1, title: 'Sesión', icon: 'mdi-cogs', route: '/', disabled: false },				
+      { id: 2, title: 'Aula', icon: 'mdi-google-classroom', route: '/classroom', disabled: true },
+      { id: 3, title: 'Configuraciones de aula', icon: 'mdi-toolbox', route: '/classroom-configurations', disabled: false },
+      { id: 4, title: 'Métricas', icon: 'mdi-chart-timeline-variant', route: '/metrics-configuration', disabled: false },
+    ],
+    /*Put request params*/
+    classroomConfigurationId: null,
+    metricId: null
   },
 
   mutations: {
-    setInitTime(state, payload){
-      let initTime = payload.initTime;
-      state.initTime = initTime;
+    setConfiguration(state, payload){
+      state.configuration = payload.configuration;
     },
 
-    setMetrics(state, payload){
-      let configuration = payload.configuration;
-      state.configuration = configuration;
+    setInitTime(state, payload){
+      state.initTime = payload.initTime;
     },
 
     setLeftDrawer(state, payload){
@@ -34,9 +49,37 @@ export default new Vuex.Store({
       state.rightDrawer = payload;
     },    
 
-    setParticipants(state, payload){
-      state.participants = payload;
+    setAllParticipants(state, payload){
+      state.allParticipants = payload;
     },
+
+    setSelectedParticipants(state, payload){
+      state.selectedParticipants = payload;
+    },
+
+    setShowLineChart(state, payload){
+      state.showLineChart = payload;
+    },
+
+    setUsername(state, payload){
+      state.username = payload;
+    },
+
+    setSelectedMetric(state, payload){
+      state.selectedMetric = payload;
+    },
+
+    setTabs(state, payload){
+      state.tabs = payload;
+    },
+
+    setClassroomConfigurationId(state, payload){
+      state.classroomConfigurationId = payload;
+    },
+
+    setMetricId(state, payload){
+      state.metricId = payload;
+    }    
   },
 
   getters:{
@@ -56,9 +99,36 @@ export default new Vuex.Store({
       return state.rightDrawer;
     },
 
-    getParticipants(state){
-      return state.participants;
+    getAllParticipants(state){
+      return state.allParticipants;
     },
-  }
 
+    getSelectedParticipants(state){
+      return state.selectedParticipants;
+    },
+
+    getShowLineChart(state){
+      return state.showLineChart;
+    },
+
+    getUsername(state){
+      return state.username;
+    },
+
+    getSelectedMetric(state){
+      return state.selectedMetric;
+    },
+
+    getTabs(state){
+      return state.tabs;
+    },
+
+    getClassroomConfigurationId(state){
+      return state.classroomConfigurationId;
+    },
+
+    getMetricId(state){
+      return state.metricId;
+    }      
+  }
 })

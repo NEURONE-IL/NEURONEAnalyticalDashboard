@@ -6,16 +6,19 @@
 				<br>
 				<v-divider></v-divider>	
 				<br>	
+				<!-- ConfigureSession form -->
 				<v-form
 					ref="configurationForm"
 					v-model="validConfiguration"
 				>
-					<Metrics :colsSize=4 @updateFunction="updateMetrics"/>
+					<!-- Metrics component -->
+					<Metrics @updateFunction="updateMetrics"/>
 					<br>
 					<v-divider></v-divider>	
 					<br>				
 					<v-row no-gutters>
 						<v-col cols="12" md="5" class="text-center ms-12">
+							<!-- Principal property selectionable field, disabled when metrics array lenght property is zero -->
 							<v-select
 								v-model="select"
 								:disabled="metrics.length === 0"
@@ -26,6 +29,7 @@
 							></v-select>
 						</v-col>
 						<v-col cols="12" md="5" class="text-center ms-12">
+							<!-- Interval property selectionable field -->
 							<v-select
 								v-model="interval"
 								:items="timeOptions"
@@ -43,13 +47,15 @@
 					<br>			
 					<v-row>
 						<v-col cols="4">
+							<!-- MetricAlert property switchable field -->
 							<v-switch
 								v-model="metricAlert"
 								label="¿Activar alertas?"
 							>
 							</v-switch>
 						</v-col>						
-						<v-col cols="4" v-if="this.metricAlert">
+						<v-col cols="4" v-if="metricAlert">
+							<!-- Option property selectionable field, only visible when metricAlert property is true -->
 							<v-select
 								v-model="option"
 								:items="alertOptions"
@@ -59,7 +65,8 @@
 							>
 							</v-select>
 						</v-col>
-						<v-col cols="4" v-if="this.metricAlert">
+						<v-col cols="4" v-if="metricAlert">
+							<!-- Limit property input field, only visible when metricAlert property is true -->
 							<v-text-field
 								v-model="limit"
 								label="Valor límite"
@@ -74,6 +81,8 @@
 				<br>
 				<v-divider></v-divider>	
 				<br>	
+				<!-- Button to save the configuration, disabled when there are not at least one selected metric or at least one ConfigureSession form 
+				field is invalid -->
 				<v-btn
 					class="mt-4 mb-4"
 					color="success"
@@ -91,6 +100,10 @@
 </template>
 
 <script>
+/*
+@fvillarrealcespedes:
+Component imports.
+*/
 import Metrics from '../SessionConfiguration/Metrics';
 import axios from 'axios';
 import { mapMutations, mapState } from 'vuex';
@@ -104,13 +117,15 @@ export default {
 
 	data(){
 		return{
+			/*Component properties*/
 			interval: 0,
 			limit: 0,
 			metricAlert: false,
 			metrics: [],
 			option: '',
 			select: 0,
-			/*Array & Rules*/
+			validConfiguration: true,
+			/*Arrays & Rules*/
 			timeOptions: [
 				{value: 10, text: '10 segs'},
 				{value: 20, text: '20 segs'},
@@ -121,47 +136,48 @@ export default {
 				{value: '1', text: 'Mayor que:'},
 				{value: '2', text: 'Menor que:'},
 			],
-			selectRules: [
-        v => v && v != null || 'Debe seleccionar una opción',
-			],
 			requiredRules: [
-        v => !!v || 'El campo es obligatorio',
-			],			
-			validConfiguration: true
+        v => !!v || 'El campo es requerido',
+			],
+			selectRules: [
+        v => v && v != null || 'Debe seleccionar una opción'
+			]						
 		}
 	},
 
 	methods: {
+		/*
+		@fvillarrealcespedes:
+		NEURONE-AM original function, captures the selected metrics from the Metric component. Called my emit. 
+		*/		
 		updateMetrics(checkedMetrics){
 			this.metrics = [...checkedMetrics]
 		},
 
-		/*NEURONE-AM*/
+		/*
+		@fvillarrealcespedes:
+		NEURONE-AM original function, sends a request to configure a new session. At the moment of send the request, composes a new configuration 
+		data object with the component properties. Then when the response is recived saves the session configuration to store and finally if 
+		everything works redirects to classroom view.
+		*/
 		async sendConfiguration(){			
-			let interval = this.interval * 1000;
-			let limit = this.limit;
-			let metrics = this.metrics;
-			let option = this.option;
-			let principal = this.select;
-			let configuration = {
-				interval,
-				limit,
-				metrics,
-				option,
-				principal
-			};
 			await axios
-				.post(`${process.env.VUE_APP_API_URL}/configure`, configuration)
+				.post(`${process.env.VUE_APP_API_URL}/configure`, {
+					interval: this.interval * 1000,
+					limit: this.limit,
+					metric: this.metrics,
+					option: this.option,
+					principal: this.principal
+				})
 				.then(response => {
-
-					console.log("response", response);
-
-					this.$store.commit("setMetrics", {
+					console.log('Session inited', response);
+					this.$store.commit('setConfiguration', {
 						configuration: {
-							limit: limit,
+							interval: this.interval * 1000,
+							limit: this.limit,
 							metrics: response.data.metrics,
-							option: option,
-							principal: principal,
+							option: this.option,
+							principal: this.principal,
 						}
 					});
 					this.$router.push('/classroom');
@@ -173,9 +189,13 @@ export default {
 		}, 
 
 		watch: {
+			/*
+			@fvillarrealcespedes:
+			Watches the metric array lenght property, in case that that value is zero sets the selected property null.
+			*/				
 			metrics: function(){
 				if(this.metrics.length === 0){
-					this.select = '';
+					this.select = null;
 				}
 			}
 		}

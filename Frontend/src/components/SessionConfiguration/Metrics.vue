@@ -2,11 +2,13 @@
 	<v-container>
 		<h3 class="title">Seleccione la(s) métrica(s) a evaluar:</h3>
     <v-row no-gutters justify="center">
+			<!-- V-for loop to display all availables metric --> 
 			<v-col 
 				v-for="(metric, i) in metrics" :key="i"
-				:sm="colsSize"
+				sm="4"
 				xs="12"
 			>
+				<!-- For each metric sets a switchable field to add the metric or remove from the checkedMetrics array -->
 				<v-switch
 					v-model="checkedMetrics"
 					:label="metric"
@@ -23,13 +25,10 @@
 
 export default {
 	name: 'Metrics',
-	
-	props: {
-		colsSize: Number
-	},
 
 	data (){
 		return {
+			/*Component properties*/
 			metrics: [
 				"activebm",
 				"bmrelevant",
@@ -52,12 +51,20 @@ export default {
 	},
 
 	methods: {
+		/*
+		@fvillarrealcespedes:
+		NEURONE-AM original function, emit function to update the selected metrics. 
+		*/
 		updateSelectedMetrics(){
 			this.$emit("updateFunction", this.checkedMetrics);
 		}
 	},
 
 	watch: {
+		/*
+		@fvillarrealcespedes:
+		NEURONE-AM original, controls the metric selection. 
+		*/		
 		checkedMetrics: function(){
 			this.updateSelectedMetrics();
 		}

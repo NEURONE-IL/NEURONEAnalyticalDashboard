@@ -1,4 +1,5 @@
 <template>
+	<!-- Navigation Drawer -->
 	<v-navigation-drawer
 		v-model="leftDrawer"
 		:mini-variant.sync="miniVariant"
@@ -8,12 +9,14 @@
 		dark	
 		:color="color"
 	>
+		<!-- List to display the view tabs -->
 		<v-list
 			dense
 			expand
 			nav
 			class="py-0"
 		>
+			<!-- First list item, just header with the username -->
 			<v-list-item>
         <v-list-item-avatar v-if="!miniVariant">
           <v-icon>
@@ -36,18 +39,22 @@
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
       </v-list-item>
+			<!-- List items, with a v-for loop display all available tabs, for each one requires the title, the route when clicked and a boolean 
+			property in case it needs to be disabled -->      
 			<v-list-item
-				v-for="item in items"
-				:key="item.title"
-				:to="item.route"
+				v-for="tab in tabs"
+				:key="tab.title"
+				:to="tab.route"
+				:disabled="tab.disabled"
 				link
 				dark
 			>
+				<!-- Shows a representative icon for each tab and the the title -->
 				<v-list-item-icon>
-					<v-icon>{{ item.icon }}</v-icon>
+					<v-icon>{{ tab.icon }}</v-icon>
 				</v-list-item-icon>
 				<v-list-item-content>
-					<v-list-item-title>{{ item.title }}</v-list-item-title>
+					<v-list-item-title>{{ tab.title }}</v-list-item-title>
 				</v-list-item-content>
 			</v-list-item>
 		</v-list>
@@ -60,22 +67,17 @@ export default {
 
 	data () {
 		return {
+			/*Component properties*/
 			color: 'primary',
-			items: [
-				{ title: 'Sesión', icon: 'mdi-cogs', route: '/' },				
-				{ title: 'Aula', icon: 'mdi-google-classroom', route: '/classroom' },
-				{ title: 'Configuraciones de aula', icon: 'mdi-toolbox', route: '/classroom-configurations'},
-				{ title: 'Métricas', icon: 'mdi-chart-timeline-variant', route: '/metrics'}
-				/*
-				{ title: 'Nueva configuración de aula', icon: 'mdi-file-plus', route: '/add-classroom-configuration'},
-				{ title: 'Adm. Configuraciones de aula', icon: 'mdi-toolbox', route: '/manage-classroom-configurations'},				
-				*/
-			],
 			miniVariant: true
 		}
 	},
 
   computed: {
+		/*
+		@fvillarrealcespedes:
+		Condition to show the left drawer, get and set methods are imported from the store.
+		*/ 		
     leftDrawer: {
       get () {
         return this.$store.getters.getLeftDrawer;
@@ -83,7 +85,20 @@ export default {
       set (payload) {
         this.$store.commit('setLeftDrawer', payload);
       },
-    },
-  }  
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Tabs to to display in the right drawer, get and set methods are imported from the store.
+		*/ 
+		tabs: {
+      get () {
+        return this.$store.getters.getTabs;
+      },
+      set (payload) {
+        this.$store.commit('setTabs', payload);
+      },
+		}
+	}
 }	
 </script>
