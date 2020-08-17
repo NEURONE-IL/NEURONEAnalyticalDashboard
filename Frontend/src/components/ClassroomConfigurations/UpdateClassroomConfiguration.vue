@@ -266,7 +266,6 @@ export default {
 			});
       /*Sets the new x and y values*/
 			networkSeries.nodes.template.events.on("dragged", function(event) {
-				console.log(event)
 				event.target.dataItem.fixed = false;  
 				var id = event.target.dataItem.id - 1;
 				this.chart.series.values[0].dataItems.values[id]._dataContext.x = event.target.dataItem.node.x; 
@@ -300,10 +299,9 @@ export default {
       .get(this.NEURONE_AD_API_URL + '/classroom-configuration/' + payload)
       .then(response => {
 				this.classroomConfiguration = response.data;
-				console.log(response.data);
       })
-      .catch(e => {
-        console.log(e.response);
+      .catch(error => {
+        console.log(error.response);
       })
 		},
 
@@ -337,9 +335,9 @@ export default {
 			.then(response => {
         //
 			})
-			.catch(e => {
-				console.log(e.response);
-			})
+      .catch(error => {
+        console.log(error.response);
+      })
 		},
 	},
 	

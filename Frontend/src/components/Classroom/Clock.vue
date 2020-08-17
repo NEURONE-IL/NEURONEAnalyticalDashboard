@@ -5,7 +5,7 @@
 				<v-col cols="4">
 					<!-- Session init time -->
 					<span>
-						Hora de inicio: {{this.initTime}}
+						Hora de inicio: {{this.sessionInitTime}}
 					</span>
 				</v-col>
 				<v-col cols="4">
@@ -38,7 +38,7 @@ export default {
 	data(){
 		return{
 			/*Component properties*/
-			initTime: '',
+			sessionInitTime: '',
 			currentTime: '',
 			sessionTime: '',
 			totalSeconds: 0
@@ -61,7 +61,7 @@ export default {
 		display. 
 		*/
 		showInitTime(){
-			var initDate = new Date(this.$store.getters.getInitTime);
+			var initDate = new Date(this.initTime);
 			var h = initDate.getHours(); 
 			var m = initDate.getMinutes(); 
 			var s = initDate.getSeconds(); 			
@@ -69,7 +69,7 @@ export default {
 			h = (h < 10) ? "0" + h : h;
 			m = (m < 10) ? "0" + m : m;
 			s = (s < 10) ? "0" + s : s;
-			this.initTime = h + ":" + m + ":" + s + " ";
+			this.sessionInitTime = h + ":" + m + ":" + s + " ";
 		},
 
 		/*
@@ -83,18 +83,19 @@ export default {
 			var h = currentDate.getHours(); 
 			var m = currentDate.getMinutes(); 
 			var s = currentDate.getSeconds(); 			
-			/*Add a zero before the value of hours, minutes and seconds in case this is under 10 to keep the format*/
+			/*Puts a zero before the value of hours, minutes and seconds in case this is under 10 to keep the format*/
 			h = (h < 10) ? "0" + h : h;
 			m = (m < 10) ? "0" + m : m;
 			s = (s < 10) ? "0" + s : s;
 			this.currentTime = h + ":" + m + ":" + s + " ";
-			/*Get the session init time*/
-			var initDate = new Date(this.$store.getters.getInitTime);
+			/*Gets the session init time and difference with crrent date*/
+			var initDate = new Date(this.initTime);
 			var dateDifference = Math.round((currentDate.getTime() - initDate.getTime())/1000);
-			var sh = parseInt(dateDifference/3600);
-			var sm = parseInt(dateDifference/60);
+			/*Gets the date difference hours, minutes and seconds. Respective division and module operations are apply*/
+			var sh = parseInt((dateDifference/3600));
+			var sm = parseInt((dateDifference/60)%60);
 			var ss = parseInt(dateDifference%60);
-			/*Add a zero before the value of hours, minutes and seconds in case this is under 10 to keep the format*/
+			/*Puts a zero before the value of hours, minutes and seconds in case this is under 10 to keep the format*/
 			sh = (sh < 10) ? "0" + sh : sh;
 			sm = (sm < 10) ? "0" + sm : sm;
 			ss = (ss < 10) ? "0" + ss : ss;			
@@ -103,6 +104,28 @@ export default {
 			setTimeout(this.showCurrentTime, 1000);
 		},
 	},
+
+	computed: {
+		initTime: {
+			get () {
+				return this.$store.getters.getInitTime;
+			},
+			set (payload) {
+				this.$store.commit('setInitTime', payload);
+			},
+		}
+	},
+
+	watch: {
+		initTime: {
+			immediate: true, 
+
+			handler: function(){
+				this.showInitTime();
+				this.showCurrentTime();			
+			}
+		}
+	}
 }
 </script>
 

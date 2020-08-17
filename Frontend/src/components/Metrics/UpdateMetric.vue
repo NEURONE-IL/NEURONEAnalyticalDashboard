@@ -151,8 +151,8 @@ export default {
 				this.metric = response.data;
 				console.log(response.data);
       })
-      .catch(e => {
-        console.log(e.response);
+      .catch(error => {
+        console.log(error.response);
       })
 		},
 
@@ -175,9 +175,9 @@ export default {
 			.then(response => {
 				//
 			})
-			.catch(e => {
-				console.log(e.response);
-			})
+      .catch(error => {
+        console.log(error.response);
+      })
 		},
 	},
 
@@ -215,13 +215,14 @@ export default {
 		Watches the metric object property and the eventual changes on it to set enable the update button.
 		*/
 		metric: {
+			deep: true,
+						
 			handler: function(){
 				if(this.changesCounter != 0){
 					this.hasChange = true;
 				}
 				this.changesCounter++;
-			},
-			deep: true
+			}
 		}
 	},
 }

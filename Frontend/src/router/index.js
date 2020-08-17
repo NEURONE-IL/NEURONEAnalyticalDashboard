@@ -27,22 +27,21 @@ async function isInit(to, from, next){
           principal: response.data.principal
         }
       })
-      next('/classroom')
+      next('/classroom');
     }
     else{
-      next('/configuration')
+      next('/configuration');
     }
   })
   .catch(error => {
-    next('/configuration')
-  })
+    next('/configuration');
+  });
 }
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: ConfigurationView,
     beforeEnter: isInit
   },
   {

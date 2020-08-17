@@ -145,6 +145,11 @@ export default {
 		}
 	},
 
+	created(){
+		this.isInit();	
+		this.initTime = null;
+	},
+
 	methods: {
 		/*
 		@fvillarrealcespedes:
@@ -156,49 +161,96 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		NEURONE-AM original function, sends a request to configure a new session. At the moment of send the request, composes a new configuration 
-		data object with the component properties. Then when the response is recived saves the session configuration to store and finally if 
-		everything works redirects to classroom view.
+		NEURONE-AM original function, sends a request to configure a new session. First composes a configuration data object with the 
+		component properties, then sends the request and when the response is recived saves the session configuration to store and 
+		finally if everything works redirects to classroom view.
 		*/
 		async sendConfiguration(){			
+			let interval = this.interval * 1000;
+			let limit = this.limit;
+			let metrics = this.metrics;
+			let option = this.option;
+			let principal = this.select;
+			let configuration = {
+				interval,
+				limit,
+				metrics,
+				option,
+				principal
+			};
 			await axios
-				.post(`${process.env.VUE_APP_API_URL}/configure`, {
-					interval: this.interval * 1000,
-					limit: this.limit,
-					metric: this.metrics,
-					option: this.option,
-					principal: this.principal
-				})
-				.then(response => {
-					console.log('Session inited', response);
-					this.$store.commit('setConfiguration', {
-						configuration: {
-							interval: this.interval * 1000,
-							limit: this.limit,
-							metrics: response.data.metrics,
-							option: this.option,
-							principal: this.principal,
-						}
-					});
-					this.$router.push('/classroom');
-				})
-				.catch(error => {
-					console.log(error)
-				})
-			}
-		}, 
-
-		watch: {
-			/*
-			@fvillarrealcespedes:
-			Watches the metric array lenght property, in case that that value is zero sets the selected property null.
-			*/				
-			metrics: function(){
-				if(this.metrics.length === 0){
-					this.select = null;
+			.post(`${process.env.VUE_APP_API_URL}/configure`, configuration)
+			.then(response => {
+				this.configuration = {
+					interval: interval,
+					limit: limit,
+					metrics: response.data.metrics,
+					option: option,
+					principal: principal,
 				}
+				this.$router.push('/classroom');
+			})
+			.catch(error => {
+				console.log(error.response);
+			})
+		},
+
+		async isInit(){
+			await axios
+			.get(`${process.env.VUE_APP_API_URL}/ifsession`)
+			.then(response => {
+				if(response.data.status){
+					this.endSession();
+				}
+			})
+			.catch(error => {
+				console.log(error.message);
+			});
+		},
+
+    async endSession(){
+			await axios
+			.get(`${process.env.VUE_APP_API_URL}/endsession`)
+			.then(response => {
+				this.configuration = null;
+      })
+			.catch(error => {
+				console.log(error.message);
+			});
+		}
+	},
+
+	watch: {
+		/*
+		@fvillarrealcespedes:
+		Watches the metric array lenght property, in case that that value is zero sets the select property as an empty string.
+		*/				
+		metrics: function(){
+			if(this.metrics.length === 0){
+				this.select = '';
 			}
 		}
+	},
+
+	computed: {
+		configuration: {
+			get () {
+				return this.$store.getters.getConfiguration;
+			},
+			set (payload) {
+				this.$store.commit('setConfiguration', payload);
+			}
+		},
+
+		initTime: {
+			get () {
+				return this.$store.getters.getInitTime;
+			},
+			set (payload) {
+				this.$store.commit('setInitTime', payload);
+			}
+		},		
+	}
 }
 </script>
 

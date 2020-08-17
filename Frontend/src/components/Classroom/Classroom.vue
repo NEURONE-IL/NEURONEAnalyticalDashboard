@@ -64,16 +64,15 @@
 				</v-btn>		
 				<!-- Button to end the current session -->
 				<v-btn
-					class="ma-4"
+					class="mb-4 ms-4"
 					color="error"
 					@click="endSession()"
-
 				>
 					Finalizar sesión	
 					<v-icon right>
 						mdi-timer-off
 					</v-icon>
-				</v-btn>					
+				</v-btn>	
 				<!-- Nodes chart -->
 				<div class="classroom" ref="chartdiv"></div>
 				<!-- Line chart dialog -->
@@ -140,7 +139,6 @@ export default {
 			classroomConfiguration: '',
 			columns: '',
 			rows: '',
-			selectedParticipants: [],
 			users: 0,
 			validConfiguration: true,
 			/*Chart properties*/
@@ -188,7 +186,7 @@ export default {
 		this.limit = configuration.limit;
 		this.option = configuration.option;
 		this.eventSource = new EventSource(`${process.env.VUE_APP_API_URL}/init`);
-		this.getInitTime();
+		this.waitInitTime();
 		this.metrics.map(metric => {
 			this.eventSource.addEventListener(metric, e => {
 				this.updateMetrics(JSON.parse(e.data), metric);
@@ -208,6 +206,7 @@ export default {
 		this.maxRadius = 15;
 		this.separation = 50;
 		this.selectedParticipants = [];
+		this.allParticipants = [];
 	},
 
 	methods: {
@@ -217,7 +216,9 @@ export default {
 		*/
 		resetLineChart(){
 			this.showLineChart = false;
-			this.$refs.lineChart.disposeChart();	
+			this.$refs.lineChart.disposeChart();
+			this.lineChartUsername = null;	
+			this.lineChartSelectedMetric = null;
 		},
 
 		/*
@@ -227,6 +228,7 @@ export default {
 		*/
 		setClassroom(index){
 			this.selectedParticipants = [];		
+			this.allParticipants = [];	
 			var data = [];
 			switch(index){
 				case 1:
@@ -398,7 +400,7 @@ export default {
 			/*Sets the node properties as x and y to set the position in the chart and the tooltip text to show when the node is on hover*/
 			networkSeries.nodes.template.propertyFields.x = "x";
 			networkSeries.nodes.template.propertyFields.y = "y";
-			networkSeries.nodes.template.tooltipText = "{name} \n {principal} \n x: {x} \n y: {y}";
+			networkSeries.nodes.template.tooltipText = "{name} \n {principal}";
 			networkSeries.nodes.template.circle.disabled = true;
 			networkSeries.nodes.template.outerCircle.disabled = true;				
 			/*Icon
@@ -456,6 +458,10 @@ export default {
 					});
 				}
 			}, this);
+			/*Sets all nodes chart participants into the right drawer*/
+			this.allParticipants = this.participants;
+			/*Sets the rightDrawerParticipantUsername to null as the chart may be reseted*/
+			this.rightDrawerParticipantUsername = null;
 		},
 
 		/*
@@ -521,6 +527,7 @@ export default {
 			}
 			if(this.chart){
 				this.updateChart();
+				this.allParticipants = this.participants;
 			}
 		},
 
@@ -556,14 +563,13 @@ export default {
 			await axios
 			.get(`${process.env.VUE_APP_API_URL}/inittime`)
 			.then(response => {
-				this.$store.commit('setInitTime', {
-					initTime: response.data.initTime
-				});
+				this.initTime = response.data.initTime;
+				console.log(response.data.initTime)
 				this.showClock = true;
 			})
-			.catch(error => {
-				console.log(error);
-			})
+      .catch(error => {
+        console.log(error.response);
+      })
 		},
 
 		/*
@@ -620,8 +626,8 @@ export default {
       .then(response => {
 				this.appendClassroomConfigurations(response.data);
       })
-      .catch(e => {
-        console.log(e.response);
+      .catch(error => {
+        console.log(error.response);
       })
 		},
 
@@ -648,12 +654,20 @@ export default {
 			await axios
 			.get(`${process.env.VUE_APP_API_URL}/endsession`)
 			.then(response => {
-        console.log('Sesión terminada');
 				this.$router.push('/session-stats');
 				this.tabs[0].disabled = false;
 				this.tabs[1].disabled = true;				
       });
     },
+
+		async waitInitTime() {
+			await this.sleep(3000);
+			this.getInitTime();
+		},
+
+		sleep(ms) {
+			return new Promise(resolve => setTimeout(resolve, ms));
+		}
 	},		
 
 	watch: {
@@ -686,14 +700,27 @@ export default {
 				this.setHeight(this.classroomConfiguration);
 			}
 		},
-		
+
 		/*
 		@fvillarrealcespedes:
-		Watches the selectedParticipants property to store it and displays it on the right drawer.
-		*/		
-		selectedParticipants: function(){
-			this.$store.commit('setSelectedParticipants', this.selectedParticipants);
-		},
+		Watches the rightDrawerParticipantUsername property, with a for loop finds the associated node to this username. Then shows the 
+		node tooltip by setting the showTooltipOn as "always", also hides all others, with the tooltip hide() method. Sets for 
+		all nodes the showTooltipOn property as "hover" to not display them permanently, finally sets the rightDrawerParticipantUsername 
+		property as null in case the new setted value is exactly the same that the old one. 
+		*/	
+		rightDrawerParticipantUsername: function(){
+			if(this.rightDrawerParticipantUsername){
+				for(var i=0; i<this.users; i++){
+					if(this.rightDrawerParticipantUsername === this.chart.series.values[0].dataItems.values[i].name){
+						this.chart.series.values[0].dataItems.values[i].node.showTooltipOn = "always";
+					}else{
+						this.chart.series.values[0].dataItems.values[i].node.tooltip.hide();
+					}
+					this.chart.series.values[0].dataItems.values[i].node.showTooltipOn = "hover";
+				}
+				this.rightDrawerParticipantUsername = null;
+			}
+		}
 	}, 
 
 	computed: {
@@ -723,31 +750,80 @@ export default {
       },
 		},
 
+    /*
+		@fvillarrealcespedes:
+		SelectedParticipants to display in the right drawer, get and set methods are imported from the store.
+		*/	    
+    selectedParticipants: {
+      get () {
+        return this.$store.getters.getSelectedParticipants;
+      },
+      set (payload) {
+        this.$store.commit('setSelectedParticipants', payload);
+      }
+    },
+
+    /*
+		@fvillarrealcespedes:
+		AllParticipants to display in the right drawer, get and set methods are imported from the store.
+		*/	    
+    allParticipants: {
+      get () {
+        return this.$store.getters.getAllParticipants;
+      },
+      set (payload) {
+        this.$store.commit('setAllParticipants', payload);
+      }
+		},
+		
+    /*
+		@fvillarrealcespedes:
+		RightDrawerParticipantUsername to find in the nodes chart the selected participant from the left drawer, get and set methods are 
+		imported from the store.
+		*/	    
+    rightDrawerParticipantUsername: {
+      get () {
+        return this.$store.getters.getRightDrawerParticipantUsername;
+      },
+      set (payload) {
+        this.$store.commit('setRightDrawerParticipantUsername', payload);
+      }
+    },		
+
 		/*
 		@fvillarrealcespedes:
-		Username for the line chart, get and set methods are imported from the store.
+		LineChartUsername for the line chart, get and set methods are imported from the store.
 		*/	
-    username: {
+    lineChartUsername: {
       get (){
-        return this.$store.getters.getUsername;
+        return this.$store.getters.getLineChartUsername;
       },      
       set (payload){
-        this.$store.commit('setUsername', payload);
+        this.$store.commit('setLineChartUsername', payload);
       }
     },
 
 		/*
 		@fvillarrealcespedes:
-		SelectedMetric for the line chart, get and set methods are imported from the store.
+		LineChartSelectedMetric for the line chart, get and set methods are imported from the store.
 		*/	
-    selectedMetric: {
+    lineChartSelectedMetric: {
       get (){
-        return this.$store.getters.getSelectedMetric;
+        return this.$store.getters.getLineChartSelectedMetric;
       },       
       set (payload){
-        this.$store.commit('setSelectedMetric', payload);
+        this.$store.commit('setLineChartSelectedMetric', payload);
       }
-    }		
+    },
+    
+		initTime: {
+			get () {
+				return this.$store.getters.getInitTime;
+			},
+			set (payload) {
+				this.$store.commit('setInitTime', payload);
+			},
+		}    
 	}
 }
 </script>
@@ -758,12 +834,5 @@ export default {
 }
 .theme--light.v-divider {
   border-color: rgba(33,150,243,0.5) !important; 
-}
-.amcharts-amexport-item {
-  border: 2px solid #777;
-}
-.amcharts-amexport-top .amcharts-amexport-item > .amcharts-amexport-menu {
-  top: -3px!important;
-  left: 2px!important;
 }
 </style>

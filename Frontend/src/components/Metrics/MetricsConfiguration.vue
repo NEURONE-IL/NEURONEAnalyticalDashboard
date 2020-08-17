@@ -218,8 +218,8 @@ export default {
       .then(response => {
         this.metrics = response.data;
       })
-      .catch(e => {
-        console.log(e.response);
+      .catch(error => {
+        console.log(error.response);
       })
 		},
 
@@ -234,10 +234,10 @@ export default {
 				console.log('Done');
 				this.getClassroomConfigurations();
 			})	
-      .catch(e => {
-        console.log(e)
+      .catch(error => {
+        console.log(error.response);
       })
-		}
+		},
 	},
 
 	computed:{

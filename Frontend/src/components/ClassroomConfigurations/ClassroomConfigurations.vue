@@ -155,7 +155,7 @@ export default {
 
 	/*
 	@fvillarrealcespedes:
-	Invoked whe the DOM is mounted and allows to access the reactive component. Calls the getter method for classroom configurations. 
+	Invoked when the DOM is mounted and allows to access the reactive component. Calls the getter method for classroom configurations. 
 	*/
 	mounted(){
 		this.getClassroomConfigurations();
@@ -211,8 +211,8 @@ export default {
       .then(response => {
         this.classroomConfigurations = response.data;
       })
-      .catch(e => {
-        console.log(e.response);
+      .catch(error => {
+        console.log(error.response);
       })
 		},
 
@@ -227,8 +227,8 @@ export default {
 			.then(response => {
 				this.getClassroomConfigurations();
 			})	
-      .catch(e => {
-        console.log(e)
+      .catch(error => {
+        console.log(error.response);
       })
 		}
 	},

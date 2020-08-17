@@ -41,9 +41,24 @@
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
       </v-list-item>
+
+      <v-list-item>
+        <v-select
+          v-model="drawerVisualization"
+          :items="drawerOptions"
+          item-value="id"
+          item-text="name"
+          label="Mostrar participantes"
+          prepend-icon="mdi-format-list-bulleted"
+          required
+          :rules="selectRules"
+        >
+        </v-select>	
+      </v-list-item>
+
       <!-- List group, contains the nodes chart selected participants -->      
       <v-list-group
-        v-for="participant in selectedParticipants"
+        v-for="participant in drawerParticipants"
         :key="participant.index"
         no-action
 				dark
@@ -56,14 +71,25 @@
         <!-- Sets the card color to match the participant's node color from the nodes chart --> 
         <v-card 
           shaped
+          v-bind:class="setColor(participant.results[principal]) + 'ItemDisplay'"
           :color="setColor(participant.results[principal]) + ' lighten-3'"
         >
+          <!-- If the drawerVisualization has value 1, the second list item is a clickable item to view the participant associated 
+          node tooltip in the nodes chart -->
+          <v-list-item
+            link
+            @click="findInChart(participant.username)"
+            
+          >
+            <!--v-if="drawerVisualization === 1"-->
+            <v-icon left>mdi-magnify</v-icon>
+            <v-list-item-title class="metricDisplay">Ver en el gráfico</v-list-item-title>            
+          </v-list-item>
           <!-- Displays all selected participants, the session selected metrics and the result for each one, set the metric item 
-          clickable to set the line chart --> 
+          clickable to set the line chart -->           
           <v-list-item
             v-for="(value, metric, index) in participant.results"
             :key="index"
-            v-bind:class="setColor(participant.results[principal]) + 'ItemDisplay'"
             link
             @click="setLineChart(participant.username, metric)"
           >
@@ -88,7 +114,17 @@ export default {
       miniVariant: true,	
       principal: '',
       limit: '',
-      option: ''
+      option: '',
+      drawerVisualization: null,
+      /*Array & rules*/      
+      drawerOptions: [
+        { id: 1, name: 'Todos' },				
+        { id: 2, name: 'Seleccionados' }
+      ],
+      drawerParticipants: [],
+			selectRules: [
+        v => v && v != null || 'Debe seleccionar una opción',
+			],
     }
 	},
 
@@ -101,6 +137,14 @@ export default {
 		this.principal = configuration.principal;
 		this.limit = configuration.limit;
     this.option = configuration.option;
+  },
+
+	/*
+	@fvillarrealcespedes:
+	Invoked when the DOM is mounted and allows to access the reactive component. Sets the drawerVisualization property as 1. 
+	*/
+  mounted(){
+    this.drawerVisualization = 1;
   },
 
   methods:{
@@ -151,14 +195,60 @@ export default {
     
 		/*
 		@fvillarrealcespedes:
-    Sets the username and selectedMetric properties, then sets true the condition to show the line chart.
+    Sets the lineChartUsername and lineChartSelectedMetric properties, then sets true the condition to show the line chart.
 		*/      
     setLineChart(username, selectedMetric){
-      this.username = username;
-      this.selectedMetric = selectedMetric;
+      this.lineChartUsername = username;
+      this.lineChartSelectedMetric = selectedMetric;
       this.showLineChart = true;
+    },
+
+		/*
+		@fvillarrealcespedes:
+    Sets and saves the rightDrawerParticipantUsername property to store.
+		*/  
+    findInChart(participantUsername){
+      this.rightDrawerParticipantUsername = participantUsername;
     }
 	},
+
+	watch: {
+		/*
+		@fvillarrealcespedes:
+		Watches the drawer visualization property to select the participants to show in the drawer.
+		*/		
+		drawerVisualization: function(){
+      this.drawerParticipants = [];
+      switch(this.drawerVisualization){
+        case 1:
+          this.drawerParticipants = this.allParticipants;
+          break;
+        case 2:
+          this.drawerParticipants = this.selectedParticipants;
+          break;
+      }
+    },
+
+		/*
+		@fvillarrealcespedes:
+		Watches the drawer visualization property to select the participants to show in the drawer.
+    */		
+    allParticipants: function(){
+      if(this.drawerVisualization === 1){
+        this.drawerParticipants = this.allParticipants;
+      }
+    },
+
+		/*
+		@fvillarrealcespedes:
+		Watches the drawer visualization property to select the participants to show in the drawer.
+    */		
+    selectedParticipants: function(){
+      if(this.drawerVisualization === 2){
+        this.drawerParticipants = this.selectedParticipants;
+      }
+    }
+  },
 
 	computed: {
 		/*
@@ -174,6 +264,32 @@ export default {
 			},
     },
 
+		/*
+		@fvillarrealcespedes:
+    Option to select the right drawer visualization option, get and set methods are imported from the store. 
+    */  
+		rightDrawerOption: {
+			get () {
+				return this.$store.getters.getRightDrawerOption;
+			},
+			set (payload) {
+				this.$store.commit('setRightDrawerOption', payload);
+			},
+    },    
+
+    /*
+		@fvillarrealcespedes:
+		AllParticipants to display in the right drawer, get and set methods are imported from the store.
+		*/	    
+    allParticipants: {
+      get () {
+        return this.$store.getters.getAllParticipants;
+      },
+      set (payload) {
+        this.$store.commit('setAllParticipants', payload);
+      }
+    },
+
     /*
 		@fvillarrealcespedes:
 		SelectedParticipants to display in the right drawer, get and set methods are imported from the store.
@@ -184,6 +300,20 @@ export default {
       },
       set (payload) {
         this.$store.commit('setSelectedParticipants', payload);
+      }
+    },
+
+    /*
+		@fvillarrealcespedes:
+		RightDrawerParticipantUsername to find in the nodes chart the selected participant from the left drawer, get and set methods are 
+		imported from the store.
+		*/	    
+    rightDrawerParticipantUsername: {
+      get () {
+        return this.$store.getters.getRightDrawerParticipantUsername;
+      },
+      set (payload) {
+        this.$store.commit('setRightDrawerParticipantUsername', payload);
       }
     },
 
@@ -202,27 +332,27 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Username for the line chart, get and set methods are imported from the store.
-		*/
-    username: {
+		LineChartUsername for the line chart, get and set methods are imported from the store.
+		*/	
+    lineChartUsername: {
       get (){
-        return this.$store.getters.getUsername;
+        return this.$store.getters.getLineChartUsername;
       },      
       set (payload){
-        this.$store.commit('setUsername', payload);
+        this.$store.commit('setLineChartUsername', payload);
       }
     },
 
 		/*
 		@fvillarrealcespedes:
-		SelectedMetric for the line chart, get and set methods are imported from the store.
-		*/
-    selectedMetric: {
+		LineChartSelectedMetric for the line chart, get and set methods are imported from the store.
+		*/	
+    lineChartSelectedMetric: {
       get (){
-        return this.$store.getters.getSelectedMetric;
+        return this.$store.getters.getLineChartSelectedMetric;
       },       
       set (payload){
-        this.$store.commit('setSelectedMetric', payload);
+        this.$store.commit('setLineChartSelectedMetric', payload);
       }
     }
 	},
@@ -262,19 +392,27 @@ export default {
   color: #000000 !important;
 }
 .redItemDisplay{
-  border: 4px solid #F44336;
-  margin-bottom: 2px;
+  border: 3px solid #F44336;
 }
 .orangeItemDisplay{
-  border: 4px solid #FF9800;
-  margin-bottom: 2px;  
+  border: 3px solid #FF9800;
 }
 .greenItemDisplay{
-  border: 4px solid #4CAF50;
-  margin-bottom: 2px;  
+  border: 3px solid #4CAF50;
 }
 .blueItemDisplay{
-  border: 4px solid #2196F3;
-  margin-bottom: 2px;  
+  border: 3px solid #2196F3;
+}
+.v-application .red.lighten-3{
+  border-color: #F44336 !important;
+}
+.v-application .orange.lighten-3{
+  border-color: #FF9800 !important;
+}
+.v-application .green.lighten-3{
+  border-color: #4CAF50 !important;
+}
+.v-application .blue.lighten-3{
+  border-color: #2196F3 !important;
 }
 </style>

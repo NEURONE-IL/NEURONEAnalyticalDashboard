@@ -5,27 +5,29 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    /*NEURONE AM*/
-    configuration: {},
+    /*NEURONE-AM*/
+    configuration: null,
     initTime: null,
-    /*Drawer visibility*/
+    /*NEURONE-AD Backend URL*/
+    NEURONE_AD_API_URL: 'http://localhost:4003',
+    /*Drawers visibility*/
     leftDrawer: null,
     rightDrawer: null,
-    /*Right Drawer */
+    /*Right Drawer*/
+    rightDrawerOption: null,
     allParticipants: [],
     selectedParticipants: [],
-    /*NEURONE AD Backend URL*/
-    NEURONE_AD_API_URL: 'http://localhost:4003',
+    rightDrawerParticipantUsername: null,
     /*Line Chart*/
     showLineChart: null,
-    username: null,
-    selectedMetric: null,
+    lineChartUsername: null,
+    lineChartSelectedMetric: null,
     /*Left Drawer*/
     tabs: [
       { id: 1, title: 'Sesión', icon: 'mdi-cogs', route: '/', disabled: false },				
       { id: 2, title: 'Aula', icon: 'mdi-google-classroom', route: '/classroom', disabled: true },
       { id: 3, title: 'Configuraciones de aula', icon: 'mdi-toolbox', route: '/classroom-configurations', disabled: false },
-      { id: 4, title: 'Métricas', icon: 'mdi-chart-timeline-variant', route: '/metrics-configuration', disabled: false },
+      { id: 4, title: 'Métricas', icon: 'mdi-chart-timeline-variant', route: '/metrics-configuration', disabled: false }
     ],
     /*Put request params*/
     classroomConfigurationId: null,
@@ -34,11 +36,11 @@ export default new Vuex.Store({
 
   mutations: {
     setConfiguration(state, payload){
-      state.configuration = payload.configuration;
+      state.configuration = payload;
     },
 
     setInitTime(state, payload){
-      state.initTime = payload.initTime;
+      state.initTime = payload;
     },
 
     setLeftDrawer(state, payload){
@@ -47,6 +49,10 @@ export default new Vuex.Store({
 
     setRightDrawer(state, payload){
       state.rightDrawer = payload;
+    },  
+    
+    setRightDrawerOption(state, payload){
+      state.rightDrawerOption = payload;
     },    
 
     setAllParticipants(state, payload){
@@ -57,16 +63,20 @@ export default new Vuex.Store({
       state.selectedParticipants = payload;
     },
 
+    setRightDrawerParticipantUsername(state, payload){
+      state.rightDrawerParticipantUsername = payload;
+    },
+
     setShowLineChart(state, payload){
       state.showLineChart = payload;
     },
 
-    setUsername(state, payload){
-      state.username = payload;
+    setLineChartUsername(state, payload){
+      state.lineChartUsername = payload;
     },
 
-    setSelectedMetric(state, payload){
-      state.selectedMetric = payload;
+    setLineChartSelectedMetric(state, payload){
+      state.lineChartSelectedMetric = payload;
     },
 
     setTabs(state, payload){
@@ -99,6 +109,10 @@ export default new Vuex.Store({
       return state.rightDrawer;
     },
 
+    getRightDrawerOption(state){
+      return state.rightDrawerOption;
+    },    
+
     getAllParticipants(state){
       return state.allParticipants;
     },
@@ -107,16 +121,20 @@ export default new Vuex.Store({
       return state.selectedParticipants;
     },
 
+    getRightDrawerParticipantUsername(state){
+      return state.rightDrawerParticipantUsername;
+    },
+
     getShowLineChart(state){
       return state.showLineChart;
     },
 
-    getUsername(state){
-      return state.username;
+    getLineChartUsername(state){
+      return state.lineChartUsername;
     },
 
-    getSelectedMetric(state){
-      return state.selectedMetric;
+    getLineChartSelectedMetric(state){
+      return state.lineChartSelectedMetric;
     },
 
     getTabs(state){

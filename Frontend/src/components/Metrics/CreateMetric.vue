@@ -173,9 +173,9 @@ export default {
 			.then(response => {
 				//
 			})
-			.catch(e => {
-				console.log(e.response);
-			})
+      .catch(error => {
+        console.log(error.response);
+      })
 		},
 	},	
 

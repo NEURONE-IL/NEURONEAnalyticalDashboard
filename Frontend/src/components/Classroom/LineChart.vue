@@ -39,25 +39,25 @@ export default {
 	methods: {
 		/*
 		@fvillarrealcespedes:
-		Sends a request to get an user specific metric value, between ti and tf, both in seconds. Before the call, composes the query URL 
-		based on the username, the metric, ti and tf. Finally composes an object to match the line chart data format and pushes it to the 
-		data set.
+		Sends a request to get an user specific metric value, between ti and tf, both in seconds. Before the call, composes the query 
+		URL based on the lineChartUsername, the lineChartSelectedMetric, ti and tf. Finally composes an object to match the line chart 
+		data format and pushes it to the data set.
 		*/
 		async getDataItem(ti, tf){
-			let url = `${this.username}?metrics=${this.selectedMetric}&`;
+			let url = `${this.lineChartUsername}?metrics=${this.lineChartSelectedMetric}&`;
 			url = this.formatUrl(url, ti, tf);
 			await axios
 			.get(`${process.env.VUE_APP_API_URL}/detail/${url}`)
 			.then(response => {
 				this.chartData.push({
 					time: tf,
-					value: response.data[0][this.selectedMetric]
+					value: response.data[0][this.lineChartSelectedMetric]
 				})
-				console.log(tf, response.data[0][this.selectedMetric]);
+				console.log(tf, response.data[0][this.lineChartSelectedMetric]);
 			})
-			.catch(error => {
-				console.log(error);
-			})
+      .catch(error => {
+        console.log(error.response);
+      })
 		},
 
 		/*
@@ -65,10 +65,14 @@ export default {
 		A loop from the interval value to the maximum value minus the interval itself to get all the data objects from zero to the 
 		changing value i, that is increment each time in the interval value.
 		*/
-		getData(){
+		async getData(){
 			for(var i=this.interval; i<=this.max-this.interval; i+=this.interval){
 				this.getDataItem(0, i);
 			}
+			await this.sleep(3000);
+			function compare ( a, b ){ return a.time - b.time; };
+			this.setChart(this.chartData.sort( compare ));
+			console.log(this.chartData.length)			
 		},
 
 		/*
@@ -96,18 +100,20 @@ export default {
 		*/
 		getInitTime(){
 			axios
-			.get(`${process.env.VUE_APP_API_URL}/initstage/${this.username}`)
+			.get(`${process.env.VUE_APP_API_URL}/initstage/${this.lineChartUsername}`)
 			.then(response => {
 				let actualTime = Date.now();
 				let initTime = response.data.inittime;
+				console.log(initTime, 'inittimeline')
 				this.max = Math.round((actualTime - initTime)/1000);
 				console.log(this.max + '/' + this.interval, 'div')
 				this.counter = Math.trunc(this.max/this.interval);
 				console.log(this.counter, 'counter')
+				this.getData();
 			})
-			.catch(error => {
-				console.log(error);
-			});			
+      .catch(error => {
+        console.log(error.response);
+      });
 		},
 
 		/*
@@ -156,6 +162,8 @@ export default {
 			this.chart.scrollbarX = new am4charts.XYChartScrollbar();
 			this.chart.scrollbarX.series.push(series);
 			this.chart.scrollbarX.parent = this.chart.bottomAxesContainer;
+
+			this.chart.exporting.menu = new am4core.ExportMenu();
 		},
 
 		/*
@@ -165,74 +173,65 @@ export default {
 		disposeChart(){
 			if(this.chart){
 				this.chart.dispose();
+				this.lineChartUsername = null;
+				this.lineChartSelectedMetric = null;
 			}
 		},		
+
+		sleep(ms) {
+			return new Promise(resolve => setTimeout(resolve, ms));
+		}
 	},
 
 	watch: {
 		/*
 		@fvillarrealcespedes:
-		Watches the username property to eventually update the line chart.
+		Watches the lineChartUsername property to eventually update the line chart.
 		*/			
-		username: function(){
-			this.chartData = [];
-			this.interval = 30;
-			this.getInitTime();
-			this.getData();				
-		},
-			
-		/*
-		@fvillarrealcespedes:
-		Watches the metric property to eventually update the line chart.
-		*/			
-		metric: function(){
-			this.chartData = [];
-			this.interval = 30;
-			this.getInitTime();
-			this.getData();				
-		},	
+		lineChartUsername: {
+			immediate: true,
 
-		/*
-		@fvillarrealcespedes:
-		Watches the chartDataLenght property to set the line chart when it equals the counter value.
-		*/	
-    chartDataLength (value, oldValue) {
-      if(value === this.counter){
-				console.log('done');
-				function compare ( a, b ){ return a.time - b.time; };
-				this.setChart(this.chartData.sort( compare ));
+			handler: async function(){
+				if(this.lineChartUsername){
+					this.chartData = [];
+					this.interval = 30;
+					this.getInitTime();			
+/*					this.getData();	
+					await this.sleep(3000);
+					function compare ( a, b ){ return a.time - b.time; };
+					this.setChart(this.chartData.sort( compare ));					*/
+				}			
 			}
-    }	
+		}
 	},
+
 
 	computed: {
 		/*
 		@fvillarrealcespedes:
-		Username for the line chart, get and set methods are imported from the store.
+		LineChartUsername for the line chart, get and set methods are imported from the store.
 		*/		
-    username: {
+    lineChartUsername: {
       get (){
-        return this.$store.getters.getUsername;
+        return this.$store.getters.getLineChartUsername;
+      },      
+      set (payload){
+        this.$store.commit('setLineChartUsername', payload);
       }
     },
 
 		/*
 		@fvillarrealcespedes:
-		SelectedMetric for the line chart, get and set methods are imported from the store.
-		*/
-    selectedMetric: {
+		LineChartSelectedMetric for the line chart, get and set methods are imported from the store.
+		*/	
+    lineChartSelectedMetric: {
       get (){
-        return this.$store.getters.getSelectedMetric;
+        return this.$store.getters.getLineChartSelectedMetric;
+      },       
+      set (payload){
+        this.$store.commit('setLineChartSelectedMetric', payload);
       }
-		},
-		
-		/*
-		@fvillarrealcespedes:
-		Method chartDataLength to get the chartData array lenght.
-		*/		
-		chartDataLength() {
-			return this.chartData.length;
-		}
+    }
 	}
 }
 </script>
@@ -241,5 +240,12 @@ export default {
 .lineChart {
   width: 100%;
 	height: 450px;
+}
+.amcharts-amexport-item {
+  border: 2px solid #777;
+}
+.amcharts-amexport-top .amcharts-amexport-item > .amcharts-amexport-menu {
+  top: -3px!important;
+  left: 2px!important;
 }
 </style>
