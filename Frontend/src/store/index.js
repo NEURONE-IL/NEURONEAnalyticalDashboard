@@ -24,10 +24,10 @@ export default new Vuex.Store({
     lineChartSelectedMetric: null,
     /*Left Drawer*/
     tabs: [
-      { id: 1, title: 'Sesión', icon: 'mdi-cogs', route: '/', disabled: false },				
-      { id: 2, title: 'Aula', icon: 'mdi-google-classroom', route: '/classroom', disabled: true },
-      { id: 3, title: 'Configuraciones de aula', icon: 'mdi-toolbox', route: '/classroom-configurations', disabled: false },
-      { id: 4, title: 'Métricas', icon: 'mdi-chart-timeline-variant', route: '/metrics-configuration', disabled: false }
+      { id: 1, title: 'store.tabs.session', icon: 'mdi-cogs', route: '/', disabled: false },				
+      { id: 2, title: 'store.tabs.classroom', icon: 'mdi-google-classroom', route: '/classroom', disabled: true },
+      { id: 3, title: 'store.tabs.classroomConfigurations', icon: 'mdi-toolbox', route: '/classroom-configurations', disabled: false },
+      { id: 4, title: 'store.tabs.metrics', icon: 'mdi-chart-timeline-variant', route: '/metrics-configuration', disabled: false }
     ],
     /*Put request params*/
     classroomConfigurationId: null,

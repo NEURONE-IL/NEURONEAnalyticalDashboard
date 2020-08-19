@@ -54,6 +54,6 @@ router.delete('/classroom-configuration/:id', async (req, res) => {
 
 /*
 @fvillarrealcespedes:
-Export the four routes defined.
+Export the five routes defined.
 */
 export default router;

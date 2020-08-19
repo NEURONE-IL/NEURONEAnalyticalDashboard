@@ -2,7 +2,7 @@
 	<v-container>
     <v-row no-gutters>
       <v-col cols="12" class="text-center">
-				<h2>Configuración de la sesión</h2>
+				<h2> {{ $t('configuration.header') }} </h2>
 				<br>
 				<v-divider></v-divider>	
 				<br>	
@@ -23,7 +23,7 @@
 								v-model="select"
 								:disabled="metrics.length === 0"
 								:items="metrics"
-								label="Métrica principal"
+								:label="$t('configuration.principal')"
 								required
 								:rules="selectRules"								
 							></v-select>
@@ -33,7 +33,7 @@
 							<v-select
 								v-model="interval"
 								:items="timeOptions"
-								label="Intervalo de actualización"
+								:label="$t('configuration.interval')"
 								item-text="text"
 								item-value="value"
 								required
@@ -50,7 +50,7 @@
 							<!-- MetricAlert property switchable field -->
 							<v-switch
 								v-model="metricAlert"
-								label="¿Activar alertas?"
+								:label="$t('configuration.activeAlert')"
 							>
 							</v-switch>
 						</v-col>						
@@ -59,7 +59,7 @@
 							<v-select
 								v-model="option"
 								:items="alertOptions"
-								label="Opciones"
+								:label="$t('configuration.alertOption')"
 								item-text="text"
 								item-value="value"
 							>
@@ -69,7 +69,7 @@
 							<!-- Limit property input field, only visible when metricAlert property is true -->
 							<v-text-field
 								v-model="limit"
-								label="Valor límite"
+								:label="$t('configuration.limit')"
 								min="0"								
 								type="number"
 								step="0.01"
@@ -89,7 +89,7 @@
 					:disabled="!validConfiguration || this.metrics.length === 0"
 					@click="sendConfiguration()"
 				>
-					Aceptar	
+					{{ $t('buttons.accept') }}	
 					<v-icon right>
 						mdi-check
 					</v-icon>
@@ -127,20 +127,20 @@ export default {
 			validConfiguration: true,
 			/*Arrays & Rules*/
 			timeOptions: [
-				{value: 10, text: '10 segs'},
-				{value: 20, text: '20 segs'},
-				{value: 30, text: '30 segs'},
-				{value: 60, text: '60 segs'}
+				{value: 10, text: '10 s'},
+				{value: 20, text: '20 s'},
+				{value: 30, text: '30 s'},
+				{value: 60, text: '60 s'}
 			],
 			alertOptions: [
-				{value: '1', text: 'Mayor que:'},
-				{value: '2', text: 'Menor que:'},
+				{value: '1', text: this.$t('configuration.alertOptions.higher')},
+				{value: '2', text: this.$t('configuration.alertOptions.lower')},
 			],
 			requiredRules: [
-        v => !!v || 'El campo es requerido',
+        v => !!v || this.$t('rules.requiredRule')
 			],
 			selectRules: [
-        v => v && v != null || 'Debe seleccionar una opción'
+        v => v && v != null || this.$t('rules.selectRule')
 			]						
 		}
 	},

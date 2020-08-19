@@ -1,0 +1,128 @@
+{
+	"buttons": {
+		"accept": "Accept",
+		"close": "Close",
+		"configurePositions": "Configure positions",
+		"reset": "Reset",
+		"save": "Guardar",
+		"saveChanges": "Save changes"
+	},
+	"classroom": {
+		"classroomConfigurations": {
+			"circle": "Circle",
+			"perRows": "Per rows",
+			"perColumns": "Per columns"
+		},
+		"colsQuantity": "Clumns quantity",		
+		"endSession": "End session",
+		"header": "Participants observatory",
+		"rowsQuantity": "Rows quantity",		
+		"visualization": "Select classroom visualization"
+	},
+	"classroomConfigurations": {
+		"createHeader": "New classroom configuration",
+		"createConfiguration": "Create new configuration",
+		"deleteConfiguration": "Are you sure you want to delete this classroom configuration?",
+		"header": "Classroom configurations",
+		"tableHeaders": {
+			"actions": "Actions",
+			"createdBy": "Created by",
+			"participants": "Participants",
+			"name": "Name"
+		},
+		"updateHeader": "Update classroom configuration"
+	},
+	"clock": {
+		"currentTime": "Current time",
+		"initTime": "Init time",
+		"sessionTime": "Session time"
+	},
+	"configuration": {
+		"activeAlert": "Active alerts?",
+		"alertOption": "Options",
+    "alertOptions": {
+      "higher": "Higher tan:",
+      "lower": "Lower than:"
+    },		
+		"header": "Session settings",
+		"interval": "Update interval",
+		"limit": "Limit value",
+		"principal": "Principal metric"
+	},
+	"labels": {
+		"alias": "Alias",
+		"dataType": "Data type",
+		"description": "Description",
+		"interval": "Interval",
+		"max": "Maximum value",
+		"name": "Name",
+		"tableSearch": "Search",
+		"usersQuantity": "Users quantity"
+	},
+	"leftDrawer": {
+		"classroom": "Classroom",
+		"classroomConfigurations": "Classroom configurations",
+		"configuration": "Configuration",
+		"metrics": "Metrics",
+		"session": "Session"
+	},
+	"lineChart": {
+
+	},
+	"metrics": {
+		"header": "Select the metric(s) to evaluate"
+	},
+	"metricsConfiguration": {
+		"createHeader": "New metric",
+		"createMetric": "Create new metric",
+		"deleteMetric": "Are you sure you want to delete this metric?",
+		"hasMax": "Does it have a defined maximum value?",
+		"header": "Metrics",
+		"nullMax": "N/A",
+		"tableHeaders": {
+			"actions": "Actions",
+			"alias": "Alias",
+			"dataType": "Data type",
+			"description": "Description",
+			"interval": "Interval",
+			"max": "Maximum value",
+			"name": "Name"
+		},
+		"updateHeader": "Update metric"
+	},
+	"rightDrawer": {
+		"drawerOptions": {
+			"all": "All",
+			"selected": "Selected"
+		},
+		"findInChart": "Find in chart",
+		"header": "Full metrics",
+		"participantsDisplay": "Show participants"
+	},
+	"rules":{
+		"selectRule": "You must select an option",
+		"maxLength50": "The field can have a maximum of 50 characters",
+		"minLength5": "The field must be at least 5 characters long",
+		"requiredRule": "The field is required"
+	},
+	"sessionStats": {
+		"newSession": "Configure new session"
+	},
+  "store": {
+    "tabs": {
+      "session": "Session",
+      "classroom": "Classroom",
+      "classroomConfigurations": "Classroom configurations",
+      "metrics": "Metrics"
+    }
+	},
+  "$vuetify": {
+    "dataFooter": {
+      "itemsPerPageAll": "All"
+    },
+    "dataTable": {
+      "itemsPerPageText": "Rows per page:"
+    },
+    "noDataText": "No data available"
+  }
+}	

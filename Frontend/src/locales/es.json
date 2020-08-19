@@ -1,0 +1,128 @@
+{
+  "buttons": {
+    "accept": "Aceptar",
+    "close": "Cerrar",
+    "configurePositions": "Configurar ubicaciones",
+    "reset": "Limpiar",
+    "save": "Guardar",
+    "saveChanges": "Guardar cambios"
+  },
+  "classroom": {
+    "classroomConfigurations": {
+      "circle": "Circular",
+      "perRows": "En filas",
+      "perColumns": "En columnas"
+    },
+    "colsQuantity": "Cantidad de columnas",    
+    "endSession": "Finalizar sesión",
+    "header": "Observatorio de participantes",
+    "rowsQuantity": "Cantidad de filas",
+    "visualization": "Seleccionar visualización de aula"
+  },
+  "classroomConfigurations": {
+    "createHeader": "Nueva configuración de aula",
+    "createConfiguration": "Crear nueva configuración",
+    "deleteConfiguration": "¿Está segur@ que desea eliminar esta configuración de aula?",
+    "header": "Configuraciones de aula",
+    "tableHeaders": {
+      "actions": "Acciones",
+      "createdBy": "Creada por",
+      "participants": "Participantes",
+      "name": "Nombre"
+    },
+    "updateHeader": "Actualizar configuración de aula"
+  },
+  "clock": {
+    "currentTime": "Hora actual",
+    "initTime": "Hora de inicio",
+    "sessionTime": "Tiempo de sesión"
+  },
+  "configuration": {
+    "activeAlert": "¿Activar alertas?",
+    "alertOption": "Opciones",
+    "alertOptions": {
+      "higher": "Mayor que:",
+      "lower": "Menor que:"
+    },
+    "header": "Configuración de sesión",
+    "interval": "Intervalo de actualización",
+    "limit": "Valor límite",
+    "principal": "Métrica principal"
+  },
+  "labels": {
+    "alias": "Alias",
+    "dataType": "Tipo de dato",
+    "description": "Descripción",
+    "interval": "Intervalo",
+    "max": "Valor máximo",
+    "name": "Nombre",
+    "tableSearch": "Buscar",
+    "usersQuantity": "Cantidad de usuarios"
+  },
+  "leftDrawer": {
+    "classroom": "Aula",
+    "classroomConfigurations": "Configuraciones de aula",
+    "configuration": "Configuración",
+    "metrics": "Métricas",
+    "session": "Sesión"
+  },
+  "lineChart": {
+
+  },
+  "metrics": {
+    "header": "Seleccione la(s) métrica(s) a evaluar"
+  },
+  "metricsConfiguration": {
+    "createHeader": "Nueva métrica",
+    "createMetric": "Crear nueva métrica",
+    "deleteMetric": "¿Está segur@ que desea eliminar esta métrica?",
+    "hasMax": "¿Tiene valor máximo definido?",
+    "header": "Métricas",
+    "nullMax": "N/A",
+    "tableHeaders": {
+      "actions": "Acciones",
+      "alias": "Alias",
+      "dataType": "Tipo de dato",
+      "description": "Descripción",
+      "interval": "Intervalo",
+      "max": "Valor máximo",
+      "name": "Nombre"
+    },
+    "updateHeader": "Actualizar métrica"
+  },
+  "rightDrawer": {
+    "drawerOptions": {
+      "all": "Todos",
+      "selected": "Seleccionados"
+    },
+    "findInChart": "Ver en el gráfico",
+    "header": "Métricas completas",
+    "participantsDisplay": "Mostrar participantes"
+  },
+  "rules":{
+    "selectRule": "Debe seleccionar una opción",
+    "maxLength50": "El campo puede tener como máximo 50 caracteres",
+    "minLength5": "El campo debe tener como mínimo 5 caracteres",
+    "requiredRule": "El campo es requerido"
+  },
+  "sessionStats": {
+    "newSession": "Configurar nueva sesión"
+  },
+  "store": {
+    "tabs": {
+      "session": "Sesión",
+      "classroom": "Aula",
+      "classroomConfigurations": "Configuraciones de aula",
+      "metrics": "Métricas"
+    }
+  },
+  "$vuetify": {
+    "dataFooter": {
+      "itemsPerPageAll": "Todos"
+    },
+    "dataTable": {
+      "itemsPerPageText": "Filas por página:"
+    },
+    "noDataText": "No hay datos disponibles"
+  }
+}

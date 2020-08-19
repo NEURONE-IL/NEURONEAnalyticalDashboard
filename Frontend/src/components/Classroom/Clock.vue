@@ -5,19 +5,19 @@
 				<v-col cols="4">
 					<!-- Session init time -->
 					<span>
-						Hora de inicio: {{this.sessionInitTime}}
+						{{ $t('clock.initTime') }}: {{this.sessionInitTime}}
 					</span>
 				</v-col>
 				<v-col cols="4">
 					<!-- Actual time -->
 					<span>
-						Hora actual: {{this.currentTime}}
+						{{ $t('clock.currentTime') }}: {{this.currentTime}}
 					</span>
 				</v-col>
 				<v-col cols="4">
 					<!-- Time in session -->
 					<span>
-						Tiempo de sesión: {{this.sessionTime}}
+						{{ $t('clock.sessionTime') }}: {{this.sessionTime}}
 					</span>
 				</v-col>
 			</v-row>

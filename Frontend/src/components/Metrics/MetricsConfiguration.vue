@@ -17,7 +17,7 @@
 						@click="resetCreate()"
 						class="mb-4 mr-4"            
 					>
-						Cerrar					
+						{{ $t('buttons.close') }}					
 						<v-icon right>
 							mdi-close
 						</v-icon> 	
@@ -43,7 +43,7 @@
 						@click="resetUpdate()"
 						class="mb-4 mr-4"            
 					>
-						Cerrar					
+						{{ $t('buttons.close') }}					
 						<v-icon right>
 							mdi-close
 						</v-icon> 	
@@ -54,7 +54,7 @@
 
     <v-row no-gutters>
       <v-col cols="12" class="text-center">
-				<h2>Métricas</h2>
+				<h2>{{ $t('metricsConfiguration.header') }}</h2>
 				<br>
 				<v-divider></v-divider>	
 				<br>	
@@ -65,14 +65,14 @@
 						color="primary"
 						@click="createDialog = true"
 					>
-						Crear nueva métrica
+						{{ $t('metricsConfiguration.createHeader') }}
 						<v-icon dark right>mdi-plus</v-icon>
 					</v-btn>
 					<v-spacer></v-spacer>
 					<v-text-field
 						v-model="search"
 						append-icon="mdi-magnify"
-						label="Search"
+						:label="$t('labels.tableSearch')"
 						single-line
 						hide-details
 					></v-text-field>
@@ -112,7 +112,7 @@
 						<template v-slot:item.max="{ item }">
 							<!-- Alternative text to show when the metric max property is null -->
 							<span v-if="item.max === null">
-								N/A 
+								{{ $t('metricsConfiguration.nullMax') }}
 							</span>
 							<span v-else>
 								{{ item.max }}
@@ -153,13 +153,13 @@ export default {
 			/*Data table properties*/
 			search: '',
 			headers: [
-				{ text: 'Nombre', value: 'name', align: 'start' },
-				{ text: 'Alias', value: 'alias' },
-				{ text: 'Descripción', value: 'description' },
-				{ text: 'Valor máximo', value: 'max' },
-				{ text: 'Tipo de dato', value: 'dataType' },
-				{ text: 'Intervalo', value: 'interval'},
-				{ text: 'Acciones', value: 'action', sortable: false }
+				{ text: this.$t('metricsConfiguration.tableHeaders.name'), value: 'name', align: 'start' },
+				{ text: this.$t('metricsConfiguration.tableHeaders.alias'), value: 'alias' },
+				{ text: this.$t('metricsConfiguration.tableHeaders.description'), value: 'description' },
+				{ text: this.$t('metricsConfiguration.tableHeaders.max'), value: 'max' },
+				{ text: this.$t('metricsConfiguration.tableHeaders.dataType'), value: 'dataType' },
+				{ text: this.$t('metricsConfiguration.tableHeaders.interval'), value: 'interval'},
+				{ text: this.$t('metricsConfiguration.tableHeaders.actions'), value: 'action', sortable: false }
 			],
 		}
 	},
@@ -196,7 +196,7 @@ export default {
 		Sets a confirmation message previous the metric deletion. 
 		*/
     confirmDelete(){
-      return confirm('¿Está segur@ que desea borrar esta metrica?');
+			return confirm(this.$t('metricsConfiguration.deleteMetric'));
 		},
 		
 		/*

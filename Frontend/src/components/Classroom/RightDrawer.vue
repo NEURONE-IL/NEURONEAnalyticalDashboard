@@ -33,7 +33,7 @@
           </v-btn>
           </v-list-item-icon>
 
-        <v-list-item-title>Métricas completas</v-list-item-title>
+        <v-list-item-title>{{ $t('rightDrawer.header') }}</v-list-item-title>
         <v-btn
           icon
           @click.stop="miniVariant = !miniVariant"
@@ -48,7 +48,7 @@
           :items="drawerOptions"
           item-value="id"
           item-text="name"
-          label="Mostrar participantes"
+          :label="$t('rightDrawer.participantsDisplay')"
           prepend-icon="mdi-format-list-bulleted"
           required
           :rules="selectRules"
@@ -83,7 +83,7 @@
           >
             <!--v-if="drawerVisualization === 1"-->
             <v-icon left>mdi-magnify</v-icon>
-            <v-list-item-title class="metricDisplay">Ver en el gráfico</v-list-item-title>            
+            <v-list-item-title class="metricDisplay">{{ $t('rightDrawer.findInChart') }}</v-list-item-title>            
           </v-list-item>
           <!-- Displays all selected participants, the session selected metrics and the result for each one, set the metric item 
           clickable to set the line chart -->           
@@ -118,12 +118,12 @@ export default {
       drawerVisualization: null,
       /*Array & rules*/      
       drawerOptions: [
-        { id: 1, name: 'Todos' },				
-        { id: 2, name: 'Seleccionados' }
+        { id: 1, name: this.$t('rightDrawer.drawerOptions.all') },				
+        { id: 2, name: this.$t('rightDrawer.drawerOptions.selected') }
       ],
       drawerParticipants: [],
 			selectRules: [
-        v => v && v != null || 'Debe seleccionar una opción',
+        v => v && v != null || this.$t('rules.requiredRule')
 			],
     }
 	},

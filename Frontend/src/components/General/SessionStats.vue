@@ -6,7 +6,7 @@
 			color="error"
 			@click="newSession()"
 		>
-			Nueva sesión	
+			{{ $t('sessionStats.newSession') }}
 			<v-icon right>
 				mdi-new-box
 			</v-icon>

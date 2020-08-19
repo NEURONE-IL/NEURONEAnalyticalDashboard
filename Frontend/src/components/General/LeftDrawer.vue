@@ -30,7 +30,7 @@
           >
             <v-icon left>mdi-chevron-right</v-icon>
           </v-btn>
-          </v-list-item-icon>
+        </v-list-item-icon>
         <v-list-item-title>Usuario</v-list-item-title>
         <v-btn
           icon
@@ -39,6 +39,17 @@
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
       </v-list-item>
+
+			<v-list-item
+				link
+				dark
+			>
+        <v-list-item-icon v-if="miniVariant">
+            <v-icon left>mdi-translate</v-icon>
+        </v-list-item-icon>
+				<LanguageSwitcher/>
+      </v-list-item>
+
 			<!-- List items, with a v-for loop display all available tabs, for each one requires the title, the route when clicked and a boolean 
 			property in case it needs to be disabled -->      
 			<v-list-item
@@ -54,7 +65,7 @@
 					<v-icon>{{ tab.icon }}</v-icon>
 				</v-list-item-icon>
 				<v-list-item-content>
-					<v-list-item-title>{{ tab.title }}</v-list-item-title>
+					<v-list-item-title>{{ $t(tab.title) }}</v-list-item-title>
 				</v-list-item-content>
 			</v-list-item>
 		</v-list>
@@ -62,8 +73,18 @@
 </template>
 
 <script>
+/*
+@fvillarrealcespedes:
+Component imports.
+*/
+import LanguageSwitcher from '../General/LanguageSwitcher';
+
 export default {
 	name: 'LeftDrawer',
+
+	components: {
+		LanguageSwitcher
+	},
 
 	data () {
 		return {

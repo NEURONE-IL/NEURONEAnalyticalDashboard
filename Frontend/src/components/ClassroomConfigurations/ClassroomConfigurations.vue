@@ -17,7 +17,7 @@
 						@click="resetCreate()"
 						class="mb-4 mr-4"            
 					>
-						Cerrar					
+						{{ $t('buttons.close') }}
 						<v-icon right>
 							mdi-close
 						</v-icon> 	
@@ -25,7 +25,6 @@
 				</v-card-actions>					
 			</v-card>		
 		</v-dialog>
-
 		<!-- Update dialog -->
 		<v-dialog
 			v-model="updateDialog"
@@ -43,7 +42,7 @@
 						@click="resetUpdate()"
 						class="mb-4 mr-4"            
 					>
-						Cerrar					
+						{{ $t('buttons.close') }}			
 						<v-icon right>
 							mdi-close
 						</v-icon> 	
@@ -51,10 +50,9 @@
 				</v-card-actions>					
 			</v-card>		
 		</v-dialog>
-
     <v-row no-gutters>
       <v-col cols="12" class="text-center">
-				<h2>Configuraciones de aula</h2>
+				<h2>{{ $t('classroomConfigurations.header') }}</h2>
 				<br>
 				<v-divider></v-divider>	
 				<br>	
@@ -65,14 +63,14 @@
 							color="primary"
 							@click="createDialog = true"
 						>
-							Crear nueva configuración
+							{{ $t('classroomConfigurations.createHeader') }}
 							<v-icon dark right>mdi-plus</v-icon>
 						</v-btn>
 						<v-spacer></v-spacer>
 						<v-text-field
 							v-model="search"
 							append-icon="mdi-magnify"
-							label="Search"
+							:label="$t('labels.tableSearch')"
 							single-line
 							hide-details
 						></v-text-field>
@@ -145,10 +143,10 @@ export default {
 			/*Data table properties*/
 			search: '',
 			headers: [
-				{ text: 'Nombre', value: 'name', align: 'start'},
-				{ text: 'Creada por', value:'createdBy' },
-				{ text: 'Participantes', value: 'participants' },
-				{ text: 'Acciones', value: 'action', sortable: false }
+				{ text: this.$t('classroomConfigurations.tableHeaders.name'), value: 'name', align: 'start'},
+				{ text: this.$t('classroomConfigurations.tableHeaders.createdBy'), value:'createdBy' },
+				{ text: this.$t('classroomConfigurations.tableHeaders.participants'), value: 'participants' },
+				{ text: this.$t('classroomConfigurations.tableHeaders.actions'), value: 'action', sortable: false }
 			],
 		}
 	},
@@ -188,7 +186,7 @@ export default {
 		Sets a confirmation message previous the classroom configuration deletion. 
 		*/		
     confirmDelete(){
-      return confirm('¿Está segur@ que desea borrar esta configuración de aula?')
+      return confirm(this.$t('classroomConfigurations.deleteConfiguration'))
 		},
 		
 		/*
@@ -250,9 +248,9 @@ export default {
 			},			
       set (payload) {
         this.$store.commit('setClassroomConfigurationId', payload);
-      },
-		},		
-	},	
+      }
+		}		
+	}	
 }
 </script>
 

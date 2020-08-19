@@ -2,7 +2,7 @@
 	<v-container>
     <v-row no-gutters>
       <v-col cols="12" class="text-center">
-				<h2>Actualizar métrica</h2>
+				<h2>{{ $t('metricsConfiguration.updateHeader') }}</h2>
 				<br>
 				<v-divider></v-divider>	
 				<br>		
@@ -16,7 +16,7 @@
 							<!-- Name property input field -->
 							<v-text-field
 								v-model="metric.name"
-								label="Nombre"
+								:label="$t('labels.name')"
 								required
 								prepend-inner-icon="mdi-new-box"
 								:counter="50"
@@ -27,7 +27,7 @@
 							<!-- Alias property input field -->
 							<v-text-field
 								v-model="metric.alias"
-								label="Alias"
+								:label="$t('labels.alias')"
 								prepend-inner-icon="mdi-new-box"
 								:counter="50"
 							>
@@ -37,7 +37,7 @@
 							<!-- Description property input field -->
 							<v-text-field
 								v-model="metric.description"
-								label="Descripción"
+								:label="$t('labels.description')"
 								prepend-inner-icon="mdi-new-box"
 								:counter="50"
 							>
@@ -48,7 +48,7 @@
 							<v-select
 								v-model="metric.dataType"
 								:items="dataTypeOptions"
-								label="Tipo de dato"
+								:label="$t('labels.dataType')"
 								required
 								:rules="selectRules"								
 							>
@@ -58,7 +58,7 @@
 							<!-- HasMax property switchable field -->
 							<v-switch
 								v-model="hasMax"
-								label="¿Tiene valor máximo definido?"
+								:label="$t('labels.hasMax')"
 							>
 							</v-switch>							
 						</v-col>											
@@ -66,7 +66,7 @@
 							<!-- Max property input field, only visible when hasMax property is true -->
 							<v-text-field
 								v-model="metric.max"
-								label="Valor máximo"
+								:label="$t('labels.max')"
 								required
 								:rules="requiredRules"
 								prepend-inner-icon="mdi-new-box"
@@ -89,7 +89,7 @@
 					:disabled="!hasChange || !editMetricForm"
 					@click="updateMetric(metricId)"
 				>
-					Guardar cambios
+					{{ $t('buttons.saveChanges') }}
 					<v-icon right>
 						mdi-content-save
 					</v-icon>
@@ -123,10 +123,10 @@ export default {
 				'Entero'
 			],			
 			requiredRules: [
-        v => !!v || 'El campo es requerido'
+        v => !!v || this.$t('rules.requiredRule')
 			],
 			selectRules: [
-        v => v && v != null || 'Debe seleccionar una opción'
+        v => v && v != null || this.$t('rules.selectRule')
 			]			
 		}
 	},

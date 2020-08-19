@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<h3 class="title">Seleccione la(s) métrica(s) a evaluar:</h3>
+		<h3 class="title">{{ $t('metrics.header') }}:</h3>
     <v-row no-gutters justify="center">
 			<!-- V-for loop to display all availables metric --> 
 			<v-col 
