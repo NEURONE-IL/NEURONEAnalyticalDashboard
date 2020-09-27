@@ -3,34 +3,50 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors'
 import classroomConfigurationRoutes from './routes/classroomConfiguration';
-import metricsRoutes from './routes/metric';
+import metricRoutes from './routes/metric';
+import userRoutes from './routes/user';
+import dotenv from 'dotenv';
 
 /*
 @fvillarrealcespedes:
-Create a new express app, then defines the port.
+Uses dotenv.config() to set enviroment variables for the app. 
+*/
+dotenv.config();
+
+/*
+@fvillarrealcespedes:
+Creates a new express app, then defines the port.
 */
 const app = express();
-const port = process.env.PORT || 4003;
+const port = process.env.NEURONE_AD_BACK_PORT || 4003;
 
 /*
 @fvillarrealcespedes:
-Set the app components:
-The bodyParser to receive requests in JSON format, the CORS to define the allowed ports to send requests 
-and the ClassroomConfiguration and Metrics routes to access the CRUD operations of both models.
+Sets the frontend URL as the one and only allowed origin by CORS to send requests.
+*/
+var corsOptions = {
+  origin: `http://${process.env.HOST}:${process.env.NEURONE_AD_FRONT_PORT}`
+}
+
+/*
+@fvillarrealcespedes:
+Sets the app components:
+The bodyParser to receive requests in JSON format, the CORS to set the allowed origins to send requests 
+and the ClassroomConfiguration, Metric and User routes to access the CRUD operations of both models.
 */
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(classroomConfigurationRoutes);
-app.use(metricsRoutes);
+app.use(metricRoutes);
+app.use(userRoutes);
 
 /*
 @fvillarrealcespedes:
-Define the DB properties:
-The host, user, password, port and DB itself.
+Defines the DB properties:
+User, password, host, port and name, all of them imported from the .env file.
 */
-const host = process.env.MONGO_DB || 'localhost';
-mongoose.connect(`mongodb://admin:admin@${host}:27017/neurone-ad`, { 
+mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`, { 
   useNewUrlParser: true, 
   useUnifiedTopology: true, 
   useFindAndModify: false 

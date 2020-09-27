@@ -15,4 +15,8 @@ const ClassroomConfiguration = new Schema({
 	width: Number
 });
 
+/*
+@fvillarrealcespedes:
+Exports the ClassroomConfiguration model.
+*/
 export default mongoose.model('classroomConfigurations', ClassroomConfiguration);

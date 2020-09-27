@@ -1,83 +1,83 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import store from '../store'
 import axios from 'axios'
+import store from '../store'
 /*Views*/
-import ClassroomView from '../views/ClassroomView.vue'
-import ConfigurationView from '../views/ConfigurationView.vue'
-import CreateClassroomConfigurationView from '../views/CreateClassroomConfigurationView.vue'
-import UpdateClassroomConfigurationView from '../views/UpdateClassroomConfigurationView.vue'
 import ClassroomConfigurationsView from '../views/ClassroomConfigurationsView.vue'
+import ClassroomView from '../views/ClassroomView.vue'
+import LoginView from '../views/LoginView.vue'
 import MetricsConfigurationView from '../views/MetricsConfigurationView.vue'
 import SessionStatsView from '../views/SessionStatsView.vue'
+import SettingsView from '../views/SettingsView.vue'
 
 Vue.use(VueRouter)
 
 async function isInit(to, from, next){
   await axios
-  .get(`${process.env.VUE_APP_API_URL}/ifsession`)
+  .get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/ifsession`)
   .then(response => {
     if(response.data.status){
-      console.log('router response', response);
-      store.commit('setConfiguration', {
-        configuration: {
-          limit: response.data.limit,
-          metrics: response.data.metrics,
-          option: response.data.option,
-          principal: response.data.principal
-        }
-      })
-      next('/classroom');
+			let settings = {
+        limit: response.data.limit,
+        metrics: response.data.metrics,
+        option: response.data.option,
+        principal: response.data.principal
+			};      
+      store.commit('setSettings', settings)
+      localStorage.setItem('settings', JSON.stringify(settings));
+      next('/classroom')
     }
     else{
-      next('/configuration');
+      store.dispatch('destroySettings');
+      next()
     }
   })
   .catch(error => {
-    next('/configuration');
-  });
+    next()
+  })
 }
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    beforeEnter: isInit
-  },
-  {
-    path: '/configuration',
-    name: 'Configuration',
-    component: ConfigurationView,
+    name: 'Settings',
+    component: SettingsView,
+    beforeEnter: isInit,
+    meta: { requiresAuth: true }
   },  
   {
     path: '/classroom',
     name: 'Classroom',
-    component: ClassroomView
-  },
-  {
-    path: '/create-classroom-configuration',
-    name: 'CreateClassroomConfiguration',
-    component: CreateClassroomConfigurationView
-  },
-  {
-    path: '/update-classroom-configuration',
-    name: 'UpdateClassroomConfiguration',
-    component: UpdateClassroomConfigurationView
+    component: ClassroomView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/classroom-configurations',
     name: 'ClassroomConfigurations',
-    component: ClassroomConfigurationsView    
+    component: ClassroomConfigurationsView,
+    meta: { requiresAuth: true }   
   },
   {
     path: '/metrics-configuration',
     name: 'MetricsConfiguration',
-    component: MetricsConfigurationView    
+    component: MetricsConfigurationView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/session-stats',
     name: 'SessionStats',
-    component: SessionStatsView    
+    component: SessionStatsView,
+    meta: { requiresAuth: true } 
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginView,
+    meta: { requiresVisitor: true } 
+  },
+  {
+    path: '*',
+    redirect: '/'
   }
 ]
 

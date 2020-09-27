@@ -1,19 +1,39 @@
 {
+  "locale": {
+    "language": "English"
+  },
 	"buttons": {
 		"accept": "Accept",
+		"charts": {
+			"barChart": "Bar charts",
+			"generate": "Generate chart",
+			"lineChart": "Line charts",
+			"update": "Update chart"
+		},
+		"clear": "Clear",
 		"close": "Close",
 		"configurePositions": "Configure positions",
 		"reset": "Reset",
 		"save": "Guardar",
 		"saveChanges": "Save changes"
 	},
+	"charts":{
+		"line":{
+			"timeLabel": "Time (s)",
+			"title": "Performance of: ",
+			"titleConnector": " at "
+		}	,		
+		"nodes":{
+			"title": "Classroom"
+		}
+	},	
 	"classroom": {
 		"classroomConfigurations": {
 			"circle": "Circle",
 			"perRows": "Per rows",
 			"perColumns": "Per columns"
 		},
-		"colsQuantity": "Clumns quantity",		
+		"colsQuantity": "Columns quantity",		
 		"endSession": "End session",
 		"header": "Participants observatory",
 		"rowsQuantity": "Rows quantity",		
@@ -37,18 +57,6 @@
 		"initTime": "Init time",
 		"sessionTime": "Session time"
 	},
-	"configuration": {
-		"activeAlert": "Active alerts?",
-		"alertOption": "Options",
-    "alertOptions": {
-      "higher": "Higher tan:",
-      "lower": "Lower than:"
-    },		
-		"header": "Session settings",
-		"interval": "Update interval",
-		"limit": "Limit value",
-		"principal": "Principal metric"
-	},
 	"labels": {
 		"alias": "Alias",
 		"dataType": "Data type",
@@ -69,26 +77,37 @@
 	"lineChart": {
 
 	},
+  "login": {
+    "header": "Login"
+  },	
 	"metrics": {
 		"header": "Select the metric(s) to evaluate"
 	},
 	"metricsConfiguration": {
-		"createHeader": "New metric",
-		"createMetric": "Create new metric",
-		"deleteMetric": "Are you sure you want to delete this metric?",
-		"hasMax": "Does it have a defined maximum value?",
 		"header": "Metrics",
-		"nullMax": "N/A",
 		"tableHeaders": {
-			"actions": "Actions",
-			"alias": "Alias",
-			"dataType": "Data type",
 			"description": "Description",
-			"interval": "Interval",
-			"max": "Maximum value",
-			"name": "Name"
+			"metric": "Metric"
+		}
+	},
+	"notifications": {
+		"classroom": {
+			"chartUpdated": "The chart was successfully updated",
+			"lineChartWarning": "This chart can't be loaded yet, the session time must be at least 30 seconds",
+			"participantsLoaded": "NEURONE participants successfully loaded"
 		},
-		"updateHeader": "Update metric"
+		"classroomConfigurations": {
+			"createError": "Error: The new classroom configuration was not created",
+			"createSuccess": "The new classroom configuration was successfully created",
+			"deleteError": "Error: The classroom configuration was not deleted",
+			"deleteSuccess": "The classroom configuration was successfully deleted",
+			"updateError": "Error: The classroom configuration was not updated",
+			"updateSuccess": "The classroom configuration was successfully updated"
+		},
+		"login": {
+			"error": "Error: Wrong username or password, please try again",
+			"success": "Welcome to NEURONE-AD!"
+		}
 	},
 	"rightDrawer": {
 		"drawerOptions": {
@@ -100,14 +119,32 @@
 		"participantsDisplay": "Show participants"
 	},
 	"rules":{
-		"selectRule": "You must select an option",
 		"maxLength50": "The field can have a maximum of 50 characters",
+		"maxLength200": "The field can have a maximum of 200 characters",
+		"minLength2": "The field must be at least 2 characters long",
 		"minLength5": "The field must be at least 5 characters long",
-		"requiredRule": "The field is required"
+		"minLength10": "The field must be at least 10 characters long",
+		"numericRule": "Minimum value must be greater than zero",
+		"requiredRule": "The field is required",
+		"selectRule": "You must select an option"
 	},
 	"sessionStats": {
 		"newSession": "Configure new session"
 	},
+	"settings": {
+		"activeAlert": "Active alerts?",
+		"alertOption": "Options",
+    "alertOptions": {
+      "higher": "Higher tan:",
+      "lower": "Lower than:"
+    },		
+		"header": "Session settings",
+		"interval": "Update interval",
+		"limit": "Limit value",
+		"maxHint": "Maximum value for",
+		"principal": "Principal metric",
+		"undefined": "Undefined"
+	},	
   "store": {
     "tabs": {
       "session": "Session",
@@ -118,10 +155,16 @@
 	},
   "$vuetify": {
     "dataFooter": {
-      "itemsPerPageAll": "All"
-    },
+			"itemsPerPageAll": "All",
+			"pageText": "{0}-{1} of {2}"
+		},
+		"dataIterator": {
+			"loadingText": "Loading items...",
+			"noResultsText": "No matching records found"
+		},
     "dataTable": {
-      "itemsPerPageText": "Rows per page:"
+			"itemsPerPageText": "Rows per page:",
+			"sortBy": "Sort by"
     },
     "noDataText": "No data available"
   }

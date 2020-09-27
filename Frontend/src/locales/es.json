@@ -1,12 +1,32 @@
 {
+  "locale": {
+    "language": "Español"
+  },
   "buttons": {
     "accept": "Aceptar",
+		"charts": {
+			"barChart": "Gráficos de barras",
+			"generate": "Generar gráfico",
+			"lineChart": "Gráficos de líneas",
+			"update": "Actualizar gráfico"
+		},    
+    "clear": "Limpiar",
     "close": "Cerrar",
     "configurePositions": "Configurar ubicaciones",
     "reset": "Limpiar",
     "save": "Guardar",
     "saveChanges": "Guardar cambios"
   },
+	"charts":{
+		"line":{
+			"timeLabel": "Tiempo (s)",
+			"title": "Desempeño de: ",
+			"titleConnector": " en "
+		}	,		
+		"nodes":{
+			"title": "Sala de clases"
+		}
+	},  
   "classroom": {
     "classroomConfigurations": {
       "circle": "Circular",
@@ -37,18 +57,6 @@
     "initTime": "Hora de inicio",
     "sessionTime": "Tiempo de sesión"
   },
-  "configuration": {
-    "activeAlert": "¿Activar alertas?",
-    "alertOption": "Opciones",
-    "alertOptions": {
-      "higher": "Mayor que:",
-      "lower": "Menor que:"
-    },
-    "header": "Configuración de sesión",
-    "interval": "Intervalo de actualización",
-    "limit": "Valor límite",
-    "principal": "Métrica principal"
-  },
   "labels": {
     "alias": "Alias",
     "dataType": "Tipo de dato",
@@ -68,27 +76,38 @@
   },
   "lineChart": {
 
+  }, 
+  "login": {
+    "header": "Inicio de sesión"
   },
   "metrics": {
     "header": "Seleccione la(s) métrica(s) a evaluar"
   },
   "metricsConfiguration": {
-    "createHeader": "Nueva métrica",
-    "createMetric": "Crear nueva métrica",
-    "deleteMetric": "¿Está segur@ que desea eliminar esta métrica?",
-    "hasMax": "¿Tiene valor máximo definido?",
     "header": "Métricas",
-    "nullMax": "N/A",
     "tableHeaders": {
-      "actions": "Acciones",
-      "alias": "Alias",
-      "dataType": "Tipo de dato",
       "description": "Descripción",
-      "interval": "Intervalo",
-      "max": "Valor máximo",
-      "name": "Nombre"
+      "metric": "Métrica"
+    }
+  },
+	"notifications": {
+		"classroom": {
+			"chartUpdated": "El gráfico fue actualizado con éxito",
+			"lineChartWarning": "Este gráfico no puede ser cargado todavía, el tiempo de sesión debe ser al menos de 30 segundos",
+			"participantsLoaded": "Los participantes de NEURONE han sido cargados éxitosamente"
+		},
+		"classroomConfigurations": {
+			"createError": "Error: La nueva configuración de aula no fue creada",
+			"createSuccess": "La nueva configuración de aula fue creada éxitosamente",
+			"deleteError": "Error: La configuración de aula no fue borrada",
+			"deleteSuccess": "La configuración de aula fue borrada éxitosamente",
+			"updateError": "Error: La configuración de aula no fue actualizada",
+			"updateSuccess": "La configuración de aula fue actualizada éxitosamente"
     },
-    "updateHeader": "Actualizar métrica"
+    "login": {
+      "error": "Error: Nombre de usuario o contraseña incorrectos, por favor intente nuevamente",
+      "success": "¡Bienvenid@ a NEURONE-AD!"
+    }
   },
   "rightDrawer": {
     "drawerOptions": {
@@ -100,14 +119,32 @@
     "participantsDisplay": "Mostrar participantes"
   },
   "rules":{
-    "selectRule": "Debe seleccionar una opción",
     "maxLength50": "El campo puede tener como máximo 50 caracteres",
+    "maxLength200": "El campo puede tener como máximo 200 caracteres",
+    "minLength2": "El campo debe tener como mínimo 2 caracteres",
     "minLength5": "El campo debe tener como mínimo 5 caracteres",
-    "requiredRule": "El campo es requerido"
+    "minLength10": "El campo debe tener como mínimo 10 caracteres",
+    "numericRule": "El valor máximo debe ser mayor que cero",
+    "requiredRule": "El campo es requerido",
+    "selectRule": "Debe seleccionar una opción"
   },
   "sessionStats": {
     "newSession": "Configurar nueva sesión"
   },
+  "settings": {
+    "activeAlert": "¿Activar alertas?",
+    "alertOption": "Opciones",
+    "alertOptions": {
+      "higher": "Mayor que:",
+      "lower": "Menor que:"
+    },
+    "header": "Ajustes de sesión",
+    "interval": "Intervalo de actualización",
+    "limit": "Valor límite",
+    "maxHint": "Valor máximo para",
+    "principal": "Métrica principal",
+    "undefined": "Indefinido"
+  },  
   "store": {
     "tabs": {
       "session": "Sesión",
@@ -118,10 +155,16 @@
   },
   "$vuetify": {
     "dataFooter": {
-      "itemsPerPageAll": "Todos"
+      "itemsPerPageAll": "Todos",
+      "pageText": "{0}-{1} de {2}"
     },
+		"dataIterator": {
+      "loadingText": "Cargando...",
+      "noResultsText": "Ningún elemento coincide con la búsqueda"
+		},    
     "dataTable": {
-      "itemsPerPageText": "Filas por página:"
+      "itemsPerPageText": "Filas por página:",
+      "sortBy": "Ordenado por"
     },
     "noDataText": "No hay datos disponibles"
   }

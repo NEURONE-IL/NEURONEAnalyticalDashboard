@@ -3,7 +3,8 @@
 		<!-- Create dialog -->
 		<v-dialog
 			v-model="createDialog"
-			max-width="80%"
+			max-width="75%"
+			width="75%"
 			persistent
 		>
 			<v-card>
@@ -28,7 +29,8 @@
 		<!-- Update dialog -->
 		<v-dialog
 			v-model="updateDialog"
-			max-width="80%"
+			max-width="75%"
+			width="75%"
 			persistent
 		>
 			<v-card>
@@ -53,7 +55,6 @@
     <v-row no-gutters>
       <v-col cols="12" class="text-center">
 				<h2>{{ $t('classroomConfigurations.header') }}</h2>
-				<br>
 				<v-divider></v-divider>	
 				<br>	
 				<v-card>
@@ -122,7 +123,7 @@ Component imports.
 import CreateClassroomConfiguration from '../ClassroomConfigurations/CreateClassroomConfiguration';
 import UpdateClassroomConfiguration from '../ClassroomConfigurations/UpdateClassroomConfiguration';
 import axios from 'axios';
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import { create } from '@amcharts/amcharts4/core';
 
 export default {
@@ -135,8 +136,6 @@ export default {
 
 	data (){
 		return {
-			/*Component properties*/
-			classroomConfigurations: [],
 			/*Dialogs properties*/
 			createDialog: false,
 			updateDialog: false,
@@ -151,15 +150,11 @@ export default {
 		}
 	},
 
-	/*
-	@fvillarrealcespedes:
-	Invoked when the DOM is mounted and allows to access the reactive component. Calls the getter method for classroom configurations. 
-	*/
-	mounted(){
-		this.getClassroomConfigurations();
-	},
-
 	methods: {
+
+		...mapActions([
+			'getClassroomConfigurations'
+		]),
 		/*
 		@fvillarrealcespedes:
 		Hides the create dialog, calls the getter method for classroom configurations, resets all the CreateClassroomConfiguration component 
@@ -167,9 +162,10 @@ export default {
 		*/		
 		resetCreate(){
 			this.createDialog = false;
-			this.getClassroomConfigurations();
 			this.$refs.createConfiguration.$refs.newConfigurationForm.reset();
 			this.$refs.createConfiguration.disposeChart();
+			this.$refs.createConfiguration.chart = null;
+			this.$refs.createConfiguration.height = 0;
 		},
 
 		/*
@@ -179,6 +175,8 @@ export default {
 		resetUpdate(){
 			this.updateDialog = false;
 			this.$refs.updateConfiguration.disposeChart();
+			this.$refs.updateConfiguration.chart = null;
+			this.$refs.updateConfiguration.height = 0;
 		},		
 
 		/*
@@ -201,43 +199,47 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Sends a request to get all classrooms configurations, then sets classroomConfigurations property as the response data. 
-		*/
-    async getClassroomConfigurations(){
-      await axios
-      .get(this.NEURONE_AD_API_URL + '/classroom-configurations')
-      .then(response => {
-        this.classroomConfigurations = response.data;
-      })
-      .catch(error => {
-        console.log(error.response);
-      })
-		},
-
-		/*
-		@fvillarrealcespedes:
 		Sends a request to delete a specific classroom configuration by its _id property, then gets the updated array of custom classroom 
 		configurations.
 		*/
 		async deleteClassroomConfiguration(payload){
 			await axios
-			.delete(this.NEURONE_AD_API_URL + '/classroom-configuration/' + payload)
+			.delete(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/classroom-configuration/' + payload)
 			.then(response => {
 				this.getClassroomConfigurations();
+				this.dispatchNotification('classroomConfigurations.deleteSuccess', 'check-circle', 5000, 'success');
 			})	
       .catch(error => {
-        console.log(error.response);
+				console.log(error.response);
+				this.dispatchNotification('classroomConfigurations.deleteError', 'close-circle', 5000, 'error');
       })
+		},
+
+		dispatchNotification(text, icon, timeout, color){
+			let notification = {
+				show: true,
+				icon: 'mdi-' + icon,
+				text: 'notifications.' + text,
+				timeout: timeout,
+				color: color
+			}
+			this.$store.dispatch('showNotification', notification)
 		}
+
+
 	},
 
 	computed:{
-		/*
-		@fvillarrealcespedes:
-		NEURONE-AD backend URL. 
-		*/			
-		...mapState(['NEURONE_AD_API_URL']),
-		
+    classroomConfigurations: {
+      get () {
+        return this.$store.getters.getClassroomConfigurations;
+			},			
+      set (payload) {
+        this.$store.commit('setClassroomConfigurations', payload);
+      }
+		},	
+
+
 		/*
 		@fvillarrealcespedes:
 		ClassroomConfigurationId for the UpdateClassroomConfiguration component, get and set methods are imported from the store.

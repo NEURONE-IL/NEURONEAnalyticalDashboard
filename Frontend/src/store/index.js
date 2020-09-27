@@ -1,15 +1,20 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from 'axios'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
     /*NEURONE-AM*/
-    configuration: null,
+    settings: JSON.parse(localStorage.getItem('settings')) || null,
     initTime: null,
-    /*NEURONE-AD Backend URL*/
-    NEURONE_AD_API_URL: 'http://localhost:4003',
+    /*User*/
+    user: JSON.parse(localStorage.getItem('currentUser')) || null,
+    /*Classroom Configurations*/
+    classroomConfigurations: [],    
+    /*AllMetrics*/
+    metrics: [],
     /*Drawers visibility*/
     leftDrawer: null,
     rightDrawer: null,
@@ -18,6 +23,8 @@ export default new Vuex.Store({
     allParticipants: [],
     selectedParticipants: [],
     rightDrawerParticipantUsername: null,
+    /*Bar Chart*/
+    showBarChart: null,
     /*Line Chart*/
     showLineChart: null,
     lineChartUsername: null,
@@ -31,16 +38,103 @@ export default new Vuex.Store({
     ],
     /*Put request params*/
     classroomConfigurationId: null,
-    metricId: null
+    /*Notifications*/
+    snackbar: {
+      show: null,
+      icon: null,
+      text: null,
+      timeout: null,
+      color: null
+    }
+  },
+
+  actions: {
+		/*
+		@fvillarrealcespedes:
+		Sends a request to get all metrics, then sets metric property as the response data. 
+		*/    
+    async getMetrics(context){
+      await axios
+      .get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}` + '/metrics')
+      .then(response => {
+        context.commit('setMetrics', response.data);
+      })
+      .catch(error => {
+        console.log(error.response);
+      })
+    },
+
+		/*
+		@fvillarrealcespedes:
+		Sends a request to get all classrooms configurations, then sets classroomConfigurations property as the response data. 
+		*/    
+    async getClassroomConfigurations(context){
+      await axios
+      .get(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/classroom-configurations')
+      .then(response => {
+        context.commit('setClassroomConfigurations', response.data);
+      })
+      .catch(error => {
+        console.log(error.response);
+      })
+    },
+
+    async retrieveUser(context, credentials){
+      return new Promise((resolve, reject) => {
+        axios
+        .post(`http://${process.env.VUE_APP_HOST}:${process.env.VUE_APP_NEURONE_AUTH_BACK}/api/credential/signin`, credentials)
+        .then(response => {
+          const user = response.data;
+          axios.defaults.headers.common['x-access-token'] = user.accessToken;
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          context.commit('setUser', user);
+          resolve(response);
+        })
+        .catch(error => {
+          reject(error);
+        })
+      })
+    },
+
+    refreshSession(state){
+      state.user = JSON.parse(localStorage.getItem('currentUser'));
+      axios.defaults.headers.common['x-access-token'] = state.user.accessToken;
+    },
+
+    showNotification(context, payload){
+      context.commit('setSnackbar', payload);
+    }
   },
 
   mutations: {
-    setConfiguration(state, payload){
-      state.configuration = payload;
+    setSettings(state, payload){
+      state.settings = payload;
     },
+
+    destroySettings(state){
+      localStorage.removeItem('settings');
+      state.settings = null;
+    },    
 
     setInitTime(state, payload){
       state.initTime = payload;
+    },
+
+    setUser(state, payload){
+      state.user = payload;
+    },
+
+    destroyUser(state){
+      localStorage.removeItem('currentUser');
+      state.user = null;
+    },
+
+    setMetrics(state, payload){
+      state.metrics = payload;
+    },    
+
+    setClassroomConfigurations(state, payload){
+      state.classroomConfigurations = payload
     },
 
     setLeftDrawer(state, payload){
@@ -67,6 +161,10 @@ export default new Vuex.Store({
       state.rightDrawerParticipantUsername = payload;
     },
 
+    setShowBarChart(state, payload){
+      state.showBarChart = payload;
+    },
+
     setShowLineChart(state, payload){
       state.showLineChart = payload;
     },
@@ -87,18 +185,34 @@ export default new Vuex.Store({
       state.classroomConfigurationId = payload;
     },
 
-    setMetricId(state, payload){
-      state.metricId = payload;
-    }    
+    setSnackbar(state, payload){
+      state.snackbar.show = payload.show;
+      state.snackbar.icon = payload.icon;
+      state.snackbar.text = payload.text;
+      state.snackbar.timeout = payload.timeout;
+      state.snackbar.color = payload.color;
+    }
   },
 
   getters:{
-    getConfiguration(state){
-      return state.configuration;
+    getSettings(state){
+      return state.settings;
     },
 
     getInitTime(state){
       return state.initTime;
+    },
+
+    getUser(state){
+      return state.user;
+    },
+
+    getMetrics(state){
+      return state.metrics;
+    },    
+
+    getClassroomConfigurations(state){
+      return state.classroomConfigurations;
     },
 
     getLeftDrawer(state){
@@ -125,6 +239,10 @@ export default new Vuex.Store({
       return state.rightDrawerParticipantUsername;
     },
 
+    getShowBarChart(state){
+      return state.showBarChart;
+    },
+
     getShowLineChart(state){
       return state.showLineChart;
     },
@@ -145,8 +263,8 @@ export default new Vuex.Store({
       return state.classroomConfigurationId;
     },
 
-    getMetricId(state){
-      return state.metricId;
-    }      
+    getSnackbar(state){
+      return state.snackbar;
+    }
   }
 })

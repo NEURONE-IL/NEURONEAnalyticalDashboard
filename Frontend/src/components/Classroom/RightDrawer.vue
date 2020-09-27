@@ -8,7 +8,7 @@
 		app
 		dark	
 		right
-		:color="color"
+		color="primary"
 	>
     <!-- List to display the selected participants of the nodes chart and all their metrics search results -->
 		<v-list
@@ -47,7 +47,7 @@
           v-model="drawerVisualization"
           :items="drawerOptions"
           item-value="id"
-          item-text="name"
+          :item-text="setOptionText()"
           :label="$t('rightDrawer.participantsDisplay')"
           prepend-icon="mdi-format-list-bulleted"
           required
@@ -55,8 +55,6 @@
         >
         </v-select>	
       </v-list-item>
-
-      <!-- List group, contains the nodes chart selected participants -->      
       <v-list-group
         v-for="participant in drawerParticipants"
         :key="participant.index"
@@ -74,12 +72,10 @@
           v-bind:class="setColor(participant.results[principal]) + 'ItemDisplay'"
           :color="setColor(participant.results[principal]) + ' lighten-3'"
         >
-          <!-- If the drawerVisualization has value 1, the second list item is a clickable item to view the participant associated 
-          node tooltip in the nodes chart -->
+          <!-- Tthe second list item is a clickable item to view the participant associated node tooltip in the nodes chart -->
           <v-list-item
             link
             @click="findInChart(participant.username)"
-            
           >
             <!--v-if="drawerVisualization === 1"-->
             <v-icon left>mdi-magnify</v-icon>
@@ -94,7 +90,7 @@
             @click="setLineChart(participant.username, metric)"
           >
             <v-icon left>mdi-circle-medium</v-icon>
-            <v-list-item-title class="metricDisplay">{{ metric }}: {{ value }}</v-list-item-title>          
+            <v-list-item-title class="metricDisplay">{{ setAlias(metric) }}: {{ value }}</v-list-item-title>          
           </v-list-item>
         </v-card>  
         <v-divider dark/>
@@ -110,7 +106,6 @@ export default {
 	data (){
     return{
       /*Component properties*/
-      color: 'primary',
       miniVariant: true,	
       principal: '',
       limit: '',
@@ -118,8 +113,8 @@ export default {
       drawerVisualization: null,
       /*Array & rules*/      
       drawerOptions: [
-        { id: 1, name: this.$t('rightDrawer.drawerOptions.all') },				
-        { id: 2, name: this.$t('rightDrawer.drawerOptions.selected') }
+        { id: 1, name: 'rightDrawer.drawerOptions.all' },				
+        { id: 2, name: 'rightDrawer.drawerOptions.selected' }
       ],
       drawerParticipants: [],
 			selectRules: [
@@ -130,13 +125,12 @@ export default {
 
 	/*
 	@fvillarrealcespedes:
-	Invoked before the rendering. Gets the configuration from the store and initializes the component properties. 
+	Invoked before the rendering. Gets the session settings from the store and initializes the component properties. 
 	*/
 	created(){
-		let configuration = this.$store.getters.getConfiguration;
-		this.principal = configuration.principal;
-		this.limit = configuration.limit;
-    this.option = configuration.option;
+		this.principal = this.settings.principal;
+		this.limit = this.settings.limit;
+    this.option = this.settings.option;
   },
 
 	/*
@@ -209,6 +203,15 @@ export default {
 		*/  
     findInChart(participantUsername){
       this.rightDrawerParticipantUsername = participantUsername;
+    },
+
+    setOptionText(){
+     return item => this.$t(item.name);
+    },
+
+    setAlias(name){
+      var metric = this.metrics.find(metric => metric.name === name);
+      return metric.alias;
     }
 	},
 
@@ -227,6 +230,7 @@ export default {
           this.drawerParticipants = this.selectedParticipants;
           break;
       }
+      console.log(this.drawerParticipants)
     },
 
 		/*
@@ -354,8 +358,26 @@ export default {
       set (payload){
         this.$store.commit('setLineChartSelectedMetric', payload);
       }
+    },
+
+		metrics: {
+			get () {
+				return this.$store.getters.getMetrics;
+			},
+			set (payload) {
+				this.$store.commit('setMetrics', payload);
+			}
+		},    
+  
+		settings: {
+			get () {
+				return this.$store.getters.getSettings;
+			},
+			set (payload) {
+				this.$store.commit('setSettings', payload);
+			}
     }
-	},
+  }  
 }
 </script>
 
@@ -415,4 +437,7 @@ export default {
 .v-application .blue.lighten-3{
   border-color: #2196F3 !important;
 }
+
+
+
 </style>

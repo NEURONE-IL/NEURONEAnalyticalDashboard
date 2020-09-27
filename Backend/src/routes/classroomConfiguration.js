@@ -34,7 +34,7 @@ router.post('/classroom-configuration', async (req, res) => {
 
 /*
 @fvillarrealcespedes:
-PUT a ClassroomConfiguration, first find it by the _id property in the DB, then updates and stores again.
+PUT a ClassroomConfiguration, first finds it by the _id property in the DB, then updates and stores again.
 */
 router.put('/classroom-configuration/:id', async (req, res) => {
 	const { id } = req.params;
@@ -54,6 +54,6 @@ router.delete('/classroom-configuration/:id', async (req, res) => {
 
 /*
 @fvillarrealcespedes:
-Export the five routes defined.
+Exports the five routes defined.
 */
 export default router;

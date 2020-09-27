@@ -31,7 +31,14 @@
             <v-icon left>mdi-chevron-right</v-icon>
           </v-btn>
         </v-list-item-icon>
-        <v-list-item-title>Usuario</v-list-item-title>
+				<v-list-item-content>
+					<v-list-item-title class="username">
+						{{ user.username }}
+					</v-list-item-title>
+					<v-list-item-subtitle>
+						{{ user.email }}
+					</v-list-item-subtitle>				
+				</v-list-item-content>
         <v-btn
           icon
           @click.stop="miniVariant = !miniVariant"
@@ -39,17 +46,6 @@
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
       </v-list-item>
-
-			<v-list-item
-				link
-				dark
-			>
-        <v-list-item-icon v-if="miniVariant">
-            <v-icon left>mdi-translate</v-icon>
-        </v-list-item-icon>
-				<LanguageSwitcher/>
-      </v-list-item>
-
 			<!-- List items, with a v-for loop display all available tabs, for each one requires the title, the route when clicked and a boolean 
 			property in case it needs to be disabled -->      
 			<v-list-item
@@ -68,29 +64,44 @@
 					<v-list-item-title>{{ $t(tab.title) }}</v-list-item-title>
 				</v-list-item-content>
 			</v-list-item>
-		</v-list>
+		</v-list>    
+		<template v-slot:append>
+			<v-list-item
+				dark
+				v-if="!miniVariant"
+			>
+					<svg height="34" width="34">
+						<g>
+						<circle cx="16" cy="16" r="15" stroke="white" stroke-width="2px" fill="transparent"/>
+						<text x="16" y="16" text-anchor="middle" stroke="#0000" stroke-width="2px" dy=".3em"> {{ getLocale($i18n.locale) }} </text>
+						</g>
+					</svg>
+				<span class="mb-1 pa-2"> {{ $t('locale.language') }} </span>
+			</v-list-item>			
+		</template>
 	</v-navigation-drawer>
 </template>
 
 <script>
-/*
-@fvillarrealcespedes:
-Component imports.
-*/
-import LanguageSwitcher from '../General/LanguageSwitcher';
-
 export default {
 	name: 'LeftDrawer',
-
-	components: {
-		LanguageSwitcher
-	},
 
 	data () {
 		return {
 			/*Component properties*/
 			color: 'primary',
 			miniVariant: true
+		}
+	},
+
+	methods: {
+		getLocale(locale){
+			var splitted = locale.split('-');
+			if(splitted[0]){
+				return splitted[0].toUpperCase();
+			}else{
+				return locale.toUpperCase();
+			}
 		}
 	},
 
@@ -119,7 +130,23 @@ export default {
       set (payload) {
         this.$store.commit('setTabs', payload);
       },
+		},
+
+		user: {
+      get () {
+        return this.$store.getters.getUser;
+      },
+      set (payload) {
+        this.$store.commit('setUser', payload);
+      }
 		}
 	}
 }	
 </script>
+
+<style scoped>
+.username{
+	font-size: 16px !important;
+	font-weight: bold;
+}
+</style>

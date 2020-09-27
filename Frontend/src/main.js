@@ -6,11 +6,30 @@ import vuetify from './plugins/vuetify'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
 import i18n from './plugins/i18n'
-import CountryFlag from 'vue-country-flag'
- 
-Vue.component('country-flag', CountryFlag)
 
 Vue.config.productionTip = false
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!store.getters.getUser) {
+      next(
+        '/login'
+      )
+    } else {
+      next()
+    }
+  } else if (to.matched.some(record => record.meta.requiresVisitor)) {
+    if (store.getters.getUser) {
+      next(
+        '/'
+      )
+    } else {
+      next()
+    }
+  }else {
+    next()
+  }
+})
 
 new Vue({
   router,

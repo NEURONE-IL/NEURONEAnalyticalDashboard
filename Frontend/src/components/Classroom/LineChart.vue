@@ -11,6 +11,7 @@
 Component imports.
 */
 import { mapActions, mapState } from 'vuex';
+import axios from 'axios';
 /*
 @fvillarrealcespedes:
 Chart library imports.
@@ -18,7 +19,6 @@ Chart library imports.
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import axios from 'axios';
 
 am4core.useTheme(am4themes_animated);
 
@@ -47,7 +47,7 @@ export default {
 			let url = `${this.lineChartUsername}?metrics=${this.lineChartSelectedMetric}&`;
 			url = this.formatUrl(url, ti, tf);
 			await axios
-			.get(`${process.env.VUE_APP_API_URL}/detail/${url}`)
+			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/detail/${url}`)
 			.then(response => {
 				this.chartData.push({
 					time: tf,
@@ -69,9 +69,9 @@ export default {
 			for(var i=this.interval; i<=this.max-this.interval; i+=this.interval){
 				this.getDataItem(0, i);
 			}
-			await this.sleep(3000);
-			function compare ( a, b ){ return a.time - b.time; };
-			this.setChart(this.chartData.sort( compare ));
+//			await this.sleep(3000);
+//			function compare ( a, b ){ return a.time - b.time; };
+//			this.setChart(this.chartData.sort( compare ));
 			console.log(this.chartData.length)			
 		},
 
@@ -98,22 +98,33 @@ export default {
 		NEURONE-AM original function, gets the init stage time for a specific user, also sets the maximum time value and the necessary 
 		data objects quantity to compose the line chart.
 		*/
-		getInitTime(){
-			axios
-			.get(`${process.env.VUE_APP_API_URL}/initstage/${this.lineChartUsername}`)
+		async getInitTime(){
+			await axios
+			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/initstage/${this.lineChartUsername}`)
 			.then(response => {
 				let actualTime = Date.now();
 				let initTime = response.data.inittime;
 				console.log(initTime, 'inittimeline')
 				this.max = Math.round((actualTime - initTime)/1000);
 				console.log(this.max + '/' + this.interval, 'div')
-				this.counter = Math.trunc(this.max/this.interval);
+				this.setCounter();
+				//this.counter = Math.trunc(this.max/this.interval) - 1;
 				console.log(this.counter, 'counter')
 				this.getData();
 			})
       .catch(error => {
         console.log(error.response);
       });
+		},
+
+		setCounter(){
+			var queries = Math.trunc(this.max/this.interval) - 1;
+			while(queries > 100){
+				this.interval += 10;
+				queries = Math.trunc(this.max/this.interval) - 1;
+			}
+			this.counter = queries;
+			console.log(this.counter, 'queries', this.interval)
 		},
 
 		/*
@@ -159,11 +170,24 @@ export default {
 			this.chart.cursor.xAxis = timeAxis;
 			this.chart.cursor.snapToSeries = series;
 			/*Creates a horizontal scrollbar with previe and place it underneath the time axis*/
-			this.chart.scrollbarX = new am4charts.XYChartScrollbar();
+/*			this.chart.scrollbarX = new am4charts.XYChartScrollbar();
 			this.chart.scrollbarX.series.push(series);
 			this.chart.scrollbarX.parent = this.chart.bottomAxesContainer;
+			*/
+
+			valueAxis.title.text = this.setAlias(this.lineChartSelectedMetric);
+			valueAxis.title.fontWeight = "bold";
+
+			timeAxis.title.text = this.$t('charts.line.timeLabel');
+			timeAxis.title.fontWeight = "bold";
 
 			this.chart.exporting.menu = new am4core.ExportMenu();
+
+			let title = this.chart.titles.create();
+			title.text = this.$t('charts.line.title') + this.lineChartUsername + this.$t('charts.line.titleConnector') + this.setAlias(this.lineChartSelectedMetric);
+			title.fontWeight = "bold";
+			title.fontSize = 25;
+			title.marginBottom = 30;
 		},
 
 		/*
@@ -180,10 +204,26 @@ export default {
 
 		sleep(ms) {
 			return new Promise(resolve => setTimeout(resolve, ms));
-		}
+		},
+
+    setAlias(name){
+      var metric = this.metrics.find(metric => metric.name === name);
+      return metric.alias;
+    }		
 	},
 
 	watch: {
+
+    async chartDataLength (value, oldValue) {
+      if(value === this.counter){
+				console.log('done');
+				await this.sleep(3000);
+				function compare ( a, b ){ return a.time - b.time; };
+				this.setChart(this.chartData.sort( compare ));
+			}
+    },
+
+
 		/*
 		@fvillarrealcespedes:
 		Watches the lineChartUsername property to eventually update the line chart.
@@ -231,7 +271,24 @@ export default {
       set (payload){
         this.$store.commit('setLineChartSelectedMetric', payload);
       }
-    }
+		},
+
+		metrics: {
+			get () {
+				return this.$store.getters.getMetrics;
+			},
+			set (payload) {
+				this.$store.commit('setMetrics', payload);
+			}
+		},		
+		
+		/*
+		@fvillarrealcespedes:
+		Method chartDataLength to get the chartData array lenght.
+		*/		
+		chartDataLength() {
+			return this.chartData.length;
+		}		
 	}
 }
 </script>

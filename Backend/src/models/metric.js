@@ -16,4 +16,8 @@ const Metric = new Schema({
     interval: Number
 });
 
+/*
+@fvillarrealcespedes:
+Exports the Metric model.
+*/
 export default mongoose.model('metrics', Metric);

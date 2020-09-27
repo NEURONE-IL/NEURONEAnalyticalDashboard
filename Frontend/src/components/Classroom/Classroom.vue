@@ -3,20 +3,22 @@
     <v-row no-gutters>
       <v-col cols="12" class="text-center">
 				<h2>{{ $t('classroom.header') }}</h2>
-				<br>
 				<v-divider></v-divider>	
-				<br>	
+				<br>
 				<!-- Clock component only visible when showClock property is true -->
 				<Clock v-if="showClock"/>
 				<!-- Form to set the classroom configuration for the nodes chart -->
 				<v-form
 					ref="configurationForm"
 					v-model="validConfiguration"
+					v-if="users != 0"
 				>
 					<!-- Select for the classroom configuration to display the nodes -->
+					<v-row>
+						<v-col cols="8">
 					<v-select
 						v-model="classroomConfiguration"
-						:items="classroomConfigurations"
+						:items="filterConfigurations(allClassroomConfigurations)"
 						item-value="id"
 						item-text="name"
 						:label="$t('classroom.visualization')"
@@ -27,10 +29,9 @@
 					</v-select>	
 					<!-- Select for the rows number in case the classroom configuration by rows is selected -->
 					<v-select
-						class="mt-4"
 						:items="setValueOptions()"
 						v-model="rows"
-						v-if="this.classroomConfiguration === 2"
+						v-if="classroomConfiguration === 2"
 						:label="$t('classroom.rowsQuantity')"
 						prepend-icon="mdi-view-sequential"
 						required
@@ -39,41 +40,104 @@
 					</v-select>
 					<!-- Select for the columns number in case the classroom configuration by columns is selected -->
 					<v-select
-						class="mt-4"
 						:items="setValueOptions()"
 						v-model="columns"
-						v-if="this.classroomConfiguration === 3"
+						v-if="classroomConfiguration === 3"
 						:label="$t('classroom.colsQuantity')"
 						prepend-icon="mdi-view-column"
 						required
 						:rules="selectRules"						
 					>
 					</v-select>										
+					</v-col>
+					<v-col cols="4">
+						<v-btn
+							color="success"
+							:disabled="!validConfiguration"
+							@click="setClassroom(classroomConfiguration)"
+						>
+							<template
+								v-if="!chart"
+							>
+								{{ $t('buttons.charts.generate') }}	
+								<v-icon right>
+									mdi-check
+								</v-icon>							
+							</template>
+							<template
+								v-else
+							>
+								{{ $t('buttons.charts.update') }}	
+								<v-icon right>
+									mdi-refresh
+								</v-icon>							
+							</template>
+						</v-btn>
+					</v-col>
+					</v-row>
 				</v-form>	
 				<!-- Button to set the nodes chart, disabled if no classroom configuration is selected or the users number is zero -->
-				<v-btn
-					class="mb-4 ms-4"
-					color="success"
-					:disabled="!validConfiguration || this.users === 0"
-					@click="setClassroom(classroomConfiguration)"
+				<v-row 
+					v-if="users != 0"
 				>
-					{{ $t('buttons.accept') }}	
-					<v-icon right>
-						mdi-check
-					</v-icon>
-				</v-btn>		
-				<!-- Button to end the current session -->
-				<v-btn
-					class="mb-4 ms-4"
-					color="error"
-					@click="endSession()"
-				>
-					{{ $t('classroom.endSession') }}	
-					<v-icon right>
-						mdi-timer-off
-					</v-icon>
-				</v-btn>	
+					<v-col cols="8">
+				<div 
+					v-if="users != 0"	
+				>	
+					<!-- Button to set the nodes chart, disabled if no classroom configuration is selected or the users number is zero -->
+					<v-btn
+						class="mb-4 ms-4"
+						color="purple darken-2"
+						dark
+						@click="showBarChart = true"
+					>
+						{{ $t('buttons.charts.barChart') }}	
+						<v-icon right>
+							mdi-chart-bar
+						</v-icon>
+					</v-btn>
+					<!-- Button to set the nodes chart, disabled if no classroom configuration is selected or the users number is zero -->
+					<v-btn
+						class="mb-4 ms-4"
+						color="purple darken-2"
+						dark
+						@click="showLineChart = true"
+					>
+						{{ $t('buttons.charts.lineChart') }}	
+						<v-icon right>
+							mdi-chart-line
+						</v-icon>
+					</v-btn>
+					</div>
+					</v-col>
+				
+					<!-- Button to end the current session -->
+					
+						<v-col cols="4">
+					<v-btn
+						color="error"
+						@click="endSession()"
+					>
+						{{ $t('classroom.endSession') }}	
+						<v-icon right>
+							mdi-power
+						</v-icon>
+					</v-btn>
+					</v-col>
+				</v-row>
 				<!-- Nodes chart -->
+				<div 
+					v-else
+				>
+  				<p class="text-center">
+						Cargando participantes, por favor espere...
+					</p>
+					<v-progress-linear 
+						indeterminate
+						color="primary"
+					>
+					</v-progress-linear>			
+				</div>
 				<div class="classroom" ref="chartdiv"></div>
 				<!-- Line chart dialog -->
 				<v-dialog
@@ -99,7 +163,31 @@
 						</v-card-actions>						
 					</v-card>
 				</v-dialog>
-      </v-col>		
+				<!-- Line chart dialog -->
+				<v-dialog
+					v-model="showBarChart"
+					max-width="80%"
+					persistent				
+				>
+					<v-card>
+						<BarChart ref="barChart"/>
+						<v-card-actions>
+							<v-spacer></v-spacer>
+							<!-- Button to close the line chart dialog-->
+							<v-btn
+								color="error"
+								@click="resetBarChart()"
+								class="mb-4 mr-4"            
+							>
+								{{ $t('buttons.close') }}			
+								<v-icon right>
+									mdi-close
+								</v-icon> 	
+							</v-btn>					
+						</v-card-actions>						
+					</v-card>
+				</v-dialog>
+      </v-col>
 		</v-row>
 	</v-container>
 </template>
@@ -109,6 +197,7 @@
 @fvillarrealcespedes:
 Component imports.
 */
+import BarChart from '../Classroom/BarChart';
 import LineChart from '../Classroom/LineChart';
 import Clock from '../Classroom/Clock';
 import { mapActions, mapState } from 'vuex';
@@ -128,6 +217,7 @@ export default {
 	name: 'Classroom',
 
 	components: {
+		BarChart,
 		LineChart,
 		Clock
 	},
@@ -142,17 +232,17 @@ export default {
 			users: 0,
 			validConfiguration: true,
 			/*Chart properties*/
-			height: 800,			
+			height: 0,
 			/*Specific nodes properties*/
-			fontsize: '',
-			maxRadius: '',
-			separation: '',
+			fontsize: 0,
+			maxRadius: 0,
+			separation: 0,
 			userIcoPath: 'M55,27.5C55,12.337,42.663,0,27.5,0S0,12.337,0,27.5c0,8.009,3.444,15.228,8.926,20.258l-0.026,0.023l0.892,0.752c0.058,0.049,0.121,0.089,0.179,0.137c0.474,0.393,0.965,0.766,1.465,1.127c0.162,0.117,0.324,0.234,0.489,0.348	c0.534,0.368,1.082,0.717,1.642,1.048c0.122,0.072,0.245,0.142,0.368,0.212c0.613,0.349,1.239,0.678,1.88,0.98	c0.047,0.022,0.095,0.042,0.142,0.064c2.089,0.971,4.319,1.684,6.651,2.105c0.061,0.011,0.122,0.022,0.184,0.033	c0.724,0.125,1.456,0.225,2.197,0.292c0.09,0.008,0.18,0.013,0.271,0.021C25.998,54.961,26.744,55,27.5,55	c0.749,0,1.488-0.039,2.222-0.098c0.093-0.008,0.186-0.013,0.279-0.021c0.735-0.067,1.461-0.164,2.178-0.287	c0.062-0.011,0.125-0.022,0.187-0.034c2.297-0.412,4.495-1.109,6.557-2.055c0.076-0.035,0.153-0.068,0.229-0.104	c0.617-0.29,1.22-0.603,1.811-0.936c0.147-0.083,0.293-0.167,0.439-0.253c0.538-0.317,1.067-0.648,1.581-1	c0.185-0.126,0.366-0.259,0.549-0.391c0.439-0.316,0.87-0.642,1.289-0.983c0.093-0.075,0.193-0.14,0.284-0.217l0.915-0.764	l-0.027-0.023C51.523,42.802,55,35.55,55,27.5z M2,27.5C2,13.439,13.439,2,27.5,2S53,13.439,53,27.5	c0,7.577-3.325,14.389-8.589,19.063c-0.294-0.203-0.59-0.385-0.893-0.537l-8.467-4.233c-0.76-0.38-1.232-1.144-1.232-1.993v-2.957	c0.196-0.242,0.403-0.516,0.617-0.817c1.096-1.548,1.975-3.27,2.616-5.123c1.267-0.602,2.085-1.864,2.085-3.289v-3.545	c0-0.867-0.318-1.708-0.887-2.369v-4.667c0.052-0.52,0.236-3.448-1.883-5.864C34.524,9.065,31.541,8,27.5,8	s-7.024,1.065-8.867,3.168c-2.119,2.416-1.935,5.346-1.883,5.864v4.667c-0.568,0.661-0.887,1.502-0.887,2.369v3.545	c0,1.101,0.494,2.128,1.34,2.821c0.81,3.173,2.477,5.575,3.093,6.389v2.894c0,0.816-0.445,1.566-1.162,1.958l-7.907,4.313	c-0.252,0.137-0.502,0.297-0.752,0.476C5.276,41.792,2,35.022,2,27.5z',
 			/*Arrays & rules*/
-			classroomConfigurations: [
-				{ id: 1, name: this.$t('classroom.classroomConfigurations.circle') },
-				{ id: 2, name: this.$t('classroom.classroomConfigurations.perRows') },
-				{ id: 3, name: this.$t('classroom.classroomConfigurations.perColumns') }
+			allClassroomConfigurations: [
+				//{ id: 1, name: this.$t('classroom.classroomConfigurations.circle'), participants: 50 },
+				{ id: 2, name: this.$t('classroom.classroomConfigurations.perRows'), participants: 100 },
+				{ id: 3, name: this.$t('classroom.classroomConfigurations.perColumns'), participants: 100 }
 			],
 			valueOptions: [],
 			requiredRules: [
@@ -164,10 +254,10 @@ export default {
 			/*Original NEURONE-AM properties*/
 			eventSource: null,
 			limit: 0,
-			metrics: [],
 			option: '',
 			participants: [],
 			principal: '',
+			sessionMetrics: [],
 			/*Clock component show condition*/
 			showClock: false
 		}
@@ -176,25 +266,24 @@ export default {
 	/*
 	@fvillarrealcespedes:
 	NEURONE-AM original function, invoked before the rendering.
-	Gets the configuration from the store, sets the EventSource to receive the metrics, gets the session init time, the classroom 
+	Gets the session settings from the store, sets the EventSource to receive the metrics, gets the session init time, the classroom 
 	configurations and finally enables and disables tabs from the left drawer.
 	*/
 	created(){
-		let configuration = this.$store.getters.getConfiguration;
-		this.metrics = configuration.metrics || [];
-		this.principal = configuration.principal;
-		this.limit = configuration.limit;
-		this.option = configuration.option;
-		this.eventSource = new EventSource(`${process.env.VUE_APP_API_URL}/init`);
+		this.sessionMetrics = this.settings.metrics;
+		this.principal = this.settings.principal;
+		this.limit = this.settings.limit;
+		this.option = this.settings.option;
+		this.eventSource = new EventSource(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/init`);
 		this.waitInitTime();
-		this.metrics.map(metric => {
+		this.sessionMetrics.map(metric => {
 			this.eventSource.addEventListener(metric, e => {
 				this.updateMetrics(JSON.parse(e.data), metric);
 			});
 		});
-		this.getClassroomConfigurations();
-		this.tabs[1].disabled = false;
 		this.tabs[0].disabled = true;
+		this.tabs[1].disabled = false;
+		this.appendClassroomConfigurations();
 	},
 
 	/*
@@ -202,14 +291,18 @@ export default {
 	Invoked after create, initializes some component properties, mainly the associated to the nodes chart.
 	*/
 	mounted(){
-		this.fontsize = 10;
-		this.maxRadius = 15;
-		this.separation = 50;
+		this.fontsize = 13;
+		this.maxRadius = 18;
+		this.separation = 60;
 		this.selectedParticipants = [];
 		this.allParticipants = [];
 	},
 
 	methods: {
+		...mapActions([
+			'getClassroomConfigurations'
+		]),
+
 		/*
 		@fvillarrealcespedes:
 		Hides the line chart component and disposes the chart itself.
@@ -219,6 +312,15 @@ export default {
 			this.$refs.lineChart.disposeChart();
 			this.lineChartUsername = null;	
 			this.lineChartSelectedMetric = null;
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Hides the line chart component and disposes the chart itself.
+		*/
+		resetBarChart(){
+			this.showBarChart = false;
+			this.$refs.barChart.disposeChart();
 		},
 
 		/*
@@ -239,10 +341,36 @@ export default {
 					break;
 				case 3:
 					this.setClassroomPerColumns(data);
+					
 					break;
+				default:
+					this.setCustomClassroom(data, index);
 			}
+			this.setHeight(data);
 			this.disposeChart();
-			this.setChart(data, index);
+			this.setChart(data);
+			/*Bug fixer to display the circle configuration classroom, chart needs to be recreated once*/
+			if(index === 1){
+				this.disposeChart();
+				this.setChart(data);
+			}
+			/*Sets all nodes chart participants into the right drawer*/
+			this.allParticipants = this.participants;
+			/*Sets the rightDrawerParticipantUsername to null as the chart may be reseted*/
+			this.rightDrawerParticipantUsername = null;
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Reset the create classroom configuration form.
+		*/
+		resetForm(){
+			this.$refs.configurationForm.reset();
+		},
+
+		filterConfigurations(configurations){
+			console.log(configurations)
+			return configurations.filter(configuration => configuration.participants >= this.users);
 		},
 
 		/*
@@ -256,9 +384,9 @@ export default {
 				var color = this.setColor(value);
 				data.push(
 					{
-						id: i,
+						id: i+1,
 						name: this.participants[i].username,
-						principal: this.principal + ': ' + value,
+						principal: this.setAlias(this.principal) + ': ' + value,
 						path: this.userIcoPath,
 						color: color,
 						fixed: true, 
@@ -275,18 +403,18 @@ export default {
 		object for the node and pushes it to the data array.
 		*/
 		setClassroomPerRows(data){
-			var nodesPerRow = Math.ceil(this.users/this.rows);
-			var offset = this.setOffset(nodesPerRow);
+			var nodesPer = Math.ceil(this.users/this.rows);
+			var offset = this.setOffset(nodesPer);
 			for(var i = 0; i < this.users; i++){
 				var value = this.participants[i].results[this.principal];
 				var color = this.setColor(value);					
-				var x = this.separation + (((i)%nodesPerRow)*this.separation*0.75) + offset;
-				var y = this.separation + this.separation * Math.trunc(i/nodesPerRow) * 1.2;
+				var x = this.separation + ((i % nodesPer) * this.separation) + offset;
+				var y = this.separation + this.separation * Math.trunc(i/nodesPer);
 				data.push(
 					{
-						id: i,
+						id: i+1,
 						name: this.participants[i].username,
-						principal: this.principal + ': ' + value,
+						principal: this.setAlias(this.principal) + ': ' + value,
 						path: this.userIcoPath,
 						color: color,
 						fixed: true, 
@@ -306,17 +434,17 @@ export default {
 		*/
 		setClassroomPerColumns(data){		
 			var nodesPer = Math.ceil(this.users/this.columns);
-			var offset = this.setOffset(nodesPer);
+			var offset = this.setOffset(this.users/nodesPer);
 			for(var i = 0; i < this.users; i++){
 				var value = this.participants[i].results[this.principal];
 				var color = this.setColor(value);			
-				var x = this.separation + this.separation * Math.trunc(i/nodesPer) * 1.2 + offset;
-				var y = this.separation + (((i)%nodesPer)*this.separation*0.75);
+				var x = this.separation + this.separation * Math.trunc(i/nodesPer) + offset;
+				var y = this.separation + ((i % nodesPer) * this.separation);
 				data.push(
 					{
-						id: i,
+						id: i+1,
 						name: this.participants[i].username,
-						principal: this.principal + ': ' + value,
+						principal: this.setAlias(this.principal) + ': ' + value,
 						path: this.userIcoPath,
 						color: color,
 						fixed: true, 
@@ -328,6 +456,31 @@ export default {
 			}
 		},
 
+		setCustomClassroom(data, index){	
+			var customConfiguration = this.allClassroomConfigurations.find(configuration => configuration.name === index);
+			var offset = this.setCustomOffset(customConfiguration.width);
+			for(var i = 0; i < this.users; i++){
+				var value = this.participants[i].results[this.principal];
+				var color = this.setColor(value);
+				var x = customConfiguration.positions[i][0] + offset;
+				var y = customConfiguration.positions[i][1] + offset;
+				data.push(
+					{
+						id: i+1,
+						name: this.participants[i].username,
+						principal: this.setAlias(this.principal) + ': ' + value,
+						path: this.userIcoPath,
+						color: color,
+						fixed: true, 
+						value: 1,
+						x: x,
+						y: y
+					}
+				);
+			}
+			//this.height = customConfiguration.height;
+		},
+
 		/*
 		@fvillarrealcespedes:
 		Sets an offset to align the nodes to nodes chart center in case that the classroom configuration selected is per rows, per columns 
@@ -337,41 +490,69 @@ export default {
 			return (this.$refs.chartdiv.clientWidth - nodesPer*this.separation)/2;
 		},
 
+		setCustomOffset(customWidth){
+			var result = 0;
+			result = this.$refs.chartdiv.clientWidth - customWidth;
+			console.log(result, 'result');
+			if(result > 0){
+				return result/2;
+			}
+			else if(result < 0){
+
+			}
+			return 0;
+		},
+
 		/*
 		@fvillarrealcespedes:
 		Sets the height for the nodes chart depending of the users quantity, the height is calcuted differently for each configuration.
 		*/
-		setHeight(index){
-			switch(index){
+		setHeight(data){
+			//switch(index){
 				/*Circular*/
+				/*
 				case 1:
+					var height = 0;
 					if(this.users <= 13){
-						this.height = 200;
+						height = 200;
 					}
 					else{
-						this.height = this.users*16;
+						height = this.users*16;
 					}
+					this.height = height;
 					break;
+				*/
 				/*Per Rows*/
-				case 2:
-					this.height = this.rows*65;
-					break;
+				//case 2:
+					var height = 0;
+					data.forEach(element => {
+						if(element.y > height){
+							height = element.y;
+						}
+					})
+					this.height = height + this.separation;
+					//break;
 				/*Per Columns*/
-				case 3:
-					this.height = Math.round(this.users*68/this.columns);	
+				/*case 3:
+					var height = 0;
+					data.forEach(element => {
+						if(element.y > height){
+							height = element.y;
+						}
+					})
+					this.height = height + this.separation;
 					break;
-			}
-		},
+			}*/
+		},		
 
 		/*
 		@fvillarrealcespedes:
 		Sets all nodes chart properties, from the height, to the nodes and the available events.
 		*/
-		setChart(data, index){
+		setChart(data){
 			/*Chart creation*/
 			this.chart = am4core.create(this.$refs.chartdiv, am4plugins_forceDirected.ForceDirectedTree);
 			/*Sets the chart container height*/
-			this.setHeight(index);
 			this.chart.svgContainer.htmlElement.style.height = this.height + "px";
 			/*Background properties*/
 			this.chart.background.fill = "#2196F3";
@@ -398,9 +579,11 @@ export default {
 			networkSeries.nodes.template.minX = 0;
 			networkSeries.nodes.template.minY = 0;			
 			/*Sets the node properties as x and y to set the position in the chart and the tooltip text to show when the node is on hover*/
+			networkSeries.nodes.template.label.dx = 20;
+			networkSeries.nodes.template.label.dy = 20;
 			networkSeries.nodes.template.propertyFields.x = "x";
 			networkSeries.nodes.template.propertyFields.y = "y";
-			networkSeries.nodes.template.tooltipText = "{name} \n {principal}";
+			networkSeries.nodes.template.tooltipText = "[bold]{name}[/] \n {principal}";
 			networkSeries.nodes.template.circle.disabled = true;
 			networkSeries.nodes.template.outerCircle.disabled = true;				
 			/*Icon
@@ -411,7 +594,7 @@ export default {
 			icon.verticalCenter = "middle";
 			icon.width = this.maxRadius;
 			icon.height = this.maxRadius;
-			icon.scale = 0.5;
+			icon.scale = 0.65;
 			/*Events: Disable native mobility
 			https://www.amcharts.com/docs/v4/chart-types/force-directed/, section: Friction and mobility*/
 			networkSeries.events.on("inited", function() {
@@ -433,7 +616,7 @@ export default {
 			/*Sets the new x and y values*/
 			networkSeries.nodes.template.events.on("dragged", function(event) {
 				event.target.dataItem.fixed = false;  
-				var id = event.target.dataItem.id;
+				var id = event.target.dataItem.id - 1;
 				this.chart.series.values[0].dataItems.values[id].dataContext.x = event.target.dataItem.node.x; 
 				this.chart.series.values[0].dataItems.values[id].dataContext.y = event.target.dataItem.node.y;
 			}, this);
@@ -458,10 +641,6 @@ export default {
 					});
 				}
 			}, this);
-			/*Sets all nodes chart participants into the right drawer*/
-			this.allParticipants = this.participants;
-			/*Sets the rightDrawerParticipantUsername to null as the chart may be reseted*/
-			this.rightDrawerParticipantUsername = null;
 		},
 
 		/*
@@ -516,6 +695,7 @@ export default {
       if (this.participants.length === 0) {
 				this.participants = [...newMetrics];
 				this.users = this.participants.length;
+				this.dispatchNotification('classroom.participantsLoaded', 'information', 5000, 'info');
       } else {
         newMetrics.map((metric, i) => {
           this.participants[i].results = Object.assign(
@@ -531,6 +711,17 @@ export default {
 			}
 		},
 
+		dispatchNotification(text, icon, timeout, color){
+			let notification = {
+				show: true,
+				icon: 'mdi-' + icon,
+				text: 'notifications.' + text,
+				timeout: timeout,
+				color: color
+			}
+			this.$store.dispatch('showNotification', notification)
+		},
+
 		/*
 		@fvillarrealcespedes:
 		Sets the new values for the nodes chart nodes. First, the principal metric value is updated, then just in case that the alert 
@@ -539,7 +730,7 @@ export default {
 		updateChart(){
 			/*Principal update*/
 			for(var i=0; i<this.users; i++){
-				this.chart.series.values[0].data[i].principal = this.principal + ': ' + this.participants[i].results[this.principal];
+				this.chart.series.values[0].data[i].principal = this.setAlias(this.principal) + ': ' + this.participants[i].results[this.principal];
 			}				
 			/*Color update*/
 			if(this.option != ""){
@@ -561,10 +752,9 @@ export default {
 		*/
 		async getInitTime(){
 			await axios
-			.get(`${process.env.VUE_APP_API_URL}/inittime`)
+			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/inittime`)
 			.then(response => {
 				this.initTime = response.data.initTime;
-				console.log(response.data.initTime)
 				this.showClock = true;
 			})
       .catch(error => {
@@ -618,30 +808,14 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Gets the custom classroom configurations availables.
-		*/
-    async getClassroomConfigurations(){
-      await axios
-      .get('http://localhost:4003/classroom-configurations')
-      .then(response => {
-				this.appendClassroomConfigurations(response.data);
-      })
-      .catch(error => {
-        console.log(error.response);
-      })
-		},
-
-		/*
-		@fvillarrealcespedes:
 		Adds the custom classroom configurations availables to the array that includes circle, per rows and per columns classroom 
 		configurations.
 		*/
-		appendClassroomConfigurations(payload){
-			for(var i=0; i<payload.length; i++){
-				if(this.classroomConfigurations.indexOf(payload[i]) != 1){
-					this.classroomConfigurations.push(payload[i]);
-				}
+		appendClassroomConfigurations(){
+			for(var i=0; i<this.classroomConfigurations.length; i++){
+				this.allClassroomConfigurations.push(this.classroomConfigurations[i]);
 			}
+			console.log(this.allClassroomConfigurations)
 		},
 
 		/*
@@ -652,8 +826,9 @@ export default {
     async endSession() {
 			(this.participants = []), this.eventSource.close();
 			await axios
-			.get(`${process.env.VUE_APP_API_URL}/endsession`)
+			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/endsession`)
 			.then(response => {
+				this.$store.dispatch('destroySettings');
 				this.$router.push('/session-stats');
 				this.tabs[0].disabled = false;
 				this.tabs[1].disabled = true;				
@@ -667,40 +842,16 @@ export default {
 
 		sleep(ms) {
 			return new Promise(resolve => setTimeout(resolve, ms));
-		}
+		},
+
+    setAlias(name){
+			console.log(name, "name")
+			var metric = this.metrics.find(metric => metric.name == name);
+      return metric.alias;
+    }		
 	},		
 
 	watch: {
-		/*
-		@fvillarrealcespedes:
-		Watches the classroom configuration property and calculates the height for the nodes chart when the selected configuration is circle.
-		*/		
-		classroomConfiguration: function(){
-			if(this.classroomConfiguration !== '' && this.users > 1 && (this.classroomConfiguration === 1 || this.classroomConfiguration === 4)){
-				this.setHeight(this.classroomConfiguration);
-			}
-		},
-
-		/*
-		@fvillarrealcespedes:
-		Watches the rows property and calculates the height for the nodes chart when the selected configuration is per rows.
-		*/		
-		rows: function(){
-			if(this.classroomConfiguration !== '' && this.users > 1 && this.rows !== ''){
-				this.setHeight(this.classroomConfiguration);
-			}
-		},
-
-		/*
-		@fvillarrealcespedes:
-		Watches the columns property and calculates the height for the nodes chart when the selected configuration is per columns.
-		*/		
-		columns: function(){
-			if(this.classroomConfiguration !== '' && this.users > 1 && this.columns !== ''){
-				this.setHeight(this.classroomConfiguration);
-			}
-		},
-
 		/*
 		@fvillarrealcespedes:
 		Watches the rightDrawerParticipantUsername property, with a for loop finds the associated node to this username. Then shows the 
@@ -720,10 +871,37 @@ export default {
 				}
 				this.rightDrawerParticipantUsername = null;
 			}
+		},
+
+		chart: function(){
+			if(!this.chart){
+				this.allParticipants = [];
+			}
+		},
+
+		classroomConfigurations: function(){
+			if(this.classroomConfigurations){
+				this.appendClassroomConfigurations();
+			}
 		}
 	}, 
 
+
+
 	computed: {
+		/*
+		@fvillarrealcespedes:
+		Condition to show the line chart, get and set methods are imported from the store.
+		*/		
+		showBarChart: {
+			get () {
+				return this.$store.getters.getShowBarChart;
+			},
+      set (payload){
+        this.$store.commit('setShowBarChart', payload);
+      }			
+		},
+
 		/*
 		@fvillarrealcespedes:
 		Condition to show the line chart, get and set methods are imported from the store.
@@ -822,8 +1000,35 @@ export default {
 			},
 			set (payload) {
 				this.$store.commit('setInitTime', payload);
+			}
+		},
+
+		metrics: {
+			get () {
+				return this.$store.getters.getMetrics;
 			},
-		}    
+			set (payload) {
+				this.$store.commit('setMetrics', payload);
+			}
+		},
+		
+    classroomConfigurations: {
+      get () {
+        return this.$store.getters.getClassroomConfigurations;
+			},			
+      set (payload) {
+        this.$store.commit('setClassroomConfigurations', payload);
+      }
+		},
+		
+		settings: {
+			get () {
+				return this.$store.getters.getSettings;
+			},
+			set (payload) {
+				this.$store.commit('setSettings', payload);
+			}
+		}		
 	}
 }
 </script>
