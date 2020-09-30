@@ -47,7 +47,7 @@
     "tableHeaders": {
       "actions": "Acciones",
       "createdBy": "Creada por",
-      "participants": "Participantes",
+      "participants": "Cantidad máxima de participantes",
       "name": "Nombre"
     },
     "updateHeader": "Actualizar configuración de aula"
@@ -57,6 +57,22 @@
     "initTime": "Hora de inicio",
     "sessionTime": "Tiempo de sesión"
   },
+	"fastSettings": {
+		"deleteSettings": "¿Está segur@ que desea eliminar estos ajustes de sesión?",
+    "header": "Ajustes de sesión",
+    "loadSettings": "¿Está segur@ que desea cargar estos ajustes de sesión?",
+		"tableHeaders": {
+			"actions": "Acciones",
+      "alert": "Alerta cuando",
+      "createdBy": "Creada por",
+      "limit": "Límite",
+			"metrics": "Métricas",
+			"name": "Nombre",
+			"options": "Opción",
+      "principal": "Principal",
+      "updateInterval": "Actualiza cada"
+    }
+  },   
   "labels": {
     "alias": "Alias",
     "dataType": "Tipo de dato",
@@ -97,8 +113,8 @@
 			"participantsLoaded": "Los participantes de NEURONE han sido cargados éxitosamente"
 		},
 		"classroomConfigurations": {
-			"createError": "Error: La nueva configuración de aula no fue creada",
-			"createSuccess": "La nueva configuración de aula fue creada éxitosamente",
+			"createError": "Error: La nueva configuración de aula no fue guardada",
+			"createSuccess": "La nueva configuración de aula fue guardada éxitosamente",
 			"deleteError": "Error: La configuración de aula no fue borrada",
 			"deleteSuccess": "La configuración de aula fue borrada éxitosamente",
 			"updateError": "Error: La configuración de aula no fue actualizada",
@@ -107,6 +123,12 @@
     "login": {
       "error": "Error: Nombre de usuario o contraseña incorrectos, por favor intente nuevamente",
       "success": "¡Bienvenid@ a NEURONE-AD!"
+    },    
+    "sessionSettings": {
+			"createError": "Error: Los nuevos ajustes de sesión no fueron guardados",
+			"createSuccess": "Los nuevos ajustes de sesión fueron guardados éxitosamente",
+			"deleteError": "Error: La configuración de aula no fue borrada",
+			"deleteSuccess": "La configuración de aula fue borrada éxitosamente"
     }
   },
   "rightDrawer": {
@@ -119,14 +141,15 @@
     "participantsDisplay": "Mostrar participantes"
   },
   "rules":{
+    "limitRule": "El valor límite debe ser mayor que cero",
     "maxLength50": "El campo puede tener como máximo 50 caracteres",
     "maxLength200": "El campo puede tener como máximo 200 caracteres",
     "minLength2": "El campo debe tener como mínimo 2 caracteres",
     "minLength5": "El campo debe tener como mínimo 5 caracteres",
     "minLength10": "El campo debe tener como mínimo 10 caracteres",
-    "numericRule": "El valor máximo debe ser mayor que cero",
     "requiredRule": "El campo es requerido",
-    "selectRule": "Debe seleccionar una opción"
+    "selectRule": "Debe seleccionar una opción",
+    "spacesRule": "El campo no puede contener solo espacios"
   },
   "sessionStats": {
     "newSession": "Configurar nueva sesión"
@@ -143,14 +166,15 @@
     "limit": "Valor límite",
     "maxHint": "Valor máximo para",
     "principal": "Métrica principal",
+    "saveSettings": "¿Guardar ajustes para futuras sesiones?",
     "undefined": "Indefinido"
   },  
   "store": {
     "tabs": {
-      "session": "Sesión",
       "classroom": "Aula",
       "classroomConfigurations": "Configuraciones de aula",
-      "metrics": "Métricas"
+      "metrics": "Métricas",
+      "session": "Sesión"      
     }
   },
   "$vuetify": {

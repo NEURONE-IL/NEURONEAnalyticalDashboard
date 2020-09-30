@@ -1,7 +1,7 @@
 <template>
   <v-container>
 		<v-row class="ms-8">
-			<v-col cols="4">
+			<v-col cols="3">
 				<v-select
 					v-model="metric"
 					:items="sortMetrics()"
@@ -11,7 +11,21 @@
 				>
 				</v-select>
 			</v-col>
-			<v-col cols="4">
+
+			<v-col cols="3">
+				<v-select
+					v-model="option"
+					:items="alertOptions"
+					label="Caso exitoso"
+					item-text="text"
+					item-value="value"
+					required
+					:rules="selectRules"									
+				>
+				</v-select>				
+			</v-col>
+
+			<v-col cols="3">
 				<v-text-field
 					v-model="limit"
 					:label="$t('settings.limit')"
@@ -21,7 +35,10 @@
 				>
 				</v-text-field>
 			</v-col>	
-			<v-col cols="4" class="text-center">
+
+
+
+			<v-col cols="3" class="text-center">
 				<v-btn
 					color="success"
 					:disabled="!metric "
@@ -68,7 +85,15 @@ export default {
 			chart: null,
 			chartData: null,
 			metric: '',
-			limit: 0
+			limit: 0,
+			option : '',
+			alertOptions: [
+				{value: 1, text: this.$t('settings.alertOptions.higher')},
+				{value: 2, text: this.$t('settings.alertOptions.lower')},
+			],
+			selectRules: [
+        v => (v && v != null) || this.$t('rules.selectRule')
+			],			
 		}
 	},
 
@@ -97,36 +122,71 @@ export default {
 			var overLimit = 0;
 			var onLimit = 0;
 			var underLimit = 0;
-			chartData.forEach(element => {
-				console.log(element[this.metric])
-				if(element[this.metric] > this.limit){
-					overLimit++;
-					console.log('over', overLimit)
-					console.log('this')
-				}
-				else if(element[this.metric] == this.limit){
-					onLimit++;
-				}
-				else{
-					underLimit++;
-				}
-			});
-			this.chartData = [
-				{
-					"category": 'Over the limit',
-					"participants": overLimit,
-					"color": '#F44336'
-				}, {
-					"category": 'On the limit',
-					"participants": onLimit,
-					"color": '#FF9800'
-				}, {
-					"category": 'Under the limit',
-					"participants": underLimit,
-					"color": '#4CAF50'
-				}
-			];
-			
+			//console.log(this.option, 'option')
+			if(this.option === 1){
+				
+				chartData.forEach(element => {
+					console.log(element[this.metric])
+					if(element[this.metric] > this.limit){
+						overLimit++;
+						console.log('over', overLimit)
+						console.log('this')
+					}
+					else if(element[this.metric] == this.limit){
+						onLimit++;
+					}
+					else{
+						underLimit++;
+					}
+					this.chartData = [
+						{
+							"category": 'Under the limit',
+							"participants": underLimit,
+							"color": '#F44336'
+						}, {
+							"category": 'On the limit',
+							"participants": onLimit,
+							"color": '#FF9800'
+						}, {
+							"category": 'Over the limit',
+							"participants": overLimit,
+							"color": '#4CAF50'
+						}
+					]				
+				})
+			}else{
+				chartData.forEach(element => {
+					console.log(element[this.metric])
+					if(element[this.metric] > this.limit){
+						overLimit++;
+						console.log('over', overLimit)
+						console.log('this')
+					}
+					else if(element[this.metric] == this.limit){
+						onLimit++;
+					}
+					else{
+						underLimit++;
+					}
+				this.chartData = [
+					{
+						"category": 'Under the limit',
+						"participants": underLimit,
+						"color": '#4CAF50'
+					},					
+					{
+						"category": 'Over the limit',
+						"participants": overLimit,
+						"color": '#F44336'
+					}, 
+					{
+						"category": 'On the limit',
+						"participants": onLimit,
+						"color": '#FF9800'
+					}
+				]
+			})
+			}
 			console.log(this.chartData, 'proce')
 			this.setChart(this.chartData);
 		},

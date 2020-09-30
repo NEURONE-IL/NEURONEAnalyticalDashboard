@@ -9,9 +9,7 @@
       <div
         class="font-weight-medium"
       >
-        <v-icon 
-          left
-        >
+        <v-icon>
           {{ snackbar.icon }}
         </v-icon> 
         {{ $t(snackbar.text) }}

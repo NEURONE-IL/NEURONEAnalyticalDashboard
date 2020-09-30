@@ -104,7 +104,6 @@ export default {
 			/*Component properties*/
 			chart: null,
 			name: '',
-			createdBy: '',
 			participants: 0,
 			positions: [],
 			saveHeight: 0,
@@ -120,8 +119,9 @@ export default {
 			/*Arrays & rules*/
 			requiredLengthRules: [
 				v => !!v || this.$t('rules.requiredRule'),
-				v => v && v.length < 51 || this.$t('rules.maxLength50'),
-				v => v && v.length > 4 || this.$t('rules.minLength5')
+				v => (v && (/\S/.test(v))) || this.$t('rules.spacesRule'),
+				v => (v && v.length < 51) || this.$t('rules.maxLength50'),
+				v => (v && v.length > 4) || this.$t('rules.minLength5')
 			],
 			requiredRules: [
         v => !!v || this.$t('rules.requiredRule')
@@ -357,9 +357,11 @@ export default {
 		*/
 		async createConfiguration(){
 			this.setClassroomProperties();
+			console.log(8978)
+			console.log(this.user, 'user')
 			console.log({
 				name: this.name,
-				createdBy: this.createdBy,
+				createdBy: this.user.username,
 				participants: this.participants,
 				positions: this.positions,
 				height: this.saveHeight,
@@ -368,7 +370,7 @@ export default {
 			await axios
 			.post(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/classroom-configuration', {
 				name: this.name,
-				createdBy: this.createdBy,
+				createdBy: this.user.username,
 				participants: this.participants,
 				positions: this.positions,
 				height: this.saveHeight,
@@ -398,6 +400,17 @@ export default {
 			}
 			console.log('notif', notification)
 			this.$store.dispatch('showNotification', notification)
+		}		
+	},
+
+	computed: {
+		user: {
+      get () {
+        return this.$store.getters.getUser;
+      },
+      set (payload) {
+        this.$store.commit('setUser', payload);
+      }
 		}		
 	}
 }

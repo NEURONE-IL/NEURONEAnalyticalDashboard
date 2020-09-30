@@ -97,7 +97,7 @@
 						</v-icon>
 					</v-btn>
 					<!-- Button to set the nodes chart, disabled if no classroom configuration is selected or the users number is zero -->
-					<v-btn
+<!--					<v-btn
 						class="mb-4 ms-4"
 						color="purple darken-2"
 						dark
@@ -107,7 +107,7 @@
 						<v-icon right>
 							mdi-chart-line
 						</v-icon>
-					</v-btn>
+					</v-btn>	-->
 					</div>
 					</v-col>
 				

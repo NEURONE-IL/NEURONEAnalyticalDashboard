@@ -437,7 +437,4 @@ export default {
 .v-application .blue.lighten-3{
   border-color: #2196F3 !important;
 }
-
-
-
 </style>

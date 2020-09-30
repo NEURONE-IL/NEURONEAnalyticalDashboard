@@ -57,6 +57,22 @@
 		"initTime": "Init time",
 		"sessionTime": "Session time"
 	},
+	"fastSettings": {
+		"deleteSettings": "Are you sure you want to delete this session settings?",
+		"header": "Session settings",
+		"loadSettings": "Are you sure you want to load this session settings?",
+		"tableHeaders": {
+			"actions": "Actions",
+			"alert": "Alert when",
+			"createdBy": "Created by",
+			"limit": "Limit",
+			"metrics": "Metrics",
+			"name": "Name",
+			"options": "Option",
+			"principal": "Principal",
+			"updateInterval": "Updates every"
+		}
+	},	
 	"labels": {
 		"alias": "Alias",
 		"dataType": "Data type",
@@ -97,8 +113,8 @@
 			"participantsLoaded": "NEURONE participants successfully loaded"
 		},
 		"classroomConfigurations": {
-			"createError": "Error: The new classroom configuration was not created",
-			"createSuccess": "The new classroom configuration was successfully created",
+			"createError": "Error: The new classroom configuration was not saved",
+			"createSuccess": "The new classroom configuration was successfully saved",
 			"deleteError": "Error: The classroom configuration was not deleted",
 			"deleteSuccess": "The classroom configuration was successfully deleted",
 			"updateError": "Error: The classroom configuration was not updated",
@@ -107,7 +123,13 @@
 		"login": {
 			"error": "Error: Wrong username or password, please try again",
 			"success": "Welcome to NEURONE-AD!"
-		}
+		},		
+    "sessionSettings": {
+			"createError": "Error: The new session settings were not saved",
+			"createSuccess": "The new session settings were successfully saved",
+			"deleteError": "Error: The session settings were not deleted",
+			"deleteSuccess": "The session settings were successfully deleted"
+    }
 	},
 	"rightDrawer": {
 		"drawerOptions": {
@@ -119,15 +141,16 @@
 		"participantsDisplay": "Show participants"
 	},
 	"rules":{
+		"limitRule": "Limit value must be greater than zero",
 		"maxLength50": "The field can have a maximum of 50 characters",
 		"maxLength200": "The field can have a maximum of 200 characters",
 		"minLength2": "The field must be at least 2 characters long",
 		"minLength5": "The field must be at least 5 characters long",
 		"minLength10": "The field must be at least 10 characters long",
-		"numericRule": "Minimum value must be greater than zero",
 		"requiredRule": "The field is required",
-		"selectRule": "You must select an option"
-	},
+		"selectRule": "You must select an option",
+		"spacesRule": "The field cannot contain just spaces"
+	},	
 	"sessionStats": {
 		"newSession": "Configure new session"
 	},
@@ -143,14 +166,15 @@
 		"limit": "Limit value",
 		"maxHint": "Maximum value for",
 		"principal": "Principal metric",
+		"saveSettings": "Save settings for future sessions?",
 		"undefined": "Undefined"
 	},	
   "store": {
     "tabs": {
-      "session": "Session",
       "classroom": "Classroom",
       "classroomConfigurations": "Classroom configurations",
-      "metrics": "Metrics"
+			"metrics": "Metrics",
+      "session": "Session"			
     }
 	},
   "$vuetify": {

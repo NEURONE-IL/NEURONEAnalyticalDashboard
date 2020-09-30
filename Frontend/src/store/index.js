@@ -11,10 +11,12 @@ export default new Vuex.Store({
     initTime: null,
     /*User*/
     user: JSON.parse(localStorage.getItem('currentUser')) || null,
-    /*Classroom Configurations*/
-    classroomConfigurations: [],    
     /*AllMetrics*/
-    metrics: [],
+    metrics: [],    
+    /*Classroom Configurations*/
+    classroomConfigurations: [],  
+    /*Session Settings*/
+    sessionSettings: [],
     /*Drawers visibility*/
     leftDrawer: null,
     rightDrawer: null,
@@ -79,13 +81,28 @@ export default new Vuex.Store({
       })
     },
 
+		/*
+		@fvillarrealcespedes:
+		Sends a request to get all session settings, then sets sessionSettings property as the response data. 
+		*/    
+    async getSessionSettings(context){
+      await axios
+      .get(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/session-settings')
+      .then(response => {
+        context.commit('setSessionSettings', response.data);
+      })
+      .catch(error => {
+        console.log(error.response);
+      })
+    },    
+
     async retrieveUser(context, credentials){
       return new Promise((resolve, reject) => {
         axios
         .post(`http://${process.env.VUE_APP_HOST}:${process.env.VUE_APP_NEURONE_AUTH_BACK}/api/credential/signin`, credentials)
         .then(response => {
           const user = response.data;
-          axios.defaults.headers.common['x-access-token'] = user.accessToken;
+//          axios.defaults.headers.common['x-access-token'] = user.accessToken;
           localStorage.setItem('currentUser', JSON.stringify(user));
           context.commit('setUser', user);
           resolve(response);
@@ -98,7 +115,7 @@ export default new Vuex.Store({
 
     refreshSession(state){
       state.user = JSON.parse(localStorage.getItem('currentUser'));
-      axios.defaults.headers.common['x-access-token'] = state.user.accessToken;
+      //axios.defaults.headers.common['x-access-token'] = state.user.accessToken;
     },
 
     showNotification(context, payload){
@@ -136,6 +153,10 @@ export default new Vuex.Store({
     setClassroomConfigurations(state, payload){
       state.classroomConfigurations = payload
     },
+
+    setSessionSettings(state, payload){
+      state.sessionSettings = payload
+    },    
 
     setLeftDrawer(state, payload){
       state.leftDrawer = payload;
@@ -214,6 +235,10 @@ export default new Vuex.Store({
     getClassroomConfigurations(state){
       return state.classroomConfigurations;
     },
+
+    getSessionSettings(state){
+      return state.sessionSettings;
+    },     
 
     getLeftDrawer(state){
       return state.leftDrawer;

@@ -76,39 +76,37 @@
 							hide-details
 						></v-text-field>
 					</v-card-title>
-					<!-- Display all custom classroom configurations -->
-					<v-data-table
-						:headers="headers"
-						:items="classroomConfigurations"
-						:search="search"
-					>
-						<template v-slot:item.action="{ item }">		
-							<!-- Button to show the selected classroom configuration in the UpdateClassroomConfiguration component -->
-							<v-btn
-								icon
-								small
-								@click="viewConfiguration(item._id)"
-							>
-								<v-icon
-									small
+						<!-- Display all custom classroom configurations -->
+						<v-data-table
+							:headers="headers"
+							:items="classroomConfigurations"
+							:search="search"
+						>
+							<template v-slot:item.action="{ item }">		
+								<!-- Button to show the selected classroom configuration in the UpdateClassroomConfiguration component -->
+								<v-btn
+									icon
+									color="blue"
+									@click="viewConfiguration(item._id)"
 								>
-									mdi-pencil
-								</v-icon> 
-							</v-btn>
-							<!-- Button to delete the selected classroom configuration after confirmation -->
-							<v-btn
-								icon
-								small
-								@click="confirmDelete() && deleteClassroomConfiguration(item._id)"
-							>
-								<v-icon
-									small
+									<v-icon>
+										mdi-pencil
+									</v-icon> 
+								</v-btn>
+								<!-- Button to delete the selected classroom configuration after confirmation -->
+								<v-btn
+									icon
+									color="red"
+									@click="confirmDelete() && deleteClassroomConfiguration(item._id)"
 								>
-									mdi-delete
-								</v-icon>
-							</v-btn>    
-						</template>   																		
-					</v-data-table>
+									<v-icon>
+										mdi-delete
+									</v-icon>
+								</v-btn>    
+							</template> 
+							
+							  																		
+						</v-data-table>
 				</v-card>
 			</v-col>
 		</v-row>
@@ -144,7 +142,7 @@ export default {
 			headers: [
 				{ text: this.$t('classroomConfigurations.tableHeaders.name'), value: 'name', align: 'start'},
 				{ text: this.$t('classroomConfigurations.tableHeaders.createdBy'), value:'createdBy' },
-				{ text: this.$t('classroomConfigurations.tableHeaders.participants'), value: 'participants' },
+				{ text: this.$t('classroomConfigurations.tableHeaders.participants'), value: 'participants', align: 'center' },
 				{ text: this.$t('classroomConfigurations.tableHeaders.actions'), value: 'action', sortable: false }
 			],
 		}

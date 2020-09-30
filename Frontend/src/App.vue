@@ -37,6 +37,7 @@ export default {
   created(){
     this.getMetrics();
     this.getClassroomConfigurations();
+    this.getSessionSettings();
     this.$store.dispatch('refreshSession');
   },
 
@@ -47,7 +48,8 @@ export default {
 		*/
     ...mapActions([
       'getMetrics',
-      'getClassroomConfigurations'
+      'getClassroomConfigurations',
+      'getSessionSettings'
     ])
   },
 

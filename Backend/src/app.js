@@ -2,9 +2,9 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors'
-import classroomConfigurationRoutes from './routes/classroomConfiguration';
-import metricRoutes from './routes/metric';
-import userRoutes from './routes/user';
+import classroomConfigurationRoutes from './routes/classroomConfiguration.routes';
+import sessionSettingsRoutes from './routes/sessionSettings.routes';
+import userRoutes from './routes/user.routes';
 import dotenv from 'dotenv';
 
 /*
@@ -32,13 +32,13 @@ var corsOptions = {
 @fvillarrealcespedes:
 Sets the app components:
 The bodyParser to receive requests in JSON format, the CORS to set the allowed origins to send requests 
-and the ClassroomConfiguration, Metric and User routes to access the CRUD operations of both models.
+and the ClassroomConfiguration, SessionSettings and User routes to access the CRUD operations of all models.
 */
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors(corsOptions));
 app.use(classroomConfigurationRoutes);
-app.use(metricRoutes);
+app.use(sessionSettingsRoutes);
 app.use(userRoutes);
 
 /*

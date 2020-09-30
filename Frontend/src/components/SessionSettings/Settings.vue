@@ -55,7 +55,7 @@
 					<v-divider></v-divider>	
 					<br>				
 					<v-row no-gutters>
-						<v-col cols="5" xs="12" class="text-center ms-12">
+						<v-col cols="5" xs="12" md="5" class="text-center ms-12">
 							<!-- Principal property selectionable field, disabled when metrics array lenght property is zero -->
 							<v-select				
 								v-model="principal"
@@ -65,14 +65,14 @@
 								required
 								item-text="alias"
 								return-object
-								:rules="selectRules"	
+								:rules="selectRules"
 							>
 							<template v-slot:item="{ item }">
 								<span> {{ item.alias }} </span>
 							</template>
 							</v-select>
 						</v-col>
-						<v-col cols="5" xs="12" class="text-center ms-12">
+						<v-col cols="5" xs="12" md="5" class="text-center ms-12">
 							<!-- Interval property selectionable field -->
 							<v-select
 								v-model="interval"
@@ -90,7 +90,7 @@
 					<v-divider></v-divider>	
 					<br>			
 					<v-row v-if="principal">
-						<v-col cols="4">
+						<v-col cols="4" xs="12">
 							<!-- MetricAlert property switchable field -->
 							<v-switch
 								v-model="metricAlert"
@@ -98,7 +98,7 @@
 							>
 							</v-switch>
 						</v-col>						
-						<v-col cols="4" v-if="metricAlert">
+						<v-col cols="4" xs="12" v-if="metricAlert">
 							<!-- Option property selectionable field, only visible when metricAlert property is true -->
 							<v-select
 								v-model="option"
@@ -111,7 +111,7 @@
 							>
 							</v-select>
 						</v-col>
-						<v-col cols="4" v-if="metricAlert">
+						<v-col cols="4" xs="12" v-if="metricAlert">
 							<!-- Limit property input field, only visible when metricAlert property is true -->
 							<v-text-field
 								v-model="limit"
@@ -122,13 +122,31 @@
 								:hint="setHint()"
 								persistent-hint
 								type="number"
-								required
-								:rules="selectRules"									
+								:rules="limitRules"									
 							>
 							</v-text-field>
 						</v-col>	
 					</v-row>					
 				</v-form>		
+				<v-row v-if="validSettings">
+					<v-col cols="4" xs="12" class="text-center">
+						<v-switch				
+							v-model="saveSettings"
+							:label="$t('settings.saveSettings')"
+						>
+						</v-switch>
+					</v-col>
+					<v-col cols="4" xs="12" class="text-center">
+						<!-- Interval property selectionable field -->
+						<v-text-field
+							v-model="settingsName"
+							v-if="saveSettings"
+							:label="$t('labels.name')"
+							:rules="requiredRules"
+						>
+						</v-text-field>
+					</v-col>					
+				</v-row>				
 				<br>
 				<v-divider v-if="principal"></v-divider>	
 				<br>	
@@ -137,8 +155,8 @@
 				<v-btn
 					class="mt-4 mb-4"
 					color="success"
-					:disabled="!validSettings || selectedMetrics.length === 0"
-					@click="sendSettings()"
+					:disabled="!validSettings || selectedMetrics.length === 0 || (saveSettings && !validSettingsName())"
+					@click="processSettings()"
 				>
 					{{ $t('buttons.accept') }}	
 					<v-icon right>
@@ -156,7 +174,7 @@
 Component imports.
 */
 import axios from 'axios';
-import { mapMutations, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import { stringify } from '@amcharts/amcharts4/.internal/core/utils/Utils';
 
 export default {
@@ -171,7 +189,9 @@ export default {
 			option: '',
 			principal: '',
 			selectedMetrics: [],
+			saveSettings: false,
 			validSettings: true,
+			settingsName: '',
 			/*Arrays & Rules*/
 			timeOptions: [
 				{value: 10, text: '10 s'},
@@ -184,11 +204,15 @@ export default {
 				{value: '2', text: this.$t('settings.alertOptions.lower')},
 			],
 			requiredRules: [
-        v => !!v || this.$t('rules.requiredRule')
+        v => !!v || this.$t('rules.requiredRule'),
+				v => (v && (/\S/.test(v))) || this.$t('rules.spacesRule')
 			],
 			selectRules: [
-        v => v && v != null || this.$t('rules.selectRule')
-			]						
+        v => (v && v != null) || this.$t('rules.selectRule')
+			],
+			limitRules: [
+				v => (!!v && v > 0) || this.$t('rules.limitRule')
+			]
 		}
 	},
 
@@ -197,6 +221,9 @@ export default {
 	},
 
 	methods: {
+		...mapActions([
+			'getSessionSettings'
+		]),
 
 		setSimpleLocale(){
 			var locale;
@@ -205,12 +232,98 @@ export default {
 			return locale;
 		},
 
+		dispatchNotification(text, icon, timeout, color){
+			let notification = {
+				show: true,
+				icon: 'mdi-' + icon,
+				text: 'notifications.' + text,
+				timeout: timeout,
+				color: color
+			}
+			this.$store.dispatch('showNotification', notification)
+		},		
+
 		setHint(){
 			if(this.principal.max){
 				return this.$t('settings.maxHint') + ' ' + this.principal.alias + ': ' + this.principal.max;
 			}else{
 				return this.$t('settings.maxHint') + ' ' + this.principal.alias + ': ' + this.$t('settings.undefined');
 			}
+		},
+
+		validSettingsName(){
+			if(!(/\S/.test(this.settingsName)) || this.settingsName.length < 5){
+				return false;
+			}
+			return true;
+		},
+		
+
+		async processSettings(){
+			if(this.saveSettings){
+				let backendMetrics = [];
+				this.sortMetrics(this.selectedMetrics).forEach(element => {
+					backendMetrics.push(element.name)
+				})
+				let interval = this.interval * 1000;
+				let limit = this.limit;
+				let metrics = backendMetrics;
+				let option = this.option;
+				let principal = this.principal.name;
+				let name = this.settingsName;
+				let settings = {
+					interval,
+					limit,
+					metrics,
+					option,
+					principal, 
+					name
+				};
+				await axios
+				.post(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}/session-settings`, settings)
+				.then(response => {
+					this.dispatchNotification('sessionSettings.createSuccess', 'check-circle', 5000, 'success');
+					this.getSessionSettings();
+					this.goSettings(settings);
+				})
+				.catch(error => {
+					this.dispatchNotification('sessionSettings.createError', 'check-circle', 5000, 'error');
+					console.log(error.response);
+				})
+			}else{
+				this.sendSettings();
+			}
+		},
+
+		async goSettings(settings){
+			console.log(settings, 'go')
+			let interval = settings.interval;
+			let limit = settings.limit;
+			let metrics = settings.metrics;
+			let option = settings.option;
+			let principal = settings.principal;
+			let newSettings = {
+				interval,
+				limit,
+				metrics,
+				option,
+				principal, 
+			};			
+			await axios
+			.post(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/configure`, newSettings)
+			.then(response => {
+				this.settings = {
+					limit: limit,
+					metrics: response.data.metrics,
+					option: option,
+					principal: principal,
+				}
+				localStorage.setItem('settings', JSON.stringify(newSettings));
+				this.$router.push('/classroom');
+			})
+			.catch(error => {
+				console.log(error.response);
+			})
 		},
 
 		/*
@@ -224,6 +337,7 @@ export default {
 			this.sortMetrics(this.selectedMetrics).forEach(element => {
 				backendMetrics.push(element.name)
 			})
+			console.log(backendMetrics)
 			let interval = this.interval * 1000;
 			let limit = this.limit;
 			let metrics = backendMetrics;
