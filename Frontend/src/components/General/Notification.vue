@@ -9,7 +9,7 @@
       <div
         class="font-weight-medium"
       >
-        <v-icon>
+        <v-icon left>
           {{ snackbar.icon }}
         </v-icon> 
         {{ $t(snackbar.text) }}
@@ -22,7 +22,7 @@
           v-bind="attrs"
           @click="snackbar.show = false"
         >
-          <v-icon right>
+          <v-icon>
             mdi-close
           </v-icon>
         </v-btn>

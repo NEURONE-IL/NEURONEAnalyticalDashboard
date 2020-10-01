@@ -44,9 +44,19 @@ app.use(userRoutes);
 /*
 @fvillarrealcespedes:
 Defines the DB properties:
-User, password, host, port and name, all of them imported from the .env file.
+User, password, host, port and name, all of them imported from the .env file. 
+The name property may vary depending on NODE_ENV variable.
 */
-mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`, { 
+let dbName = process.env.DB_NAME;
+if(process.env.NODE_ENV === 'test'){
+  dbName = process.env.DB_TEST_NAME;
+}
+
+/*
+@fvillarrealcespedes:
+DB connection.
+*/
+mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.HOST}:${process.env.DB_PORT}/${dbName}`, { 
   useNewUrlParser: true, 
   useUnifiedTopology: true, 
   useFindAndModify: false 
@@ -54,9 +64,11 @@ mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${
   .then(() => {
     /*
     @fvillarrealcespedes:
-    Message to verify the DB has started.
-    */    
-    console.log('DB Started');
+    Message to verify the DB has started, not showed on test environment.
+    */
+    if(process.env.NODE_ENV !== 'test'){
+      console.log('DB connected');
+    }
   })
   .catch(err => {
     process.exit(1);
@@ -65,8 +77,16 @@ mongoose.set('debug', false);
 
 /*
 @fvillarrealcespedes:
-Message to verify the app is running and the listening port.
+Message to verify the app is running and the listening port, not showed on test environment..
 */
 app.listen(port, () => {
-  console.log(`Server on port ${port}`);
-})
+  if(process.env.NODE_ENV !== 'test'){
+    console.log(`Server on port ${port}`);
+  }  
+});
+
+/*
+@fvillarrealcespedes:
+Exports the app, this way can be imported for test purposes.
+*/
+export default app;

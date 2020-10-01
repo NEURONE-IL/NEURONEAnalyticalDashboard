@@ -7,12 +7,13 @@ const Schema = mongoose.Schema;
 ClassroomConfiguration model definition.
 */
 const ClassroomConfiguration = new Schema({
-	name: String,
-	createdBy: String,
-	participants: Number,
-	positions: [[Number, Number]],
-	height: Number,
-	width: Number
+	name: { type: String, required: true },
+	createdBy: { type: String, required: true },
+	lastEditedBy: { type: String },
+	participants: { type: Number, required: true },
+	positions: { type: [[Number, Number]], required: true },
+	height: { type: Number, required: true },
+	width: { type: Number, required: true }
 });
 
 /*

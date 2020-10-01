@@ -7,12 +7,12 @@ const Schema = mongoose.Schema;
 SessionSettings model definition.
 */
 const SessionSettings = new Schema({
-	name: String,
-	metrics: [String],
-    principal: String,
-    interval: Number,
-    option: String,
-    limit: Number
+	name: { type: String, required: true },
+	metrics: { type: [String], required: true },
+    principal: { type: String, required: true },
+    interval: { type: Number, required: true },
+    option: { type: String, required: true },
+    limit: { type: Number, required: true }
 });
 
 /*
