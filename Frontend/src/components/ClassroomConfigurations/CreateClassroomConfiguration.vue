@@ -328,25 +328,39 @@ export default {
 				);
 			}	
 			/*Sets saveHeight*/
-			var height = 0;
+/*			var maxHeight = 0;
 			this.positions.forEach(element => {
-				if(element[1] > height){
-					height = element[1];
+				if(element[1] > maxHeight){
+					maxHeight = element[1];
 				}
 			})
-			if(height < 150){
+			var minHeight = this.$refs.chartdiv.clientHeight;
+			this.positions.forEach(element => {
+				if(element[1] < minHeight){
+					minHeight = element[1];
+				}
+			})			
+			this.saveHeight = maxHeight - minHeight;
+			if(this.saveHeight < 150){
 				this.saveHeight = 200;
 			}else{
-				this.saveHeight = height + this.separation;			
-			}			
+				this.saveHeight = this.saveHeight + this.separation*2;			
+			}			*/
+			this.saveHeight = this.$refs.chartdiv.clientHeight;
 			/*Sets saveWidth*/
-			var width = 0;
+			var maxWidth = 0;
 			this.positions.forEach(element => {
-				if(element[0] > width){
-					width = element[0];
+				if(element[0] > maxWidth){
+					maxWidth = element[0];
 				}
 			})
-			this.saveWidth = width + this.separation;
+			var minWidth = this.$refs.chartdiv.clientWidth;
+			this.positions.forEach(element => {
+				if(element[0] < minWidth){
+					minWidth = element[0];
+				}
+			})			
+			this.saveWidth = maxWidth - minWidth;
 		},
 
 		/*

@@ -63,7 +63,12 @@
       >
         <!-- Sets an icon and the username for each nodes chart selected participant --> 
         <template v-slot:activator>
-          <v-icon left>mdi-account-circle</v-icon>
+          <v-icon 
+						:color="setColor(participant.results[principal]) + ' lighten-1'"
+						left
+					>
+						mdi-checkbox-blank-circle
+					</v-icon>
           <v-list-item-title v-text="participant.username"></v-list-item-title>
         </template>
         <!-- Sets the card color to match the participant's node color from the nodes chart --> 
@@ -100,6 +105,12 @@
 </template>
 
 <script>
+/*
+@fvillarrealcespedes:
+Component imports.
+*/
+import axios from 'axios';
+
 export default {
 	name: 'RightDrawer',
 
@@ -191,11 +202,33 @@ export default {
 		@fvillarrealcespedes:
     Sets the lineChartUsername and lineChartSelectedMetric properties, then sets true the condition to show the line chart.
 		*/      
-    setLineChart(username, selectedMetric){
-      this.lineChartUsername = username;
-      this.lineChartSelectedMetric = selectedMetric;
-      this.showLineChart = true;
+    async setLineChart(username, selectedMetric){
+      console.log('in')
+			await axios
+			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/initstage/${username}`)
+			.then(response => {
+        let initTime = response.data.inittime;
+				if(initTime === 0){
+					this.dispatchNotification('lineChart.alert', 'alert', 5000, 'yellow darken-3');
+					return;
+				}
+        this.showLineChart = true;
+			})
+      .catch(error => {
+        console.log(error.response);
+      });
     },
+
+		dispatchNotification(text, icon, timeout, color){
+			let notification = {
+				show: true,
+				icon: 'mdi-' + icon,
+				text: 'notifications.' + text,
+				timeout: timeout,
+				color: color
+			}
+			this.$store.dispatch('showNotification', notification)
+		},
 
 		/*
 		@fvillarrealcespedes:

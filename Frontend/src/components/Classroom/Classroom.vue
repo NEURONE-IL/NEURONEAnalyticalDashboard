@@ -97,7 +97,7 @@
 						</v-icon>
 					</v-btn>
 					<!-- Button to set the nodes chart, disabled if no classroom configuration is selected or the users number is zero -->
-<!--					<v-btn
+					<v-btn
 						class="mb-4 ms-4"
 						color="purple darken-2"
 						dark
@@ -107,7 +107,7 @@
 						<v-icon right>
 							mdi-chart-line
 						</v-icon>
-					</v-btn>	-->
+					</v-btn>	
 					</div>
 					</v-col>
 				
@@ -129,8 +129,8 @@
 				<div 
 					v-else
 				>
-  				<p class="text-center">
-						Cargando participantes, por favor espere...
+  				<p class="text-center mt-12">
+						{{ $t('classroom.loading') }}
 					</p>
 					<v-progress-linear 
 						indeterminate
@@ -138,6 +138,30 @@
 					>
 					</v-progress-linear>			
 				</div>
+
+				<div class="mt-4 mb-4" v-if="users != 0">
+					<v-card>
+						<v-row class="text-center">
+							<v-col cols="4">
+								<!-- Session init time -->
+								<span>
+									{{ $t('classroom.participants') }}: {{this.users}}
+								</span>
+							</v-col>
+							<v-col cols="4">
+								<span>
+									{{ $t('classroom.principal') }}: {{this.setAlias(this.principal)}}
+								</span>
+							</v-col>
+							<v-col cols="4">
+								<span>
+									{{ $t('classroom.limit') }}: {{this.settings.limit}}
+								</span>
+							</v-col>				
+						</v-row>
+					</v-card>					
+				</div>
+
 				<div class="classroom" ref="chartdiv"></div>
 				<!-- Line chart dialog -->
 				<v-dialog
@@ -274,6 +298,9 @@ export default {
 		this.principal = this.settings.principal;
 		this.limit = this.settings.limit;
 		this.option = this.settings.option;
+
+console.log(this.settings, 'now');
+
 		this.eventSource = new EventSource(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/init`);
 		this.waitInitTime();
 		this.sessionMetrics.map(metric => {
@@ -335,18 +362,19 @@ export default {
 			switch(index){
 				case 1:
 					this.setCircleClassroom(data);
+					this.setHeight(data);
 					break;
 				case 2:
 					this.setClassroomPerRows(data);
+					this.setHeight(data);
 					break;
 				case 3:
 					this.setClassroomPerColumns(data);
-					
+					this.setHeight(data);
 					break;
 				default:
 					this.setCustomClassroom(data, index);
 			}
-			this.setHeight(data);
 			this.disposeChart();
 			this.setChart(data);
 			/*Bug fixer to display the circle configuration classroom, chart needs to be recreated once*/
@@ -404,12 +432,12 @@ export default {
 		*/
 		setClassroomPerRows(data){
 			var nodesPer = Math.ceil(this.users/this.rows);
-			var offset = this.setOffset(nodesPer);
+			var offset = this.setOffset(nodesPer) + this.separation/2;
 			for(var i = 0; i < this.users; i++){
 				var value = this.participants[i].results[this.principal];
-				var color = this.setColor(value);					
-				var x = this.separation + ((i % nodesPer) * this.separation) + offset;
-				var y = this.separation + this.separation * Math.trunc(i/nodesPer);
+				var color = this.setColor(value);		
+				var x = this.separation * (i % nodesPer) + offset;
+				var y = this.separation/2 + this.separation * Math.trunc(i/nodesPer);
 				data.push(
 					{
 						id: i+1,
@@ -434,12 +462,12 @@ export default {
 		*/
 		setClassroomPerColumns(data){		
 			var nodesPer = Math.ceil(this.users/this.columns);
-			var offset = this.setOffset(this.users/nodesPer);
+			var offset = this.setOffset(this.users/nodesPer) + this.separation/2;
 			for(var i = 0; i < this.users; i++){
 				var value = this.participants[i].results[this.principal];
 				var color = this.setColor(value);			
-				var x = this.separation + this.separation * Math.trunc(i/nodesPer) + offset;
-				var y = this.separation + ((i % nodesPer) * this.separation);
+				var x = this.separation * Math.trunc(i/nodesPer) + offset;
+				var y = this.separation/2 + this.separation * (i % nodesPer);
 				data.push(
 					{
 						id: i+1,
@@ -462,8 +490,8 @@ export default {
 			for(var i = 0; i < this.users; i++){
 				var value = this.participants[i].results[this.principal];
 				var color = this.setColor(value);
-				var x = customConfiguration.positions[i][0] + offset;
-				var y = customConfiguration.positions[i][1] + offset;
+				var x = customConfiguration.positions[i][0];
+				var y = customConfiguration.positions[i][1];
 				data.push(
 					{
 						id: i+1,
@@ -478,7 +506,7 @@ export default {
 					}
 				);
 			}
-			//this.height = customConfiguration.height;
+			this.setHeight(data);
 		},
 
 		/*
@@ -491,18 +519,38 @@ export default {
 		},
 
 		setCustomOffset(customWidth){
-			var result = 0;
-			result = this.$refs.chartdiv.clientWidth - customWidth;
-			console.log(result, 'result');
+			return (this.$refs.chartdiv.clientWidth - customWidth)/2;
+/*			console.log(result/2, 'result');
 			if(result > 0){
 				return result/2;
 			}
 			else if(result < 0){
 
 			}
-			return 0;
+			return 0;*/
 		},
 
+
+		setCustomHeight(data, savedHeight){
+			var maxHeight = 0;
+			data.forEach(element => {
+				if(element[1] > maxHeight){
+					maxHeight = element[1];
+				}
+			})
+			var minHeight = savedHeight;
+			data.forEach(element => {
+				if(element[1] < minHeight){
+					minHeight = element[1];
+				}
+			})			
+			this.height = maxHeight - minHeight;
+			if(this.height < 150){
+				this.height = 200;
+			}else{
+				this.height = this.height + this.separation*2;			
+			}			
+		},
 		/*
 		@fvillarrealcespedes:
 		Sets the height for the nodes chart depending of the users quantity, the height is calcuted differently for each configuration.
@@ -641,6 +689,11 @@ export default {
 					});
 				}
 			}, this);
+
+			let title = this.chart.titles.create();
+			title.text = this.$t('charts.nodes.title');
+			title.fontWeight = "bold";
+			title.fontSize = 25;	
 		},
 
 		/*
@@ -676,7 +729,7 @@ export default {
 		*/
 		setValueOptions(){
 			var values = []
-			for(var i=2; i<=this.setMaxValue(); i++){
+			for(var i=1; i<=this.setMaxValue(); i++){
 				var value = Math.ceil(this.users/i);
 				if(values.indexOf(value) === -1 && value <= 10){
 					values.push(value);
@@ -828,7 +881,7 @@ export default {
 			await axios
 			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/endsession`)
 			.then(response => {
-				this.$store.dispatch('destroySettings');
+				this.$store.commit('destroySettings');
 				this.$router.push('/session-stats');
 				this.tabs[0].disabled = false;
 				this.tabs[1].disabled = true;				

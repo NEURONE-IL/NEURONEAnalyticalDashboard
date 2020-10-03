@@ -18,13 +18,19 @@
     "saveChanges": "Guardar cambios"
   },
 	"charts":{
+    "bars":{
+			"onLimit": "En el límite",
+			"overLimit": "Sobre el límite", 
+      "title": "Estudiantes según categoría de desempeño en la métrica: ",
+      "underLimit": "Bajo el límite"
+    },
 		"line":{
 			"timeLabel": "Tiempo (s)",
 			"title": "Desempeño de: ",
 			"titleConnector": " en "
 		}	,		
 		"nodes":{
-			"title": "Sala de clases"
+			"title": "Aula"
 		}
 	},  
   "classroom": {
@@ -36,10 +42,17 @@
     "colsQuantity": "Cantidad de columnas",    
     "endSession": "Finalizar sesión",
     "header": "Observatorio de participantes",
+    "interval": "Intervalo de actualización",
+    "limit": "Valor límite",
+    "loading": "Cargando participantes, por favor espere...",
+    "participants": "Participantes en sesión",
+		"principal":"Métrica principal",
     "rowsQuantity": "Cantidad de filas",
+    "seconds": "segundos",
     "visualization": "Seleccionar visualización de aula"
   },
   "classroomConfigurations": {
+		"alert": "En la vista principal solo se mostrarán las configuraciones de aula donde la cantidad de participantes sea menor o igual a la de participantes en la sesión",
     "createHeader": "Nueva configuración de aula",
     "createConfiguration": "Crear nueva configuración",
     "deleteConfiguration": "¿Está segur@ que desea eliminar esta configuración de aula?",
@@ -47,6 +60,7 @@
     "tableHeaders": {
       "actions": "Acciones",
       "createdBy": "Creada por",
+      "lastEditedBy": "Última edición por",
       "participants": "Cantidad máxima de participantes",
       "name": "Nombre"
     },
@@ -71,7 +85,8 @@
 			"options": "Opción",
       "principal": "Principal",
       "updateInterval": "Actualiza cada"
-    }
+    },
+		"tableTitle": "Ajustes de sesión guardados"	    
   },   
   "labels": {
     "alias": "Alias",
@@ -90,9 +105,6 @@
     "metrics": "Métricas",
     "session": "Sesión"
   },
-  "lineChart": {
-
-  }, 
   "login": {
     "header": "Inicio de sesión"
   },
@@ -120,6 +132,15 @@
 			"updateError": "Error: La configuración de aula no fue actualizada",
 			"updateSuccess": "La configuración de aula fue actualizada éxitosamente"
     },
+    "fastSettings": {
+			"createError": "Error: Los nuevos ajustes de sesión no fueron guardados",
+			"createSuccess": "Los nuevos ajustes de sesión fueron guardados éxitosamente",
+			"deleteError": "Error: Los ajustes de sesión no fueron borrados",
+			"deleteSuccess": "Los ajustes de sesión fueron borrados éxitosamente"
+    },
+    "lineChart": {
+      "alert": "El participante aún no ha entrado al motor de búsqueda de NEURONE, el gráfico no puede ser generado"
+    },    
     "login": {
       "error": "Error: Nombre de usuario o contraseña incorrectos, por favor intente nuevamente",
       "success": "¡Bienvenid@ a NEURONE-AD!"
@@ -131,6 +152,11 @@
 			"deleteSuccess": "La configuración de aula fue borrada éxitosamente"
     }
   },
+	"performance": {
+		"limit": "Límite",
+		"metric": "Métrica",
+		"successful": "Caso exitoso"
+	},   
   "rightDrawer": {
     "drawerOptions": {
       "all": "Todos",
@@ -166,7 +192,12 @@
     "limit": "Valor límite",
     "maxHint": "Valor máximo para",
     "principal": "Métrica principal",
-    "saveSettings": "¿Guardar ajustes para futuras sesiones?",
+		"saveSettings": "¿Guardar ajustes para futuras sesiones?",
+		"seconds": "segundos",
+		"tabs": {
+			"new": "Nuevos ajustes",
+			"saved": "Ajustes guardados"
+		},		
     "undefined": "Indefinido"
   },  
   "store": {

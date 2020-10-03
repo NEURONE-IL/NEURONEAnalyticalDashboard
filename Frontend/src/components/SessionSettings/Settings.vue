@@ -2,10 +2,6 @@
 	<v-container>
     <v-row no-gutters>
       <v-col cols="12" class="text-center">
-				<h2> {{ $t('settings.header') }} </h2>
-				<br>
-				<v-divider></v-divider>	
-				<br>	
 				<!-- SessionSettings form -->
 				<v-form
 					ref="settingsForm"
@@ -194,10 +190,10 @@ export default {
 			settingsName: '',
 			/*Arrays & Rules*/
 			timeOptions: [
-				{value: 10, text: '10 s'},
-				{value: 20, text: '20 s'},
-				{value: 30, text: '30 s'},
-				{value: 60, text: '60 s'}
+				{value: 10, text: '10 ' + this.$t('settings.seconds')},
+				{value: 20, text: '20 ' + this.$t('settings.seconds')},
+				{value: 30, text: '30 ' + this.$t('settings.seconds')},
+				{value: 60, text: '60 ' + this.$t('settings.seconds')}
 			],
 			alertOptions: [
 				{value: '1', text: this.$t('settings.alertOptions.higher')},

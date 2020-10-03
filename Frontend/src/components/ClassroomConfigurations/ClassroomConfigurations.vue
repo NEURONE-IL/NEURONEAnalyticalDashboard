@@ -75,7 +75,7 @@
 							single-line
 							hide-details
 						></v-text-field>
-					</v-card-title>
+					</v-card-title>					
 						<!-- Display all custom classroom configurations -->
 						<v-data-table
 							:headers="headers"
@@ -103,11 +103,16 @@
 										mdi-delete
 									</v-icon>
 								</v-btn>    
-							</template> 
-							
-							  																		
-						</v-data-table>
+							</template> 							  																		
+						</v-data-table>					
 				</v-card>
+				<v-alert
+					type="info"
+					dense
+					class="mt-4"
+				>
+					{{ $t('classroomConfigurations.alert') }}
+				</v-alert>					
 			</v-col>
 		</v-row>
 	</v-container>
@@ -142,6 +147,7 @@ export default {
 			headers: [
 				{ text: this.$t('classroomConfigurations.tableHeaders.name'), value: 'name', align: 'start'},
 				{ text: this.$t('classroomConfigurations.tableHeaders.createdBy'), value:'createdBy' },
+				{ text: this.$t('classroomConfigurations.tableHeaders.lastEditedBy'), value:'lastEditedBy' },
 				{ text: this.$t('classroomConfigurations.tableHeaders.participants'), value: 'participants', align: 'center' },
 				{ text: this.$t('classroomConfigurations.tableHeaders.actions'), value: 'action', sortable: false }
 			],

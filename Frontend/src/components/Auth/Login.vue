@@ -91,13 +91,6 @@ export default {
 			.then(response => {
 				this.$router.push('/');
 			})
-			.finally(response => {
-				if(response.data.user.accessToken != null){
-					this.dispatchNotification('login.success', 'check-circle', 5000, 'success')
-				}else{
-					this.dispatchNotification('login.error', 'close-circle', 5000, 'error')
-				}
-			})
 		},
 
 		/*

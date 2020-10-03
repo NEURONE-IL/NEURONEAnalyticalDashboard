@@ -1,7 +1,7 @@
 {
   "locale": {
     "language": "English"
-  },
+	},
 	"buttons": {
 		"accept": "Accept",
 		"charts": {
@@ -18,6 +18,12 @@
 		"saveChanges": "Save changes"
 	},
 	"charts":{
+		"bars": {
+			"onLimit": "On the limit",
+			"overLimit": "Over the limit",
+			"title": "Students according to performance category in the metric: ",
+			"underLimit": "Under the limit"
+		},
 		"line":{
 			"timeLabel": "Time (s)",
 			"title": "Performance of: ",
@@ -36,10 +42,17 @@
 		"colsQuantity": "Columns quantity",		
 		"endSession": "End session",
 		"header": "Participants observatory",
-		"rowsQuantity": "Rows quantity",		
+		"interval":"Update interval",
+		"limit": "Limit value",
+		"loading": "Loading participants, please wait...",
+		"participants": "Session participants",
+		"principal":"Principal metric",
+		"rowsQuantity": "Rows quantity",	
+		"seconds": "seconds",	
 		"visualization": "Select classroom visualization"
 	},
 	"classroomConfigurations": {
+		"alert": "In the main view only the classroom configurations where the number of participants is less than or equal to the number of participants in the session will be shown",
 		"createHeader": "New classroom configuration",
 		"createConfiguration": "Create new configuration",
 		"deleteConfiguration": "Are you sure you want to delete this classroom configuration?",
@@ -47,6 +60,7 @@
 		"tableHeaders": {
 			"actions": "Actions",
 			"createdBy": "Created by",
+			"lastEditedBy": "Last edited by",
 			"participants": "Participants",
 			"name": "Name"
 		},
@@ -71,14 +85,15 @@
 			"options": "Option",
 			"principal": "Principal",
 			"updateInterval": "Updates every"
-		}
+		},
+		"tableTitle": "Saved session settings"	
 	},	
 	"labels": {
 		"alias": "Alias",
 		"dataType": "Data type",
 		"description": "Description",
 		"interval": "Interval",
-		"max": "Maximum value",
+		"max": "Maximum value",		
 		"name": "Name",
 		"tableSearch": "Search",
 		"usersQuantity": "Users quantity"
@@ -89,9 +104,6 @@
 		"configuration": "Configuration",
 		"metrics": "Metrics",
 		"session": "Session"
-	},
-	"lineChart": {
-
 	},
   "login": {
     "header": "Login"
@@ -120,6 +132,15 @@
 			"updateError": "Error: The classroom configuration was not updated",
 			"updateSuccess": "The classroom configuration was successfully updated"
 		},
+    "fastSettings": {
+			"createError": "Error: The new session settings were not saved",
+			"createSuccess": "The new session setting were sucessfully saved",
+			"deleteError": "Error: The session settings were not deleted",
+			"deleteSuccess": "THe session settings were successfully saved"
+    },		
+		"lineChart": {
+			"alert": "The participant has not yet entered the NEURONE search engine, the graphic cannot be generated"
+		},
 		"login": {
 			"error": "Error: Wrong username or password, please try again",
 			"success": "Welcome to NEURONE-AD!"
@@ -131,6 +152,11 @@
 			"deleteSuccess": "The session settings were successfully deleted"
     }
 	},
+	"performance": {
+		"limit": "Limit",
+		"metric": "Metric",
+		"successful": "Successful case"
+	},	
 	"rightDrawer": {
 		"drawerOptions": {
 			"all": "All",
@@ -167,6 +193,11 @@
 		"maxHint": "Maximum value for",
 		"principal": "Principal metric",
 		"saveSettings": "Save settings for future sessions?",
+		"seconds": "seconds",
+		"tabs": {
+			"new": "New settings",
+			"saved": "Saved settings"
+		},
 		"undefined": "Undefined"
 	},	
   "store": {

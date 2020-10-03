@@ -309,7 +309,7 @@ export default {
       await axios
       .get(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/classroom-configuration/' + payload)
       .then(response => {
-				this.classroomConfiguration = response.data;
+				this.classroomConfiguration = response.data.classroomConfiguration;
       })
       .catch(error => {
         console.log(error.response);
@@ -342,6 +342,7 @@ export default {
 			.put(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/classroom-configuration/' + payload, {
 				name: this.classroomConfiguration.name,
 				createdBy: this.classroomConfiguration.createdBy,
+				lastEditedBy: this.user.username,
 				participants: this.classroomConfiguration.participants,
 				positions: this.classroomConfiguration.positions,
 				height: height,
@@ -381,7 +382,15 @@ export default {
       get () {
         return this.$store.getters.getClassroomConfigurationId;
 			}
-		},	
+		},
+		user: {
+      get () {
+        return this.$store.getters.getUser;
+      },
+      set (payload) {
+        this.$store.commit('setUser', payload);
+      }
+		}		
 	},
 
 	watch: {

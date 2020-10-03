@@ -7,7 +7,7 @@
 					:items="sortMetrics()"
 					item-text="alias"
 					item-value="name"
-					label="Métrica"					
+					:label="$t('performance.metric')"				
 				>
 				</v-select>
 			</v-col>
@@ -16,7 +16,7 @@
 				<v-select
 					v-model="option"
 					:items="alertOptions"
-					label="Caso exitoso"
+					:label="$t('performance.successful')"
 					item-text="text"
 					item-value="value"
 					required
@@ -28,7 +28,7 @@
 			<v-col cols="3">
 				<v-text-field
 					v-model="limit"
-					:label="$t('settings.limit')"
+					:label="$t('performance.limit')"
 					min="0"								
 					type="number"
 					step="0.01"
@@ -44,7 +44,7 @@
 					:disabled="!metric "
 					@click="getData()"
 				>
-					Generar gráfico
+					{{ $t('buttons.charts.generate') }}
 					<v-icon right>
 						mdi-check
 					</v-icon>
@@ -85,6 +85,7 @@ export default {
 			chart: null,
 			chartData: null,
 			metric: '',
+			metricAlias: '',
 			limit: 0,
 			option : '',
 			alertOptions: [
@@ -106,6 +107,7 @@ export default {
 
 		async getData(){
 			console.log('ininin')
+			console.log(this.metric, 'here')
 			await axios
 			.get(`${process.env.VUE_APP_NEURONE_AM_CONNECTOR_API_URL}/${this.metric}`)
 			.then(response => {
@@ -122,6 +124,7 @@ export default {
 			var overLimit = 0;
 			var onLimit = 0;
 			var underLimit = 0;
+
 			//console.log(this.option, 'option')
 			if(this.option === 1){
 				
@@ -140,15 +143,15 @@ export default {
 					}
 					this.chartData = [
 						{
-							"category": 'Under the limit',
+							"category": this.$t('charts.bars.underLimit'),
 							"participants": underLimit,
 							"color": '#F44336'
 						}, {
-							"category": 'On the limit',
+							"category": this.$t('charts.bars.onLimit'),
 							"participants": onLimit,
 							"color": '#FF9800'
 						}, {
-							"category": 'Over the limit',
+							"category": this.$t('charts.bars.overLimit'),
 							"participants": overLimit,
 							"color": '#4CAF50'
 						}
@@ -170,17 +173,17 @@ export default {
 					}
 				this.chartData = [
 					{
-						"category": 'Under the limit',
+						"category": this.$t('charts.bars.underLimit'),
 						"participants": underLimit,
 						"color": '#4CAF50'
 					},					
 					{
-						"category": 'Over the limit',
+						"category": this.$t('charts.bars.overLimit'),
 						"participants": overLimit,
 						"color": '#F44336'
 					}, 
 					{
-						"category": 'On the limit',
+						"category": this.$t('charts.bars.onLimit'),
 						"participants": onLimit,
 						"color": '#FF9800'
 					}
@@ -214,6 +217,7 @@ export default {
 				return dy;
 			});
 
+
 			*/
 
 			var valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
@@ -225,7 +229,7 @@ export default {
 			series.name = "Performance";
 			series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
 			series.columns.template.fillOpacity = .8;
-series.columns.template.width = am4core.percent(50);
+			series.columns.template.width = am4core.percent(50);
 
 
 			categoryAxis.title.text = "Desempeño respecto al límite";
@@ -236,17 +240,18 @@ series.columns.template.width = am4core.percent(50);
 
 			valueAxis.min = 0;
 
-series.columns.template.adapter.add("fill", function(fill, target) {
-  return am4core.color(target.dataItem.dataContext.color);
-});
+			series.columns.template.adapter.add("fill", function(fill, target) {
+				return am4core.color(target.dataItem.dataContext.color);
+			});
 
-series.columns.template.adapter.add("stroke", function(stroke, target) {
-	return am4core.color(target.dataItem.dataContext.color);
-});
+			series.columns.template.adapter.add("stroke", function(stroke, target) {
+				return am4core.color(target.dataItem.dataContext.color);
+			});
 
+			this.chart.exporting.menu = new am4core.ExportMenu();
 
 			let title = this.chart.titles.create();
-			title.text = "Estudiantes según categoría de desempeño";
+			title.text = this.$t('charts.bars.title') + this.metricAlias;
 			title.fontSize = 25;
 			title.marginBottom = 30;
 
@@ -266,12 +271,30 @@ series.columns.template.adapter.add("stroke", function(stroke, target) {
 			}
 		},
 
+		setAlias(metric){
+			console.log(metric, 'entra')
+			let metrics = [...this.metrics];
+			console.log(metrics, 'metrics')
+			metrics.forEach(element => {
+				console.log(element.name)
+				if(element.name == metric){
+					console.log(element.alias)
+					this.metricAlias = element.alias;
+				}
+			})
+		},
 
 		sortMetrics(){
 			let metrics = [...this.metrics];
 			console.log(metrics)
 			function compare ( a, b ){ return a.alias > b.alias ? 1 : -1; };
 			return metrics.sort( compare );
+		}
+	},
+
+	watch: {
+		metric: function(){
+			this.setAlias(this.metric);
 		}
 	},
 
@@ -292,12 +315,5 @@ series.columns.template.adapter.add("stroke", function(stroke, target) {
 .barChart {
   width: 100%;
 	height: 375px;
-}
-.amcharts-amexport-item {
-  border: 2px solid #777;
-}
-.amcharts-amexport-top .amcharts-amexport-item > .amcharts-amexport-menu {
-  top: -3px!important;
-  left: 2px!important;
 }
 </style>

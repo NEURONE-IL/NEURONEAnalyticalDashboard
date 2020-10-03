@@ -74,7 +74,7 @@ export default new Vuex.Store({
       await axios
       .get(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/classroom-configurations')
       .then(response => {
-        context.commit('setClassroomConfigurations', response.data);
+        context.commit('setClassroomConfigurations', response.data.classroomConfigurations);
       })
       .catch(error => {
         console.log(error.response);
@@ -89,7 +89,7 @@ export default new Vuex.Store({
       await axios
       .get(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/session-settings')
       .then(response => {
-        context.commit('setSessionSettings', response.data);
+        context.commit('setSessionSettings', response.data.sessionSettings);
       })
       .catch(error => {
         console.log(error.response);
@@ -105,14 +105,27 @@ export default new Vuex.Store({
 //          axios.defaults.headers.common['x-access-token'] = user.accessToken;
           localStorage.setItem('currentUser', JSON.stringify(user));
           context.commit('setUser', user);
+          context.dispatch('showNotification', {
+            show: true, 
+            icon: 'mdi-check-circle', 
+            text: 'notifications.login.success', 
+            timeout: 5000, 
+            color: 'success'
+          });
           resolve(response);
         })
         .catch(error => {
+          context.dispatch('showNotification', {
+            show: true, 
+            icon: 'mdi-check-close', 
+            text: 'notifications.login.error', 
+            timeout: 5000, 
+            color: 'error'
+          });
           reject(error);
         })
       })
     },
-
     refreshSession(state){
       state.user = JSON.parse(localStorage.getItem('currentUser'));
       //axios.defaults.headers.common['x-access-token'] = state.user.accessToken;

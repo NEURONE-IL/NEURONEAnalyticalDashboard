@@ -53,7 +53,7 @@ export default {
 					time: tf,
 					value: response.data[0][this.lineChartSelectedMetric]
 				})
-				console.log(tf, response.data[0][this.lineChartSelectedMetric]);
+				//console.log(tf, response.data[0][this.lineChartSelectedMetric]);
 			})
       .catch(error => {
         console.log(error.response);
@@ -104,17 +104,33 @@ export default {
 			.then(response => {
 				let actualTime = Date.now();
 				let initTime = response.data.inittime;
+				if(initTime === 0){
+					console.log('cae')
+					this.dispatchNotification('classroom.participantsLoaded', 'alert', 5000, 'yellow darken-3');
+					return;
+				}
 				console.log(initTime, 'inittimeline')
 				this.max = Math.round((actualTime - initTime)/1000);
-				console.log(this.max + '/' + this.interval, 'div')
+				//console.log(this.max + '/' + this.interval, 'div')
 				this.setCounter();
 				//this.counter = Math.trunc(this.max/this.interval) - 1;
-				console.log(this.counter, 'counter')
+				//console.log(this.counter, 'counter')
 				this.getData();
 			})
       .catch(error => {
         console.log(error.response);
       });
+		},
+
+		dispatchNotification(text, icon, timeout, color){
+			let notification = {
+				show: true,
+				icon: 'mdi-' + icon,
+				text: 'notifications.' + text,
+				timeout: timeout,
+				color: color
+			}
+			this.$store.dispatch('showNotification', notification)
 		},
 
 		setCounter(){
@@ -124,7 +140,7 @@ export default {
 				queries = Math.trunc(this.max/this.interval) - 1;
 			}
 			this.counter = queries;
-			console.log(this.counter, 'queries', this.interval)
+			//console.log(this.counter, 'queries', this.interval)
 		},
 
 		/*

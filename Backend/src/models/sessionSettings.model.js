@@ -11,8 +11,8 @@ const SessionSettings = new Schema({
 	metrics: { type: [String], required: true },
     principal: { type: String, required: true },
     interval: { type: Number, required: true },
-    option: { type: String, required: true },
-    limit: { type: Number, required: true }
+    option: { type: String },
+    limit: { type: Number }
 });
 
 /*

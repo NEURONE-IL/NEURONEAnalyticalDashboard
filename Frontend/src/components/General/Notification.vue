@@ -7,7 +7,7 @@
       top
     >
       <div
-        class="font-weight-medium"
+        class="font-weight-medium text-center"
       >
         <v-icon left>
           {{ snackbar.icon }}

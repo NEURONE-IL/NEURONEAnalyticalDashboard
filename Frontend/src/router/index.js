@@ -28,7 +28,7 @@ async function isInit(to, from, next){
       next('/classroom')
     }
     else{
-      store.dispatch('destroySettings');
+      store.commit('destroySettings');
       next()
     }
   })

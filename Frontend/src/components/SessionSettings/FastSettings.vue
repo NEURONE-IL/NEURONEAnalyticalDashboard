@@ -2,12 +2,9 @@
 	<v-container>
     <v-row no-gutters>
       <v-col cols="12" class="text-center">
-				<h2>{{ $t('fastSettings.header') }}</h2>
-				<v-divider></v-divider>	
-				<br>	
 				<v-card>
 					<v-card-title>
-						Configuraciones
+						{{ $t('fastSettings.tableTitle') }}
 						<v-spacer></v-spacer>
 						<v-text-field
 							v-model="search"
@@ -106,7 +103,6 @@ export default {
 			search: '',
 			headers: [
 				{ text: this.$t('fastSettings.tableHeaders.name'), value: 'name', align: 'start'},
-				//{ text: this.$t('fastSettings.tableHeaders.createdBy'), value:'createdBy' },
 				{ text: this.$t('fastSettings.tableHeaders.metrics'), value:'metrics' },
 				{ text: this.$t('fastSettings.tableHeaders.principal'), value:'principal' },
 				{ text: this.$t('fastSettings.tableHeaders.alert'), value: 'limit' },
@@ -180,7 +176,7 @@ export default {
 		setInterval(interval){
 			interval /= 1000;
 			var timeOption = this.timeOptions.find(option => option.value === interval);
-			return timeOption.text;
+			return timeOption.text + this.$t('settings.seconds');
 		},
 
 		confirmDelete(){

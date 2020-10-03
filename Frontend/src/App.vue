@@ -63,3 +63,9 @@ export default {
   }
 };
 </script>
+
+<style>
+.amcharts-amexport-item {
+  border: 1px solid #000;
+}
+</style>
