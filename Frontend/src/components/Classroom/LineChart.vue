@@ -39,45 +39,35 @@ export default {
 	methods: {
 		/*
 		@fvillarrealcespedes:
-		Sends a request to get an user specific metric value, between ti and tf, both in seconds. Before the call, composes the query 
-		URL based on the lineChartUsername, the lineChartSelectedMetric, ti and tf. Finally composes an object to match the line chart 
-		data format and pushes it to the data set.
+		Composes and send to store a notification object to be displayed for the user. The icon, text, timeout and color properties depends on the type 
+		of message that want to display.
 		*/
-		async getDataItem(ti, tf){
-			let url = `${this.lineChartUsername}?metrics=${this.lineChartSelectedMetric}&`;
-			url = this.formatUrl(url, ti, tf);
-			await axios
-			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/detail/${url}`)
-			.then(response => {
-				this.chartData.push({
-					time: tf,
-					value: response.data[0][this.lineChartSelectedMetric]
-				})
-				//console.log(tf, response.data[0][this.lineChartSelectedMetric]);
-			})
-      .catch(error => {
-        console.log(error.response);
-      })
-		},
-
-		/*
-		@fvillarrealcespedes:
-		A loop from the interval value to the maximum value minus the interval itself to get all the data objects from zero to the 
-		changing value i, that is increment each time in the interval value.
-		*/
-		async getData(){
-			for(var i=this.interval; i<=this.max-this.interval; i+=this.interval){
-				this.getDataItem(0, i);
+		dispatchNotification(text, icon, timeout, color){
+			let notification = {
+				show: true,
+				icon: 'mdi-' + icon,
+				text: 'notifications.' + text,
+				timeout: timeout,
+				color: color
 			}
-//			await this.sleep(3000);
-//			function compare ( a, b ){ return a.time - b.time; };
-//			this.setChart(this.chartData.sort( compare ));
-			console.log(this.chartData.length)			
+			this.$store.dispatch('showNotification', notification)
 		},
 
 		/*
 		@fvillarrealcespedes:
-		NEURONE-AM original function, formates a query URL to match the backend format. Has three params, the URL string before the 
+		Disposes current line chart and sets to null lineChartUsername and lineChartSelectedMetric properties.
+		*/
+		disposeChart(){
+			if(this.chart){
+				this.chart.dispose();
+				this.lineChartUsername = null;
+				this.lineChartSelectedMetric = null;
+			}
+		},	
+
+		/*
+		@fvillarrealcespedes:
+		NEURONE-AM original method, formates a query URL to match the backend format. Has three params, the URL string before the 
 		format, ti and tf, both of this two last being numeric values to represent seconds. Three cases are contemplated, the init time 
 		is zero, the tf param is the same as the maximum value, and a default one.
 		*/
@@ -95,7 +85,40 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		NEURONE-AM original function, gets the init stage time for a specific user, also sets the maximum time value and the necessary 
+		A loop from the interval value to the maximum value minus the interval itself to get all the data objects from zero to the 
+		changing value i, that is increment each time in the interval value.
+		*/
+		async getData(){
+			for(var i=this.interval; i<=this.max-this.interval; i+=this.interval){
+				this.getDataItem(0, i);
+			}
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Sends a request to get an user specific metric value, between ti and tf, both in seconds. Before the call, composes the query 
+		URL based on the lineChartUsername, the lineChartSelectedMetric, ti and tf. Finally composes an object to match the line chart 
+		data format and pushes it to the data set.
+		*/
+		async getDataItem(ti, tf){
+			let url = `${this.lineChartUsername}?metrics=${this.lineChartSelectedMetric}&`;
+			url = this.formatUrl(url, ti, tf);
+			await axios
+			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/detail/${url}`)
+			.then(response => {
+				this.chartData.push({
+					time: tf,
+					value: response.data[0][this.lineChartSelectedMetric]
+				})
+			})
+      .catch(error => {
+        console.log(error.response);
+      })
+		},
+
+		/*
+		@fvillarrealcespedes:
+		NEURONE-AM original method, gets the init stage time for a specific user, also sets the maximum time value and the necessary 
 		data objects quantity to compose the line chart.
 		*/
 		async getInitTime(){
@@ -104,17 +127,8 @@ export default {
 			.then(response => {
 				let actualTime = Date.now();
 				let initTime = response.data.inittime;
-				if(initTime === 0){
-					console.log('cae')
-					this.dispatchNotification('classroom.participantsLoaded', 'alert', 5000, 'yellow darken-3');
-					return;
-				}
-				console.log(initTime, 'inittimeline')
 				this.max = Math.round((actualTime - initTime)/1000);
-				//console.log(this.max + '/' + this.interval, 'div')
 				this.setCounter();
-				//this.counter = Math.trunc(this.max/this.interval) - 1;
-				//console.log(this.counter, 'counter')
 				this.getData();
 			})
       .catch(error => {
@@ -122,30 +136,18 @@ export default {
       });
 		},
 
-		dispatchNotification(text, icon, timeout, color){
-			let notification = {
-				show: true,
-				icon: 'mdi-' + icon,
-				text: 'notifications.' + text,
-				timeout: timeout,
-				color: color
-			}
-			this.$store.dispatch('showNotification', notification)
-		},
-
-		setCounter(){
-			var queries = Math.trunc(this.max/this.interval) - 1;
-			while(queries > 100){
-				this.interval += 10;
-				queries = Math.trunc(this.max/this.interval) - 1;
-			}
-			this.counter = queries;
-			//console.log(this.counter, 'queries', this.interval)
-		},
+		/*
+		@fvillarrealcespedes:
+		Searches in metrics array the metric object where name property equals the given name param, then returns that object alias.
+		*/
+    setAlias(name){
+      var metric = this.metrics.find(metric => metric.name === name);
+      return metric.alias;
+    },
 
 		/*
 		@fvillarrealcespedes:
-		Sets all line chart properties, from the height, to the axes among others.
+		Sets all line chart properties, from height to axes, among others.
 		*/
 		setChart(chartData){
 			/*Chart creation*/
@@ -157,15 +159,15 @@ export default {
 			var valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
 			timeAxis.min = 0;
 			valueAxis.min = 0;
-			/*Creates the data series for the chart*/
+			/*Creates data series for chart*/
 			var series = this.chart.series.push(new am4charts.LineSeries());
-			/*Sets the datafields*/
+			/*Sets datafields*/
 			series.dataFields.valueY = "value";
 			series.dataFields.valueX = "time";
 			series.tooltipText = "{value}"
 			series.strokeWidth = 2;
 			series.minBulletDistance = 15;
-			/*Sets the series tooltip properties*/
+			/*Sets series tooltip properties*/
 			series.tooltip.background.cornerRadius = 20;
 			series.tooltip.background.strokeOpacity = 0;
 			series.tooltip.pointerOrientation = "vertical";
@@ -185,20 +187,20 @@ export default {
 			this.chart.cursor.behavior = "panXY";
 			this.chart.cursor.xAxis = timeAxis;
 			this.chart.cursor.snapToSeries = series;
-			/*Creates a horizontal scrollbar with previe and place it underneath the time axis*/
-/*			this.chart.scrollbarX = new am4charts.XYChartScrollbar();
+			/*Creates a horizontal scrollbar with previe and place it underneath the time axis (just for tests)*/
+			/*			
+			this.chart.scrollbarX = new am4charts.XYChartScrollbar();
 			this.chart.scrollbarX.series.push(series);
 			this.chart.scrollbarX.parent = this.chart.bottomAxesContainer;
 			*/
-
+			/*Sets axis titles and their font properties*/
 			valueAxis.title.text = this.setAlias(this.lineChartSelectedMetric);
 			valueAxis.title.fontWeight = "bold";
-
 			timeAxis.title.text = this.$t('charts.line.timeLabel');
 			timeAxis.title.fontWeight = "bold";
-
+			/*Sets export menu*/
 			this.chart.exporting.menu = new am4core.ExportMenu();
-
+			/*Sets title and its font properties*/
 			let title = this.chart.titles.create();
 			title.text = this.$t('charts.line.title') + this.lineChartUsername + this.$t('charts.line.titleConnector') + this.setAlias(this.lineChartSelectedMetric);
 			title.fontWeight = "bold";
@@ -208,37 +210,40 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Disposes the current node chart.
+		Using maximum time for a query and a interval value (in seconds, starting at 30) properties in a loop, calculates and sets the queries quantity 
+		needed to get the required data for line chart. In case the queries value exceeds 100, interval value is increased in 10 and queries value is 
+		recalculated.
 		*/
-		disposeChart(){
-			if(this.chart){
-				this.chart.dispose();
-				this.lineChartUsername = null;
-				this.lineChartSelectedMetric = null;
+		setCounter(){
+			var queries = Math.trunc(this.max/this.interval) - 1;
+			while(queries > 100){
+				this.interval += 10;
+				queries = Math.trunc(this.max/this.interval) - 1;
 			}
+			this.counter = queries;
 		},		
 
+		/*
+		@fvillarrealcespedes:
+		Helper method to wait for a given time in milliseconds.
+		*/	
 		sleep(ms) {
 			return new Promise(resolve => setTimeout(resolve, ms));
-		},
-
-    setAlias(name){
-      var metric = this.metrics.find(metric => metric.name === name);
-      return metric.alias;
-    }		
+		}
 	},
 
 	watch: {
-
+		/*
+		@fvillarrealcespedes:
+		Watches chartData array property, when this value equals the counter property sorts the chartData array by time property and finally sets the line chart.
+		*/
     async chartDataLength (value, oldValue) {
       if(value === this.counter){
-				console.log('done');
 				await this.sleep(3000);
 				function compare ( a, b ){ return a.time - b.time; };
 				this.setChart(this.chartData.sort( compare ));
 			}
     },
-
 
 		/*
 		@fvillarrealcespedes:
@@ -252,10 +257,6 @@ export default {
 					this.chartData = [];
 					this.interval = 30;
 					this.getInitTime();			
-/*					this.getData();	
-					await this.sleep(3000);
-					function compare ( a, b ){ return a.time - b.time; };
-					this.setChart(this.chartData.sort( compare ));					*/
 				}			
 			}
 		}
@@ -265,20 +266,15 @@ export default {
 	computed: {
 		/*
 		@fvillarrealcespedes:
-		LineChartUsername for the line chart, get and set methods are imported from the store.
+		Helper method that gets the chartData array lenght.
 		*/		
-    lineChartUsername: {
-      get (){
-        return this.$store.getters.getLineChartUsername;
-      },      
-      set (payload){
-        this.$store.commit('setLineChartUsername', payload);
-      }
-    },
+		chartDataLength() {
+			return this.chartData.length;
+		},
 
 		/*
 		@fvillarrealcespedes:
-		LineChartSelectedMetric for the line chart, get and set methods are imported from the store.
+		LineChartSelectedMetric for the line chart, get and set methods are imported from store.
 		*/	
     lineChartSelectedMetric: {
       get (){
@@ -289,6 +285,23 @@ export default {
       }
 		},
 
+		/*
+		@fvillarrealcespedes:
+		LineChartUsername for the line chart, get and set methods are imported from store.
+		*/		
+    lineChartUsername: {
+      get (){
+        return this.$store.getters.getLineChartUsername;
+      },      
+      set (payload){
+        this.$store.commit('setLineChartUsername', payload);
+      }
+		},
+		
+		/*
+		@fvillarrealcespedes:
+		Array that includes all available performance metrics in NEURONE-AM, get and set methods are imported from store.
+		*/	
 		metrics: {
 			get () {
 				return this.$store.getters.getMetrics;
@@ -296,15 +309,7 @@ export default {
 			set (payload) {
 				this.$store.commit('setMetrics', payload);
 			}
-		},		
-		
-		/*
-		@fvillarrealcespedes:
-		Method chartDataLength to get the chartData array lenght.
-		*/		
-		chartDataLength() {
-			return this.chartData.length;
-		}		
+		}	
 	}
 }
 </script>

@@ -10,7 +10,7 @@
 		right
 		color="primary"
 	>
-    <!-- List to display the selected participants of the nodes chart and all their metrics search results -->
+    <!-- List to display node chart selected participants and all their metrics search results -->
 		<v-list
 			dense
 			expand
@@ -41,7 +41,7 @@
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
       </v-list-item>
-
+      <!-- Participant displayer selector, available options are: all and selected ones from node chart -->
       <v-list-item>
         <v-select
           v-model="drawerVisualization"
@@ -55,13 +55,14 @@
         >
         </v-select>	
       </v-list-item>
+      <!-- Participants list -->
       <v-list-group
         v-for="participant in drawerParticipants"
         :key="participant.index"
         no-action
 				dark
       >
-        <!-- Sets an icon and the username for each nodes chart selected participant --> 
+        <!-- Sets an icon and username for each node chart selected participant --> 
         <template v-slot:activator>
           <v-icon 
 						:color="setColor(participant.results[principal]) + ' lighten-1'"
@@ -71,22 +72,21 @@
 					</v-icon>
           <v-list-item-title v-text="participant.username"></v-list-item-title>
         </template>
-        <!-- Sets the card color to match the participant's node color from the nodes chart --> 
+        <!-- Sets card color to match participant node color from node chart --> 
         <v-card 
           shaped
           v-bind:class="setColor(participant.results[principal]) + 'ItemDisplay'"
           :color="setColor(participant.results[principal]) + ' lighten-3'"
         >
-          <!-- Tthe second list item is a clickable item to view the participant associated node tooltip in the nodes chart -->
+          <!-- For each participant, the first list item is a clickable item to find the associated node in the node chart -->
           <v-list-item
             link
             @click="findInChart(participant.username)"
           >
-            <!--v-if="drawerVisualization === 1"-->
             <v-icon left>mdi-magnify</v-icon>
             <v-list-item-title class="metricDisplay">{{ $t('rightDrawer.findInChart') }}</v-list-item-title>            
           </v-list-item>
-          <!-- Displays all selected participants, the session selected metrics and the result for each one, set the metric item 
+          <!-- Displays all selected participants, the session selected metrics and the result for each one, sets the metric item 
           clickable to set the line chart -->           
           <v-list-item
             v-for="(value, metric, index) in participant.results"
@@ -122,12 +122,13 @@ export default {
       limit: '',
       option: '',
       drawerVisualization: null,
-      /*Array & rules*/      
+      /*Array*/      
       drawerOptions: [
         { id: 1, name: 'rightDrawer.drawerOptions.all' },				
         { id: 2, name: 'rightDrawer.drawerOptions.selected' }
       ],
       drawerParticipants: [],
+      /*Rules*/
 			selectRules: [
         v => v && v != null || this.$t('rules.requiredRule')
 			],
@@ -136,7 +137,7 @@ export default {
 
 	/*
 	@fvillarrealcespedes:
-	Invoked before the rendering. Gets the session settings from the store and initializes the component properties. 
+	Invoked before the rendering. Gets the session settings from store and initializes the component properties. 
 	*/
 	created(){
 		this.principal = this.settings.principal;
@@ -155,70 +156,9 @@ export default {
   methods:{
 		/*
 		@fvillarrealcespedes:
-    Sets the color for each card of the drawer depending on the principal metric value when the alert option is setted "1" or "2". 
-    If the alert option is setted "", the color is always the same, blue. This color matches exactly the participant's node color 
-    from the nodes chart. 
-		*/    
-		setColor(value){
-			switch(this.option){
-        /*The value must not exceed the limit*/
-				case "1":
-          /*Red when the value exceeds the limit*/
-					if(value > Number(this.limit)){
-						return 'red';
-          }
-          /*Orange when the value is the same that the limit*/
-					else if(value === Number(this.limit)){
-						return 'orange';
-          }
-          /*Green when the value is under the limit*/
-					else{
-						return 'green';
-					}	
-          break;
-        /*The value must not be under the limit*/							
-				case "2":
-          /*Red when the value is under the limit*/
-					if(value < Number(this.limit)){
-						return 'red';
-          }
-          /*Orange when the value is the same that the limit*/
-					else if(value === Number(this.limit)){
-						return 'orange';
-          }
-          /*Green when the value exceeds the limit*/
-					else{
-						return 'green';
-					}	
-					break;				
-        /*Blue if the alert option is disabled*/
-        default:
-					return 'blue';
-					break;
-			}
-    }, 
-    
-		/*
-		@fvillarrealcespedes:
-    Sets the lineChartUsername and lineChartSelectedMetric properties, then sets true the condition to show the line chart.
-		*/      
-    async setLineChart(username, selectedMetric){
-      console.log('in')
-			await axios
-			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/initstage/${username}`)
-			.then(response => {
-        let initTime = response.data.inittime;
-				if(initTime === 0){
-					this.dispatchNotification('lineChart.alert', 'alert', 5000, 'yellow darken-3');
-					return;
-				}
-        this.showLineChart = true;
-			})
-      .catch(error => {
-        console.log(error.response);
-      });
-    },
-
+		Composes and send to store a notification object to be displayed for the user. The icon, text, timeout and color properties depends on the type 
+		of message that want to display.
+		*/
 		dispatchNotification(text, icon, timeout, color){
 			let notification = {
 				show: true,
@@ -238,18 +178,103 @@ export default {
       this.rightDrawerParticipantUsername = participantUsername;
     },
 
-    setOptionText(){
-     return item => this.$t(item.name);
-    },
-
+		/*
+		@fvillarrealcespedes:
+		Searches in metrics array the metric object where name property equals the given name param, then returns that object alias.
+		*/
     setAlias(name){
       var metric = this.metrics.find(metric => metric.name === name);
       return metric.alias;
+    },
+
+		/*
+		@fvillarrealcespedes:
+    Sets the color for each card of the drawer depending on the principal metric value when the alert option is setted "1" or "2". 
+    If the alert option is setted "", the color is always the same, blue. This color equals exactly the participant's node color 
+    from the node chart. 
+		*/    
+		setColor(value){
+			switch(this.option){
+				/*The value must not be over the limit*/
+				case "1":
+					/*Red when the value is over the limit*/
+					if(value > Number(this.limit)){
+						return 'red';
+          }
+					/*Orange when the value equals the limit*/
+					else if(value === Number(this.limit)){
+						return 'orange';
+          }
+          /*Green when the value is under the limit*/
+					else{
+						return 'green';
+					}	
+          break;
+        /*The value must not be under the limit*/							
+				case "2":
+          /*Red when the value is under the limit*/
+					if(value < Number(this.limit)){
+						return 'red';
+          }
+					/*Orange when the value equals the limit*/
+					else if(value === Number(this.limit)){
+						return 'orange';
+          }
+          /*Green when the value exceeds the limit*/
+					else{
+						return 'green';
+					}	
+					break;				
+        /*Blue if the alert option is disabled*/
+        default:
+					return 'blue';
+					break;
+			}
+    }, 
+    
+		/*
+		@fvillarrealcespedes:
+    Sets lineChartUsername and lineChartSelectedMetric properties, then sets true the condition to show the line chart.
+		*/      
+    async setLineChart(username, selectedMetric){
+      this.lineChartUsername = username;
+      this.lineChartSelectedMetric = selectedMetric;
+			await axios
+			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/initstage/${this.lineChartUsername}`)
+			.then(response => {
+        let initTime = response.data.inittime;
+				if(initTime === 0){
+					this.dispatchNotification('lineChart.alert', 'alert', 5000, 'yellow darken-3');
+					return;
+				}
+        this.showLineChart = true;
+			})
+      .catch(error => {
+        console.log(error.response);
+      });
+    },
+
+		/*
+		@fvillarrealcespedes:
+		Sets for each drawerOptions array object the text to display in the selector component.
+		*/
+    setOptionText(){
+     return item => this.$t(item.name);
     }
 	},
 
 	watch: {
 		/*
+		@fvillarrealcespedes:
+		Watches the drawer visualization property to select the participants to show in the drawer.
+    */		
+    allParticipants: function(){
+      if(this.drawerVisualization === 1){
+        this.drawerParticipants = this.allParticipants;
+      }
+    },
+    
+    /*
 		@fvillarrealcespedes:
 		Watches the drawer visualization property to select the participants to show in the drawer.
 		*/		
@@ -270,16 +295,6 @@ export default {
 		@fvillarrealcespedes:
 		Watches the drawer visualization property to select the participants to show in the drawer.
     */		
-    allParticipants: function(){
-      if(this.drawerVisualization === 1){
-        this.drawerParticipants = this.allParticipants;
-      }
-    },
-
-		/*
-		@fvillarrealcespedes:
-		Watches the drawer visualization property to select the participants to show in the drawer.
-    */		
     selectedParticipants: function(){
       if(this.drawerVisualization === 2){
         this.drawerParticipants = this.selectedParticipants;
@@ -288,35 +303,9 @@ export default {
   },
 
 	computed: {
-		/*
-		@fvillarrealcespedes:
-		Condition to show the right drawer, get and set methods are imported from the store.
-		*/    
-		rightDrawer: {
-			get () {
-				return this.$store.getters.getRightDrawer;
-			},
-			set (payload) {
-				this.$store.commit('setRightDrawer', payload);
-			},
-    },
-
-		/*
-		@fvillarrealcespedes:
-    Option to select the right drawer visualization option, get and set methods are imported from the store. 
-    */  
-		rightDrawerOption: {
-			get () {
-				return this.$store.getters.getRightDrawerOption;
-			},
-			set (payload) {
-				this.$store.commit('setRightDrawerOption', payload);
-			},
-    },    
-
     /*
 		@fvillarrealcespedes:
-		AllParticipants to display in the right drawer, get and set methods are imported from the store.
+		AllParticipants to display in the right drawer, get and set methods are imported from store.
 		*/	    
     allParticipants: {
       get () {
@@ -327,49 +316,22 @@ export default {
       }
     },
 
-    /*
-		@fvillarrealcespedes:
-		SelectedParticipants to display in the right drawer, get and set methods are imported from the store.
-		*/	    
-    selectedParticipants: {
-      get () {
-        return this.$store.getters.getSelectedParticipants;
-      },
-      set (payload) {
-        this.$store.commit('setSelectedParticipants', payload);
-      }
-    },
-
-    /*
-		@fvillarrealcespedes:
-		RightDrawerParticipantUsername to find in the nodes chart the selected participant from the left drawer, get and set methods are 
-		imported from the store.
-		*/	    
-    rightDrawerParticipantUsername: {
-      get () {
-        return this.$store.getters.getRightDrawerParticipantUsername;
-      },
-      set (payload) {
-        this.$store.commit('setRightDrawerParticipantUsername', payload);
-      }
-    },
-
 		/*
 		@fvillarrealcespedes:
-		Condition to show the line chart, get and set methods are imported from the store.
+		LineChartSelectedMetric for line chart, get and set methods are imported from store.
 		*/	
-    showLineChart: {
-      get () {
-        return this.$store.getters.getShowLineChart;
-      },    
+    lineChartSelectedMetric: {
+      get (){
+        return this.$store.getters.getLineChartSelectedMetric;
+      },       
       set (payload){
-        this.$store.commit('setShowLineChart', payload);
+        this.$store.commit('setLineChartSelectedMetric', payload);
       }
-    },    
+    },
 
 		/*
 		@fvillarrealcespedes:
-		LineChartUsername for the line chart, get and set methods are imported from the store.
+		LineChartUsername for line chart, get and set methods are imported from store.
 		*/	
     lineChartUsername: {
       get (){
@@ -382,17 +344,8 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		LineChartSelectedMetric for the line chart, get and set methods are imported from the store.
+		Array that includes all available performance metrics in NEURONE-AM, get and set methods are imported from store.
 		*/	
-    lineChartSelectedMetric: {
-      get (){
-        return this.$store.getters.getLineChartSelectedMetric;
-      },       
-      set (payload){
-        this.$store.commit('setLineChartSelectedMetric', payload);
-      }
-    },
-
 		metrics: {
 			get () {
 				return this.$store.getters.getMetrics;
@@ -400,8 +353,65 @@ export default {
 			set (payload) {
 				this.$store.commit('setMetrics', payload);
 			}
-		},    
-  
+    },      
+
+    /*
+		@fvillarrealcespedes:
+		Condition to show the right drawer, get and set methods are imported from store.
+		*/    
+		rightDrawer: {
+			get () {
+				return this.$store.getters.getRightDrawer;
+			},
+			set (payload) {
+				this.$store.commit('setRightDrawer', payload);
+			},
+    },
+
+		/*
+		@fvillarrealcespedes:
+    Option to select the right drawer visualization option, get and set methods are imported from store. 
+    */  
+		rightDrawerOption: {
+			get () {
+				return this.$store.getters.getRightDrawerOption;
+			},
+			set (payload) {
+				this.$store.commit('setRightDrawerOption', payload);
+			},
+    },    
+
+    /*
+		@fvillarrealcespedes:
+		RightDrawerParticipantUsername to find in node chart the selected participant from the left drawer, get and set methods are 
+		imported from store.
+		*/	    
+    rightDrawerParticipantUsername: {
+      get () {
+        return this.$store.getters.getRightDrawerParticipantUsername;
+      },
+      set (payload) {
+        this.$store.commit('setRightDrawerParticipantUsername', payload);
+      }
+    },
+
+    /*
+		@fvillarrealcespedes:
+		SelectedParticipants to display in the right drawer, get and set methods are imported from store.
+		*/	    
+    selectedParticipants: {
+      get () {
+        return this.$store.getters.getSelectedParticipants;
+      },
+      set (payload) {
+        this.$store.commit('setSelectedParticipants', payload);
+      }
+    },
+
+		/*
+		@fvillarrealcespedes:
+		Object that includes all session settings, get and set methods are imported from store.
+		*/	
 		settings: {
 			get () {
 				return this.$store.getters.getSettings;
@@ -409,6 +419,19 @@ export default {
 			set (payload) {
 				this.$store.commit('setSettings', payload);
 			}
+    },
+
+		/*
+		@fvillarrealcespedes:
+		Condition to show the line chart, get and set methods are imported from store.
+		*/	
+    showLineChart: {
+      get () {
+        return this.$store.getters.getShowLineChart;
+      },    
+      set (payload){
+        this.$store.commit('setShowLineChart', payload);
+      }
     }
   }  
 }

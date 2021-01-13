@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "babel-node src/app.js",
     "dev": "nodemon --exec babel-node src/app.js",
     "test": "NODE_ENV='test' mocha --require @babel/register --timeout 10000 --exit"
   },

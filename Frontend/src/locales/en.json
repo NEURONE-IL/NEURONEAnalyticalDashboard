@@ -13,12 +13,15 @@
 		"clear": "Clear",
 		"close": "Close",
 		"configurePositions": "Configure positions",
+		"help": "Help?",
+		"login": "Login",
+		"logout": "Logout",
 		"reset": "Reset",
 		"save": "Guardar",
 		"saveChanges": "Save changes"
 	},
 	"charts":{
-		"bars": {
+		"bar": {
 			"onLimit": "On the limit",
 			"overLimit": "Over the limit",
 			"title": "Students according to performance category in the metric: ",
@@ -29,7 +32,7 @@
 			"title": "Performance of: ",
 			"titleConnector": " at "
 		}	,		
-		"nodes":{
+		"node":{
 			"title": "Classroom"
 		}
 	},	
@@ -55,7 +58,7 @@
 		"alert": "In the main view only the classroom configurations where the number of participants is less than or equal to the number of participants in the session will be shown",
 		"createHeader": "New classroom configuration",
 		"createConfiguration": "Create new configuration",
-		"deleteConfiguration": "Are you sure you want to delete this classroom configuration?",
+		"deleteConfigurationConfirmation": "Are you sure you want to delete this classroom configuration?",
 		"header": "Classroom configurations",
 		"tableHeaders": {
 			"actions": "Actions",
@@ -66,13 +69,8 @@
 		},
 		"updateHeader": "Update classroom configuration"
 	},
-	"clock": {
-		"currentTime": "Current time",
-		"initTime": "Init time",
-		"sessionTime": "Session time"
-	},
 	"fastSettings": {
-		"deleteSettings": "Are you sure you want to delete this session settings?",
+		"deleteSettingsConfirmation": "Are you sure you want to delete this session settings?",
 		"header": "Session settings",
 		"loadSettings": "Are you sure you want to load this session settings?",
 		"tableHeaders": {
@@ -106,12 +104,17 @@
 		"session": "Session"
 	},
   "login": {
-    "header": "Login"
+		"header": "Login",
+    "logoutConfirmation": "Are you sure you want to logout from NEURONE-AD?", 
+		"password": "Password",
+		"signin": "Sign in",
+		"signup": "Sign up",
+    "username": "Username"		
   },	
 	"metrics": {
 		"header": "Select the metric(s) to evaluate"
 	},
-	"metricsConfiguration": {
+	"metricsDisplay": {
 		"header": "Metrics",
 		"tableHeaders": {
 			"description": "Description",
@@ -208,6 +211,11 @@
       "session": "Session"			
     }
 	},
+	"timer": {
+		"currentTime": "Current time",
+		"initTime": "Init time",
+		"sessionTime": "Session time"
+	},	
   "$vuetify": {
     "dataFooter": {
 			"itemsPerPageAll": "All",

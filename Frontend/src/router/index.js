@@ -6,12 +6,15 @@ import store from '../store'
 import ClassroomConfigurationsView from '../views/ClassroomConfigurationsView.vue'
 import ClassroomView from '../views/ClassroomView.vue'
 import LoginView from '../views/LoginView.vue'
-import MetricsConfigurationView from '../views/MetricsConfigurationView.vue'
+import MetricsDisplayView from '../views/MetricsDisplayView.vue'
 import SessionStatsView from '../views/SessionStatsView.vue'
 import SettingsView from '../views/SettingsView.vue'
 
 Vue.use(VueRouter)
 
+/*
+ 
+ */
 async function isInit(to, from, next){
   await axios
   .get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/ifsession`)
@@ -25,11 +28,11 @@ async function isInit(to, from, next){
 			};      
       store.commit('setSettings', settings)
       localStorage.setItem('settings', JSON.stringify(settings));
-      next('/classroom')
+      next('/classroom');
     }
     else{
       store.commit('destroySettings');
-      next()
+      next();
     }
   })
   .catch(error => {
@@ -37,9 +40,33 @@ async function isInit(to, from, next){
   })
 }
 
+async function notInit(to, from, next){
+  console.log('notinit')
+  console.log(from)
+  console.log(to)
+  if(from.path !== '/settings'){
+    await axios
+    .get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/ifsession`)
+    .then(response => {
+      console.log(response.data)
+      if(response.data.status){
+        next();
+      }else{
+        next('/settings')
+      }
+    })
+    .catch(error => {
+      next('/settings')
+    })
+  }else{
+    next();
+  }
+}
+
+
 const routes = [
   {
-    path: '/',
+    path: '/settings',
     name: 'Settings',
     component: SettingsView,
     beforeEnter: isInit,
@@ -49,6 +76,7 @@ const routes = [
     path: '/classroom',
     name: 'Classroom',
     component: ClassroomView,
+    beforeEnter: notInit,
     meta: { requiresAuth: true }
   },
   {
@@ -58,9 +86,9 @@ const routes = [
     meta: { requiresAuth: true }   
   },
   {
-    path: '/metrics-configuration',
-    name: 'MetricsConfiguration',
-    component: MetricsConfigurationView,
+    path: '/metrics',
+    name: 'MetricsDisplay',
+    component: MetricsDisplayView,
     meta: { requiresAuth: true }
   },
   {
@@ -77,7 +105,7 @@ const routes = [
   },
   {
     path: '*',
-    redirect: '/'
+    redirect: '/settings'
   }
 ]
 

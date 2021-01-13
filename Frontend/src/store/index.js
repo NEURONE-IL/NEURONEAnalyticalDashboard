@@ -33,10 +33,10 @@ export default new Vuex.Store({
     lineChartSelectedMetric: null,
     /*Left Drawer*/
     tabs: [
-      { id: 1, title: 'store.tabs.session', icon: 'mdi-cogs', route: '/', disabled: false },				
+      { id: 1, title: 'store.tabs.session', icon: 'mdi-cogs', route: '/settings', disabled: false },				
       { id: 2, title: 'store.tabs.classroom', icon: 'mdi-google-classroom', route: '/classroom', disabled: true },
       { id: 3, title: 'store.tabs.classroomConfigurations', icon: 'mdi-toolbox', route: '/classroom-configurations', disabled: false },
-      { id: 4, title: 'store.tabs.metrics', icon: 'mdi-chart-timeline-variant', route: '/metrics-configuration', disabled: false }
+      { id: 4, title: 'store.tabs.metrics', icon: 'mdi-chart-timeline-variant', route: '/metrics', disabled: false }
     ],
     /*Put request params*/
     classroomConfigurationId: null,
@@ -102,7 +102,6 @@ export default new Vuex.Store({
         .post(`http://${process.env.VUE_APP_HOST}:${process.env.VUE_APP_NEURONE_AUTH_BACK}/api/credential/signin`, credentials)
         .then(response => {
           const user = response.data;
-//          axios.defaults.headers.common['x-access-token'] = user.accessToken;
           localStorage.setItem('currentUser', JSON.stringify(user));
           context.commit('setUser', user);
           context.dispatch('showNotification', {
@@ -128,7 +127,6 @@ export default new Vuex.Store({
     },
     refreshSession(state){
       state.user = JSON.parse(localStorage.getItem('currentUser'));
-      //axios.defaults.headers.common['x-access-token'] = state.user.accessToken;
     },
 
     showNotification(context, payload){
@@ -144,6 +142,11 @@ export default new Vuex.Store({
     destroySettings(state){
       localStorage.removeItem('settings');
       state.settings = null;
+    },    
+
+    destroyUser(state){
+      localStorage.removeItem('currentUser');
+      state.user = null;
     },    
 
     setInitTime(state, payload){

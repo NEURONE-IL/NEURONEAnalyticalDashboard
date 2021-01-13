@@ -5,19 +5,19 @@
 				<v-col cols="4">
 					<!-- Session init time -->
 					<span>
-						{{ $t('clock.initTime') }}: {{this.sessionInitTime}}
+						{{ $t('timer.initTime') }}: {{this.sessionInitTime}}
 					</span>
 				</v-col>
 				<v-col cols="4">
 					<!-- Actual time -->
 					<span>
-						{{ $t('clock.currentTime') }}: {{this.currentTime}}
+						{{ $t('timer.currentTime') }}: {{this.currentTime}}
 					</span>
 				</v-col>
 				<v-col cols="4">
-					<!-- Time in session -->
+					<!-- Session time -->
 					<span>
-						{{ $t('clock.sessionTime') }}: {{this.sessionTime}}
+						{{ $t('timer.sessionTime') }}: {{this.sessionTime}}
 					</span>
 				</v-col>
 			</v-row>
@@ -33,13 +33,13 @@ Component imports.
 import { mapState } from 'vuex';
 
 export default {
-	name: 'Clock', 
+	name: 'Timer', 
 
 	data(){
 		return{
 			/*Component properties*/
-			sessionInitTime: '',
 			currentTime: '',
+			sessionInitTime: '',
 			sessionTime: '',
 			totalSeconds: 0
 		}
@@ -47,7 +47,7 @@ export default {
 
 	/*
 	@fvillarrealcespedes:
-	Invoked whe the DOM is mounted and allows to access the reactive component. Calls the two methods to get the necessaries times. 
+	Invoked when the DOM is mounted and allows to access the reactive component. Calls the two methods to get the necessaries times. 
 	*/
 	mounted(){
 		this.showInitTime();
@@ -57,27 +57,10 @@ export default {
 	methods:{
 		/*
 		@fvillarrealcespedes:
-		Gets the session init time from store in milliseconds, gets the hours, minutes and seconds, then formates it to "hh:mm:ss" to 
-		display. 
-		*/
-		showInitTime(){
-			var initDate = new Date(this.initTime);
-			var h = initDate.getHours(); 
-			var m = initDate.getMinutes(); 
-			var s = initDate.getSeconds(); 			
-			/*Add a zero before the value of hours, minutes and seconds in case this is under 10 to keep the format*/
-			h = (h < 10) ? "0" + h : h;
-			m = (m < 10) ? "0" + m : m;
-			s = (s < 10) ? "0" + s : s;
-			this.sessionInitTime = h + ":" + m + ":" + s + " ";
-		},
-
-		/*
-		@fvillarrealcespedes:
-		Gets the actual in milliseconds, gets the hours, minutes and seconds, then formates it to "hh:mm:ss" to display. Also calculates 
+		Gets the actual time in milliseconds, gets the hours, minutes and seconds, then formates it to "hh:mm:ss" to display. Also calculates 
 		the time in session comparing the session init time and the actual time, then formates it to "hh:mm:ss" to display. This method 
-		is repeated every 1000 milliseconds to update the time in session. 
-*/
+		is repeated every 1000 milliseconds to update the session time every second. 
+		*/
 		showCurrentTime(){
 			var currentDate = new Date();
 			var h = currentDate.getHours(); 
@@ -103,9 +86,30 @@ export default {
 			/*Sets the repeat time in milliseconds*/
 			setTimeout(this.showCurrentTime, 1000);
 		},
+
+		/*
+		@fvillarrealcespedes:
+		Gets the session init time from store in milliseconds, gets the hours, minutes and seconds, then formates it to "hh:mm:ss" to 
+		display. 
+		*/
+		showInitTime(){
+			var initDate = new Date(this.initTime);
+			var h = initDate.getHours(); 
+			var m = initDate.getMinutes(); 
+			var s = initDate.getSeconds(); 			
+			/*Add a zero before the value of hours, minutes or seconds in case any of this values is under 10 to keep the format*/
+			h = (h < 10) ? "0" + h : h;
+			m = (m < 10) ? "0" + m : m;
+			s = (s < 10) ? "0" + s : s;
+			this.sessionInitTime = h + ":" + m + ":" + s + " ";
+		}
 	},
 
 	computed: {
+		/*
+		@fvillarrealcespedes:
+		Session init time, get and set methods are imported from store.
+		*/		
 		initTime: {
 			get () {
 				return this.$store.getters.getInitTime;
@@ -117,6 +121,10 @@ export default {
 	},
 
 	watch: {
+		/*
+		@fvillarrealcespedes:
+		Watches the session init time property to calculate and display the three time values.
+		*/				
 		initTime: {
 			immediate: true, 
 
@@ -129,13 +137,11 @@ export default {
 }
 </script>
 
-
-
 <style scoped>
 .body {
   background: black;
 }
-.clock {
+.timer {
 	position: absolute;
 	top: 50%;
 	left: 50%;

@@ -1,5 +1,6 @@
 <template>
   <div class="text-center">
+    <!-- Snackbar component -->
     <v-snackbar
       v-model="snackbar.show"
       :timeout="snackbar.timeout"
@@ -14,6 +15,7 @@
         </v-icon> 
         {{ $t(snackbar.text) }}
       </div>
+      <!-- Hide Snackbar button -->
       <template v-slot:action="{ attrs }">
         <v-btn
           dark
@@ -42,7 +44,10 @@ export default {
   },
 
   computed: {
-
+		/*
+		@fvillarrealcespedes:
+		Snackbar data object, get and set methods are imported from store.
+		*/ 
 		snackbar: {
 			get () {
 				return this.$store.getters.getSnackbar;

@@ -2,12 +2,13 @@
 	<v-container>
     <v-row no-gutters>
       <v-col cols="12" class="text-center">
-				<h2>{{ $t('metricsConfiguration.header') }}</h2>
+				<h2>{{ $t('metricsDisplay.header') }}</h2>
 				<v-divider></v-divider>	
 				<br>	
 				<v-card>
 					<v-card-title>
 					<v-spacer></v-spacer>
+					<!-- Data table search imput field -->
 					<v-text-field
 						v-model="search"
 						append-icon="mdi-magnify"
@@ -16,7 +17,7 @@
 						hide-details
 					></v-text-field>
 					</v-card-title>
-					<!-- Display all metrics -->
+					<!-- Data table to display all metrics -->
 					<v-data-table
 						:headers="headers"
 						:items="metrics"
@@ -39,29 +40,36 @@ import axios from 'axios';
 import { mapState } from 'vuex';
 
 export default {
-	name: 'MetricsConfiguration',
+	name: 'MetricsDisplay',
 
 	data (){
 		return {
 			/*Data table properties*/
 			search: '',
 			headers: [
-				{ text: this.$t('metricsConfiguration.tableHeaders.metric'), value: 'alias', width: '17%' },
-				{ text: this.$t('metricsConfiguration.tableHeaders.description'), value: this.setDescription(), width: '83%' }
+				{ text: this.$t('metricsDisplay.tableHeaders.metric'), value: 'alias', width: '17%' },
+				{ text: this.$t('metricsDisplay.tableHeaders.description'), value: this.setDescription(), width: '83%' }
 			]
 		}
 	},
 
 	methods: {
+		/*
+		@fvillarrealcespedes:
+		Sets metrics descriptions depending on i18n locale property.
+		*/			
 		setDescription(){
-			var header;
+			var description;
 			header = 'descriptions.' + this.$i18n.locale.split('-')[0];
-			console.log(header);
-			return header;
+			return description;
 		}
 	},
 
 	computed:{
+		/*
+		@fvillarrealcespedes:
+		Array that includes all available performance metrics in NEURONE-AM, get and set methods are imported from store.
+		*/			
 		metrics: {
 			get () {
 				return this.$store.getters.getMetrics;

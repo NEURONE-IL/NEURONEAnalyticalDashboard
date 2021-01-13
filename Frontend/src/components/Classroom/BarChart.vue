@@ -2,6 +2,7 @@
   <v-container>
 		<v-row class="ms-8">
 			<v-col cols="3">
+				<!-- Metric selector -->
 				<v-select
 					v-model="metric"
 					:items="sortMetrics()"
@@ -11,8 +12,8 @@
 				>
 				</v-select>
 			</v-col>
-
 			<v-col cols="3">
+				<!-- Alert option selector (higher or lower than) -->
 				<v-select
 					v-model="option"
 					:items="alertOptions"
@@ -24,8 +25,8 @@
 				>
 				</v-select>				
 			</v-col>
-
 			<v-col cols="3">
+				<!-- Limit value input -->
 				<v-text-field
 					v-model="limit"
 					:label="$t('performance.limit')"
@@ -34,11 +35,9 @@
 					step="0.01"
 				>
 				</v-text-field>
-			</v-col>	
-
-
-
+			</v-col>
 			<v-col cols="3" class="text-center">
+				<!-- Bar chart displayer button -->
 				<v-btn
 					color="success"
 					:disabled="!metric "
@@ -51,9 +50,6 @@
 				</v-btn>
 			</v-col>					
 		</v-row>		
-
-
-
 		<!-- Bar chart -->
 		<div class="barChart" ref="chartdiv"></div>
   </v-container>
@@ -84,56 +80,39 @@ export default {
 			/*Component properties*/
 			chart: null,
 			chartData: null,
+			limit: 0,
 			metric: '',
 			metricAlias: '',
-			limit: 0,
 			option : '',
+			/*Arrays*/			
 			alertOptions: [
 				{value: 1, text: this.$t('settings.alertOptions.higher')},
 				{value: 2, text: this.$t('settings.alertOptions.lower')},
 			],
+			/*Rules*/
 			selectRules: [
         v => (v && v != null) || this.$t('rules.selectRule')
 			],			
 		}
 	},
 
-	mounted(){
-		//this.sortMetrics();
-		//this.setChart();
-	},
-
 	methods: {
-
-		async getData(){
-			console.log('ininin')
-			console.log(this.metric, 'here')
-			await axios
-			.get(`${process.env.VUE_APP_NEURONE_AM_CONNECTOR_API_URL}/${this.metric}`)
-			.then(response => {
-				var chartData = response.data;
-				console.log(chartData);
-				this.composeData(chartData);
-			})
-			.catch(error => {
-				console.log(error.response);
-			})
-		},
-
+		/*
+		@fvillarrealcespedes:
+		Formates the data from NEURONE-AM Connector component to match the chart format. The final dataset depends on option and limit properties 
+		selected by the user and its composed by three sub datasets: one for values over the limit property, one for values that equals the limit and 
+		one for values under the limit. Finally calls setChart method.*/
 		composeData(chartData){
 			var overLimit = 0;
 			var onLimit = 0;
 			var underLimit = 0;
-
-			//console.log(this.option, 'option')
+			/*Checks the option property to assign a representative color for each sub dataset. If option equals 1, assigns red color for values under the 
+			limit property, orange for values that equals the limit and green for values over the limit*/
 			if(this.option === 1){
-				
 				chartData.forEach(element => {
 					console.log(element[this.metric])
 					if(element[this.metric] > this.limit){
 						overLimit++;
-						console.log('over', overLimit)
-						console.log('this')
 					}
 					else if(element[this.metric] == this.limit){
 						onLimit++;
@@ -141,6 +120,7 @@ export default {
 					else{
 						underLimit++;
 					}
+					/*Composes the final dataset*/
 					this.chartData = [
 						{
 							"category": this.$t('charts.bars.underLimit'),
@@ -157,13 +137,12 @@ export default {
 						}
 					]				
 				})
-			}else{
+			}
+			/*If option equals 2, assigns green color for values under the limit property, orange for values that equals the limit and red for values over the limit*/
+			else{
 				chartData.forEach(element => {
-					console.log(element[this.metric])
 					if(element[this.metric] > this.limit){
 						overLimit++;
-						console.log('over', overLimit)
-						console.log('this')
 					}
 					else if(element[this.metric] == this.limit){
 						onLimit++;
@@ -171,99 +150,33 @@ export default {
 					else{
 						underLimit++;
 					}
-				this.chartData = [
-					{
-						"category": this.$t('charts.bars.underLimit'),
-						"participants": underLimit,
-						"color": '#4CAF50'
-					},					
-					{
-						"category": this.$t('charts.bars.overLimit'),
-						"participants": overLimit,
-						"color": '#F44336'
-					}, 
-					{
-						"category": this.$t('charts.bars.onLimit'),
-						"participants": onLimit,
-						"color": '#FF9800'
-					}
-				]
-			})
+					/*Composes the final dataset*/					
+					this.chartData = [
+						{
+							"category": this.$t('charts.bars.underLimit'),
+							"participants": underLimit,
+							"color": '#4CAF50'
+						},					
+						{
+							"category": this.$t('charts.bars.overLimit'),
+							"participants": overLimit,
+							"color": '#F44336'
+						}, 
+						{
+							"category": this.$t('charts.bars.onLimit'),
+							"participants": onLimit,
+							"color": '#FF9800'
+						}
+					]
+				})
 			}
-			console.log(this.chartData, 'proce')
+			/*Calls setChart method*/
 			this.setChart(this.chartData);
-		},
-
-		setChart(chartData){
-
-			this.chart = am4core.create(this.$refs.chartdiv, am4charts.XYChart);
-
-			// Add data
-			this.chart.data = chartData;
-
-			// Create axes
-
-			var categoryAxis = this.chart.xAxes.push(new am4charts.CategoryAxis());
-			categoryAxis.dataFields.category = "category";
-			categoryAxis.renderer.grid.template.location = 0;
-			categoryAxis.renderer.minGridDistance = 30;
-			
-
-/*
-			categoryAxis.renderer.labels.template.adapter.add("dy", function(dy, target) {
-				if (target.dataItem && target.dataItem.index & 2 == 2) {
-//					return dy + 25;
-				}
-				return dy;
-			});
-
-
-			*/
-
-			var valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
-
-			// Create series
-			var series = this.chart.series.push(new am4charts.ColumnSeries());
-			series.dataFields.valueY = "participants";
-			series.dataFields.categoryX = "category";
-			series.name = "Performance";
-			series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
-			series.columns.template.fillOpacity = .8;
-			series.columns.template.width = am4core.percent(50);
-
-
-			categoryAxis.title.text = "Desempeño respecto al límite";
-			categoryAxis.title.fontWeight = "bold";
-
-			valueAxis.title.text = "Participants";
-			valueAxis.title.fontWeight = "bold";
-
-			valueAxis.min = 0;
-
-			series.columns.template.adapter.add("fill", function(fill, target) {
-				return am4core.color(target.dataItem.dataContext.color);
-			});
-
-			series.columns.template.adapter.add("stroke", function(stroke, target) {
-				return am4core.color(target.dataItem.dataContext.color);
-			});
-
-			this.chart.exporting.menu = new am4core.ExportMenu();
-
-			let title = this.chart.titles.create();
-			title.text = this.$t('charts.bars.title') + this.metricAlias;
-			title.fontSize = 25;
-			title.marginBottom = 30;
-
-
-			var columnTemplate = series.columns.template;
-			columnTemplate.strokeWidth = 2;
-			columnTemplate.strokeOpacity = 1;
 		},
 
 		/*
 		@fvillarrealcespedes:
-		Disposes the current node chart.
+		Disposes current bar chart.
 		*/
 		disposeChart(){
 			if(this.chart){
@@ -271,34 +184,111 @@ export default {
 			}
 		},
 
+		/*
+		@fvillarrealcespedes:
+		Gets the performace value in a specific metric for all students from NEURONE-AM Connector component.
+		*/		
+		async getData(){
+			await axios
+			.get(`${process.env.VUE_APP_NEURONE_AM_CONNECTOR_API_URL}/${this.metric}`)
+			.then(response => {
+				var chartData = response.data;
+				this.composeData(chartData);
+			})
+			.catch(error => {
+				console.log(error.response);
+			})
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Searches in the metrics array the metric object where the name equals the given name param, then assigns that object alias to metricAlias property.
+		*/
 		setAlias(metric){
-			console.log(metric, 'entra')
 			let metrics = [...this.metrics];
-			console.log(metrics, 'metrics')
 			metrics.forEach(element => {
-				console.log(element.name)
-				if(element.name == metric){
-					console.log(element.alias)
+				if(element.name === metric){
 					this.metricAlias = element.alias;
 				}
 			})
 		},
 
+		/*
+		@fvillarrealcespedes:
+		Sets all bar chart properties, from height to bars and available events.
+		*/
+		setChart(chartData){
+			/*Chart creation*/
+			this.chart = am4core.create(this.$refs.chartdiv, am4charts.XYChart);
+			this.chart.logo.height = -15000;	
+			/*Sets series data and datafields*/
+			this.chart.data = chartData;
+			/*Creates category axis*/
+			var categoryAxis = this.chart.xAxes.push(new am4charts.CategoryAxis());
+			categoryAxis.dataFields.category = "category";
+			categoryAxis.renderer.grid.template.location = 0;
+			categoryAxis.renderer.minGridDistance = 30;
+			/*Creates value axis*/
+			var valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
+			var series = this.chart.series.push(new am4charts.ColumnSeries());
+			/*Sets datafields*/
+			series.dataFields.valueY = "participants";
+			series.dataFields.categoryX = "category";
+			series.name = "Performance";
+			series.columns.template.tooltipText = "{categoryX}: [bold]{valueY}[/]";
+			series.columns.template.fillOpacity = .8;
+			series.columns.template.width = am4core.percent(50);
+			/*Sets labels and its font height*/
+			categoryAxis.title.text = "Desempeño respecto al límite";
+			categoryAxis.title.fontWeight = "bold";
+			valueAxis.title.text = "Participantes";
+			valueAxis.title.fontWeight = "bold";
+			valueAxis.min = 0;
+			/*Sets columns colors*/
+			series.columns.template.adapter.add("fill", function(fill, target) {
+				return am4core.color(target.dataItem.dataContext.color);
+			});
+			series.columns.template.adapter.add("stroke", function(stroke, target) {
+				return am4core.color(target.dataItem.dataContext.color);
+			});
+			/*Sets export menu*/
+			this.chart.exporting.menu = new am4core.ExportMenu();
+			/*Sets title and colums properties*/
+			let title = this.chart.titles.create();
+			title.text = this.$t('charts.bars.title') + this.metricAlias;
+			title.fontSize = 25;
+			title.marginBottom = 30;
+			var columnTemplate = series.columns.template;
+			columnTemplate.strokeWidth = 2;
+			columnTemplate.strokeOpacity = 1;
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Sorts the array metrics elements alphabetically by their alias.
+		*/		
 		sortMetrics(){
 			let metrics = [...this.metrics];
-			console.log(metrics)
 			function compare ( a, b ){ return a.alias > b.alias ? 1 : -1; };
 			return metrics.sort( compare );
 		}
 	},
 
 	watch: {
+		/*
+		@fvillarrealcespedes:
+		Watches the metric property to trigger the setAlias method. 
+		*/			
 		metric: function(){
 			this.setAlias(this.metric);
 		}
 	},
 
 	computed: {
+		/*
+		@fvillarrealcespedes:
+		Array that includes all available performance metrics in NEURONE-AM, get and set methods are imported from store.
+		*/				
 		metrics: {
 			get () {
 				return this.$store.getters.getMetrics;

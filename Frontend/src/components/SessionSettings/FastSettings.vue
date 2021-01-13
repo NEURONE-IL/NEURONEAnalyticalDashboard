@@ -6,6 +6,7 @@
 					<v-card-title>
 						{{ $t('fastSettings.tableTitle') }}
 						<v-spacer></v-spacer>
+						<!-- Data table search imput field -->
 						<v-text-field
 							v-model="search"
 							append-icon="mdi-magnify"
@@ -14,14 +15,14 @@
 							hide-details
 						></v-text-field>
 					</v-card-title>
-					<!-- Display all custom classroom configurations -->
+					<!-- Data table to display all sessionSettings -->
 					<v-data-table
 						:headers="headers"
 						:items="sessionSettings"
 						:search="search"
 					>
-						<template v-slot:item.action="{ item }">		
-							<!-- Button to delete the selected classroom configuration after confirmation -->
+						<template v-slot:[`item.action`]="{ item }">		
+							<!-- Button to delete the selected sessionSettings after confirmation -->
 							<v-btn
 								icon
 								color="error"
@@ -32,12 +33,11 @@
 									mdi-delete
 								</v-icon>
 							</v-btn>    
-
-							<!-- Button to delete the selected classroom configuration after confirmation -->
+							<!-- Button to select and use the selected sessionSettings after confirmation -->
 							<v-btn
 								icon
 								color="success"
-								@click="confirmContinue() && sendSettings(item)"
+								@click="confirmContinue() && processSettings(item)"
 							>
 								<v-icon
 								>
@@ -45,31 +45,30 @@
 								</v-icon>
 							</v-btn>    
 						</template> 
-
-						<template v-slot:item.limit="{ item }">
+						<!-- Alert template slot -->
+						<template v-slot:[`item.limit`]="{ item }">
 							<span>
 								{{ setAlert(item) }}
 							</span>
 						</template>
-
-						<template v-slot:item.principal="{ item }">
+						<!-- Principal template slot -->
+						<template v-slot:[`item.principal`]="{ item }">
 							<span>
 								{{ setAlias(item.principal) }}
 							</span>
 						</template>
-
-						<template v-slot:item.metrics="{ item }">
+						<!-- Metrics template slot -->
+						<template v-slot:[`item.metrics`]="{ item }">
 							<span>
 								{{ setMetrics(item.metrics) }}
 							</span>
 						</template>						
-
-						<template v-slot:item.interval="{ item }">
+						<!-- Update interval template slot -->
+						<template v-slot:[`item.interval`]="{ item }">
 							<span>
 								{{ setInterval(item.interval) }}
 							</span>
 						</template>
-
 					</v-data-table>
 				</v-card>
 			</v-col>
@@ -91,14 +90,6 @@ export default {
 
 	data(){
 		return{
-			/*Component properties*/
-			interval: 0,
-			limit: 0,
-			metricAlert: false,
-			option: '',
-			principal: '',
-			selectedMetrics: [],
-			validSettings: true,
 			/*Data table properties*/
 			search: '',
 			headers: [
@@ -109,91 +100,89 @@ export default {
 				{ text: this.$t('fastSettings.tableHeaders.updateInterval'), value:'interval' },
 				{ text: this.$t('fastSettings.tableHeaders.actions'), value: 'action', sortable: false }
 			],			
-			/*Arrays & Rules*/
+			/*Arrays*/
 			timeOptions: [
-				{value: 10, text: '10 s'},
-				{value: 20, text: '20 s'},
-				{value: 30, text: '30 s'},
-				{value: 60, text: '60 s'}
-			],
-			alertOptions: [
-				{value: '1', text: this.$t('settings.alertOptions.higher')},
-				{value: '2', text: this.$t('settings.alertOptions.lower')},
-			],
-			requiredRules: [
-        v => !!v || this.$t('rules.requiredRule')
-			],
-			selectRules: [
-        v => (v && v != null) || this.$t('rules.selectRule')
-			]			
+				{value: 10, text: '10 '},
+				{value: 20, text: '20 '},
+				{value: 30, text: '30 '},
+				{value: 60, text: '60 '}
+			]
 		}
 	},
 
+	/*
+	@fvillarrealcespedes:
+	Invoked before the rendering. Sets initTime property null.
+	*/
 	created(){
 		this.initTime = null;
 	},
 
 	methods: {
+		/*
+		@fvillarrealcespedes:
+		Methods imported from store.
+		*/			
 		...mapActions([
 			'getSessionSettings'
 		]),		
 
-		setAlert(item){
-			var option;
-			switch (item.option) {
-				case "1":
-					option = '>';
-					break;
-				case "2":
-					option = '<';
-				default:
-					return this.$t('settings.undefined');
-					break;
-			}
-			return this.setAlias(item.principal) + ' ' + option + ' ' + item.limit;
-		},
-
-		setSimpleLocale(){
-			var locale;
-			locale = this.$i18n.locale.split('-')[0];
-			console.log(locale)
-			return locale;
-		},
-
-		setHint(){
-			if(this.principal.max){
-				return this.$t('settings.maxHint') + ' ' + this.principal.alias + ': ' + this.principal.max;
-			}else{
-				return this.$t('settings.maxHint') + ' ' + this.principal.alias + ': ' + this.$t('settings.undefined');
-			}
-		},
-
-    setAlias(name){
-      var metric = this.metrics.find(metric => metric.name === name);
-      return metric.alias;
-		},		
-		
-		setInterval(interval){
-			interval /= 1000;
-			var timeOption = this.timeOptions.find(option => option.value === interval);
-			return timeOption.text + this.$t('settings.seconds');
-		},
-
-		confirmDelete(){
-    	return confirm(this.$t('fastSettings.deleteSettings'))
-		},
-
+		/*
+		@fvillarrealcespedes:
+		Sets a confirmation message previous the sessionSettings use. 
+		*/	
 		confirmContinue(){
     	return confirm(this.$t('fastSettings.loadSettings'))
 		},
 
 		/*
 		@fvillarrealcespedes:
-		NEURONE-AM original function, sends a request to configure a new session. First composes a settings data object with the 
+		Sets a confirmation message previous the sessionSettings deletion. 
+		*/	
+		confirmDelete(){
+    	return confirm(this.$t('fastSettings.deleteSettingsConfirmation'))
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Sends a request to delete a specific sessionSettings by its _id property, then gets the updated sessionSettings array.
+		*/
+		async deleteSessionSettings(payload){
+			await axios
+			.delete(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/session-settings/' + payload)
+			.then(response => {
+				this.getSessionSettings();
+				this.dispatchNotification('fastSettings.deleteSuccess', 'check-circle', 5000, 'success');
+			})	
+      .catch(error => {
+				console.log(error.response);
+				this.dispatchNotification('fastSettings.deleteError', 'close-circle', 5000, 'error');
+      })
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Composes and send to store a notification object to be displayed for the user. The icon, text, timeout and color properties depends on the type 
+		of message that want to display.
+		*/
+		dispatchNotification(text, icon, timeout, color){
+			let notification = {
+				show: true,
+				icon: 'mdi-' + icon,
+				text: 'notifications.' + text,
+				timeout: timeout,
+				color: color
+			}
+			this.$store.dispatch('showNotification', notification)
+		},			
+
+		/*
+		@fvillarrealcespedes:
+		NEURONE-AM original method, sends a request to configure a new session. First composes a settings data object with the 
 		component properties, then sends the request and when the response is recived saves the session settings to store and 
 		finally if everything works redirects to classroom view.
 		*/
-		async sendSettings(item){
+		async processSettings(item){
 			let interval = item.interval;
 			let limit = item.limit;
 			let metrics = item.metrics;
@@ -223,13 +212,48 @@ export default {
 			})
 		},
 
-		sortMetrics(metricsArray){
-			let metrics = [...metricsArray];
-			function compare ( a, b ){ return a.alias > b.alias ? 1 : -1; };
-			console.log(metrics.sort( compare ), 'sort')
-			return metrics.sort( compare );
+		/*
+		@fvillarrealcespedes:
+		Composes an alert for a sessionSettings by its option, principal and limit properties.
+		*/	
+		setAlert(item){
+			var option;
+			switch (item.option) {
+				case "1":
+					option = '>';
+					break;
+				case "2":
+					option = '<';
+				default:
+					return this.$t('settings.undefined');
+					break;
+			}
+			return this.setAlias(item.principal) + ' ' + option + ' ' + item.limit;
 		},
 
+		/*
+		@fvillarrealcespedes:
+		Searches in metrics array the metric object where name property equals the given name param, then returns that object alias.
+		*/
+    setAlias(name){
+      var metric = this.metrics.find(metric => metric.name === name);
+      return metric.alias;
+		},	
+
+		/*
+		@fvillarrealcespedes:
+		Composes an interval update for a sessionSettings by its option and an interval param.
+		*/		
+		setInterval(interval){
+			interval /= 1000;
+			var timeOption = this.timeOptions.find(option => option.value === interval);
+			return timeOption.text + this.$t('settings.seconds');
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Formats the metrics array param into a single string to display it on the data table.
+		*/
 		setMetrics(metrics){
 			var formattedMetrics = [];
 			this.sortMetrics(metrics).forEach(metric => {
@@ -238,85 +262,60 @@ export default {
 			return formattedMetrics.toString().replace(/,/g, ', ');
 		},
 
-		async createSettings(){
-			let backendMetrics = [];
-			this.sortMetrics(this.selectedMetrics).forEach(element => {
-				backendMetrics.push(element.name)
-			})
-			await axios
-			.post(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/session-settings', {
-				name: this.name,
-				createdBy: this.createdBy,
-				participants: this.principal,
-				interval: this.interval,
-				option: this.option,
-				metrics: backendMetrics
-			})
-			.then(response => {
-				console.log('success', response.data)
-				this.getSessionSettings();
-				this.dispatchNotification('fastSettings.createSuccess', 'check-circle', 5000, 'success');
-			})
-      .catch(error => {
-				console.log(error.response);
-				this.dispatchNotification('fastSettings.createError', 'close-circle', 5000, 'error');
-      })
-		},		
-
 		/*
 		@fvillarrealcespedes:
-		Sends a request to delete a specific session settings by its _id property, then gets the updated array of session settings.
+		Gets locale from i18n plugin and gets the ISO 639-1 code of it. 
 		*/
-		async deleteSessionSettings(payload){
-			await axios
-			.delete(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/session-settings/' + payload)
-			.then(response => {
-				this.getSessionSettings();
-				this.dispatchNotification('fastSettings.deleteSuccess', 'check-circle', 5000, 'success');
-			})	
-      .catch(error => {
-				console.log(error.response);
-				this.dispatchNotification('fastSettings.deleteError', 'close-circle', 5000, 'error');
-      })
+		setSimpleLocale(){
+			var locale;
+			locale = this.$i18n.locale.split('-')[0];
+			console.log(locale)
+			return locale;
 		},
 
-		dispatchNotification(text, icon, timeout, color){
-			let notification = {
-				show: true,
-				icon: 'mdi-' + icon,
-				text: 'notifications.' + text,
-				timeout: timeout,
-				color: color
-			}
-			this.$store.dispatch('showNotification', notification)
-		}		
-
-	},
-
-	watch: {
 		/*
 		@fvillarrealcespedes:
-		Watches the metric array lenght property, in case that that value is zero sets the principal property as an empty string.
-		*/				
-		selectedMetrics: function(){
-			if(this.selectedMetrics.length === 0){
-				this.principal = '';
-			}
-		},
-
-		principal: function(){
-			if(this.option){
-				if(this.principal.max){
-					this.limit = this.principal.max/2;
-				}
-				else{
-					this.limit = 1;
-				}
-			}
+		Sorts the array metrics elements alphabetically by their alias.
+		*/
+		sortMetrics(metricsArray){
+			let metrics = [...metricsArray];
+			function compare ( a, b ){ return a.alias > b.alias ? 1 : -1; };
+			console.log(metrics.sort( compare ), 'sort')
+			return metrics.sort( compare );
 		}
 	},
 
 	computed: {
+		/*
+		@fvillarrealcespedes:
+		Session InitTime, get and set methods are imported from store.
+		*/
+		initTime: {
+			get () {
+				return this.$store.getters.getInitTime;
+			},
+			set (payload) {
+				this.$store.commit('setInitTime', payload);
+			}
+		},	
+
+		/*
+		@fvillarrealcespedes:
+		Array that includes all available performance metrics in NEURONE-AM, get and set methods are imported from store.
+		*/
+		metrics: {
+			get () {
+				return this.$store.getters.getMetrics;
+			},
+			set (payload) {
+				this.$store.commit('setMetrics', payload);
+			}
+		},				
+
+		/*
+		@fvillarrealcespedes:
+		Array that includes all custom sessionSettings, get and set methods are imported from store.
+		*/			
 		sessionSettings: {
 			get () {
 				return this.$store.getters.getSessionSettings;
@@ -326,6 +325,10 @@ export default {
 			}
 		},
 
+		/*
+		@fvillarrealcespedes:
+		Object that includes all session settings, get and set methods are imported from store.
+		*/
 		settings: {
 			get () {
 				return this.$store.getters.getSettings;
@@ -333,25 +336,7 @@ export default {
 			set (payload) {
 				this.$store.commit('setSettings', payload);
 			}
-		},
-
-		metrics: {
-			get () {
-				return this.$store.getters.getMetrics;
-			},
-			set (payload) {
-				this.$store.commit('setMetrics', payload);
-			}
-		},		
-
-		initTime: {
-			get () {
-				return this.$store.getters.getInitTime;
-			},
-			set (payload) {
-				this.$store.commit('setInitTime', payload);
-			}
-		},		
+		}	
 	}
 }
 </script>

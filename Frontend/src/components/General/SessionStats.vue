@@ -30,7 +30,7 @@ export default {
 		Redirects to session configuration view. 
 		*/
 		newSession(){
-			this.$router.push('/');
+			this.$router.push('/settings');
 		}
 	}
 }

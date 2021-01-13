@@ -1,6 +1,6 @@
 <template>
 	<v-container>
-		<!-- Create dialog -->
+		<!-- Create ClassroomConfiguration dialog -->
 		<v-dialog
 			v-model="createDialog"
 			max-width="75%"
@@ -26,7 +26,7 @@
 				</v-card-actions>					
 			</v-card>		
 		</v-dialog>
-		<!-- Update dialog -->
+		<!-- Update ClassroomConfiguration dialog -->
 		<v-dialog
 			v-model="updateDialog"
 			max-width="75%"
@@ -76,14 +76,14 @@
 							hide-details
 						></v-text-field>
 					</v-card-title>					
-						<!-- Display all custom classroom configurations -->
+						<!-- Display all custom classroomConfigurations -->
 						<v-data-table
 							:headers="headers"
 							:items="classroomConfigurations"
 							:search="search"
 						>
-							<template v-slot:item.action="{ item }">		
-								<!-- Button to show the selected classroom configuration in the UpdateClassroomConfiguration component -->
+							<template v-slot:item="{ item }">		
+								<!-- Button to show the selected classroomConfiguration in the UpdateClassroomConfiguration component -->
 								<v-btn
 									icon
 									color="blue"
@@ -93,7 +93,7 @@
 										mdi-pencil
 									</v-icon> 
 								</v-btn>
-								<!-- Button to delete the selected classroom configuration after confirmation -->
+								<!-- Button to delete the selected classroomConfiguration after confirmation -->
 								<v-btn
 									icon
 									color="red"
@@ -106,6 +106,7 @@
 							</template> 							  																		
 						</v-data-table>					
 				</v-card>
+				<!-- Alert about custom classroomConfigurations -->
 				<v-alert
 					type="info"
 					dense
@@ -155,56 +156,25 @@ export default {
 	},
 
 	methods: {
-
+		/*
+		@fvillarrealcespedes:
+		Methods imported from store.
+		*/
 		...mapActions([
 			'getClassroomConfigurations'
 		]),
-		/*
-		@fvillarrealcespedes:
-		Hides the create dialog, calls the getter method for classroom configurations, resets all the CreateClassroomConfiguration component 
-		fields and finally disposes the chart of the same component. 
-		*/		
-		resetCreate(){
-			this.createDialog = false;
-			this.$refs.createConfiguration.$refs.newConfigurationForm.reset();
-			this.$refs.createConfiguration.disposeChart();
-			this.$refs.createConfiguration.chart = null;
-			this.$refs.createConfiguration.height = 0;
-		},
 
 		/*
 		@fvillarrealcespedes:
-		Hides the update dialog and disposes the update classroom configuration chart. 
-		*/		
-		resetUpdate(){
-			this.updateDialog = false;
-			this.$refs.updateConfiguration.disposeChart();
-			this.$refs.updateConfiguration.chart = null;
-			this.$refs.updateConfiguration.height = 0;
-		},		
-
-		/*
-		@fvillarrealcespedes:
-		Sets a confirmation message previous the classroom configuration deletion. 
+		Sets a confirmation message previous the classroomConfiguration deletion. 
 		*/		
     confirmDelete(){
-      return confirm(this.$t('classroomConfigurations.deleteConfiguration'))
-		},
-		
-		/*
-		@fvillarrealcespedes:
-		Sets the selected classroom configuration in the UpdateClassroomConfiguration component by getting its _id property, then shows the update 
-		dialog.
-		*/		
-		viewConfiguration(payload){
-			this.classroomConfigurationId = payload;
-			this.updateDialog = true;
+      return confirm(this.$t('classroomConfigurations.deleteConfigurationConfirmation'))
 		},
 
 		/*
 		@fvillarrealcespedes:
-		Sends a request to delete a specific classroom configuration by its _id property, then gets the updated array of custom classroom 
-		configurations.
+		Sends a request to delete a specific classroom configuration by its _id property, then gets the updated custom classroomConfigurations array.
 		*/
 		async deleteClassroomConfiguration(payload){
 			await axios
@@ -219,6 +189,11 @@ export default {
       })
 		},
 
+		/*
+		@fvillarrealcespedes:
+		Composes and send to store a notification object to be displayed for the user. The icon, text, timeout and color properties depends on the type 
+		of message that want to display.
+		*/
 		dispatchNotification(text, icon, timeout, color){
 			let notification = {
 				show: true,
@@ -228,25 +203,47 @@ export default {
 				color: color
 			}
 			this.$store.dispatch('showNotification', notification)
-		}
-
-
-	},
-
-	computed:{
-    classroomConfigurations: {
-      get () {
-        return this.$store.getters.getClassroomConfigurations;
-			},			
-      set (payload) {
-        this.$store.commit('setClassroomConfigurations', payload);
-      }
-		},	
-
+		},		
 
 		/*
 		@fvillarrealcespedes:
-		ClassroomConfigurationId for the UpdateClassroomConfiguration component, get and set methods are imported from the store.
+		Hides the create dialog, calls getter method for classroomConfigurations, resets all CreateClassroomConfiguration component 
+		fields and disposes its chart. 
+		*/		
+		resetCreate(){
+			this.createDialog = false;
+			this.$refs.createConfiguration.$refs.newConfigurationForm.reset();
+			this.$refs.createConfiguration.disposeChart();
+			this.$refs.createConfiguration.chart = null;
+			this.$refs.createConfiguration.height = 0;
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Hides the update dialog and disposes the update classroomConfiguration chart. 
+		*/		
+		resetUpdate(){
+			this.updateDialog = false;
+			this.$refs.updateConfiguration.disposeChart();
+			this.$refs.updateConfiguration.chart = null;
+			this.$refs.updateConfiguration.height = 0;
+		},		
+
+		/*
+		@fvillarrealcespedes:
+		Sets the selected classroomConfiguration in the UpdateClassroomConfiguration component by getting its _id property, then shows it in the update 
+		dialog.
+		*/		
+		viewConfiguration(payload){
+			this.classroomConfigurationId = payload;
+			this.updateDialog = true;
+		}
+	},
+
+	computed:{
+		/*
+		@fvillarrealcespedes:
+		ClassroomConfigurationId for UpdateClassroomConfiguration component, get and set methods are imported from store.
 		*/		
     classroomConfigurationId: {
       get () {
@@ -255,7 +252,20 @@ export default {
       set (payload) {
         this.$store.commit('setClassroomConfigurationId', payload);
       }
-		}		
+		},
+				
+		/*
+		@fvillarrealcespedes:
+		Array that includes all custom classroomConfigurations, get and set methods are imported from store.
+		*/				
+    classroomConfigurations: {
+      get () {
+        return this.$store.getters.getClassroomConfigurations;
+			},			
+      set (payload) {
+        this.$store.commit('setClassroomConfigurations', payload);
+      }
+		}	
 	}	
 }
 </script>

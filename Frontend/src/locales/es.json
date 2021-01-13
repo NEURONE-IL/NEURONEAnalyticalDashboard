@@ -12,13 +12,16 @@
 		},    
     "clear": "Limpiar",
     "close": "Cerrar",
+    "help": "¿Ayuda?",
+		"login": "Iniciar sesión",
+		"logout": "Cerrar sesión",    
     "configurePositions": "Configurar ubicaciones",
     "reset": "Limpiar",
     "save": "Guardar",
     "saveChanges": "Guardar cambios"
   },
 	"charts":{
-    "bars":{
+    "bar":{
 			"onLimit": "En el límite",
 			"overLimit": "Sobre el límite", 
       "title": "Estudiantes según categoría de desempeño en la métrica: ",
@@ -29,7 +32,7 @@
 			"title": "Desempeño de: ",
 			"titleConnector": " en "
 		}	,		
-		"nodes":{
+		"node":{
 			"title": "Aula"
 		}
 	},  
@@ -55,7 +58,7 @@
 		"alert": "En la vista principal solo se mostrarán las configuraciones de aula donde la cantidad de participantes sea menor o igual a la de participantes en la sesión",
     "createHeader": "Nueva configuración de aula",
     "createConfiguration": "Crear nueva configuración",
-    "deleteConfiguration": "¿Está segur@ que desea eliminar esta configuración de aula?",
+    "deleteConfigurationConfirmation": "¿Está segur@ que desea eliminar esta configuración de aula?",
     "header": "Configuraciones de aula",
     "tableHeaders": {
       "actions": "Acciones",
@@ -66,13 +69,8 @@
     },
     "updateHeader": "Actualizar configuración de aula"
   },
-  "clock": {
-    "currentTime": "Hora actual",
-    "initTime": "Hora de inicio",
-    "sessionTime": "Tiempo de sesión"
-  },
 	"fastSettings": {
-		"deleteSettings": "¿Está segur@ que desea eliminar estos ajustes de sesión?",
+		"deleteSettingsConfirmation": "¿Está segur@ que desea eliminar estos ajustes de sesión?",
     "header": "Ajustes de sesión",
     "loadSettings": "¿Está segur@ que desea cargar estos ajustes de sesión?",
 		"tableHeaders": {
@@ -106,12 +104,17 @@
     "session": "Sesión"
   },
   "login": {
-    "header": "Inicio de sesión"
+    "header": "Inicio de sesión",
+    "logoutConfirmation": "¿Está segur@ que desea salir de NEURONE-AD?", 
+    "password": "Contraseña",
+    "signin": "Ingresar",
+    "signup": "Registrarse",
+    "username": "Nombre de usuario"
   },
   "metrics": {
     "header": "Seleccione la(s) métrica(s) a evaluar"
   },
-  "metricsConfiguration": {
+  "metricsDisplay": {
     "header": "Métricas",
     "tableHeaders": {
       "description": "Descripción",
@@ -208,6 +211,11 @@
       "session": "Sesión"      
     }
   },
+  "timer": {
+    "currentTime": "Hora actual",
+    "initTime": "Hora de inicio",
+    "sessionTime": "Tiempo de sesión"
+  },  
   "$vuetify": {
     "dataFooter": {
       "itemsPerPageAll": "Todos",

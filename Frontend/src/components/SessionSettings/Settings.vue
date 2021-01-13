@@ -9,7 +9,7 @@
 				>
 					<h3 class="title">{{ $t('metrics.header') }}:</h3>
 					<v-row no-gutters justify="center">
-						<!-- V-for loop to display all availables metric --> 
+						<!-- V-for loop to display all availables metrics --> 
 						<v-col 
 							v-for="(metric, i) in sortMetrics(metrics)" :key="i"
 							md="4"
@@ -17,13 +17,14 @@
 							xs="12"
 						>
 							<v-row>
-								<!-- For each metric sets a switch to add the metric or remove from the selectedMetrics array -->
+								<!-- For each metric sets a switch to add the metric or remove it from the selectedMetrics array -->
 								<v-switch
 									v-model="selectedMetrics"
 									:label="metric.alias"
 									:value="metric"
 								>
 								</v-switch>
+								<!-- A tooltip is displayed to show the each metric description -->
 								<v-tooltip 
 									bottom
 									nudge-bottom="-20"
@@ -42,6 +43,7 @@
 											mdi-information
 										</v-icon>
 									</template>
+									<!-- Metrics description language depends on i18n locale property, by default its English -->
 									<span> {{ metric.descriptions[setSimpleLocale()] || metric.descriptions['en'] }}</span>
 								</v-tooltip>
 							</v-row>
@@ -63,6 +65,7 @@
 								return-object
 								:rules="selectRules"
 							>
+							<!-- Shows the NEURONE-AD metric alias, not the NEURONE-AM metric name -->
 							<template v-slot:item="{ item }">
 								<span> {{ item.alias }} </span>
 							</template>
@@ -84,7 +87,8 @@
 					</v-row>
 					<br>
 					<v-divider></v-divider>	
-					<br>			
+					<br>
+					<!-- Showed when principal property is selected -->
 					<v-row v-if="principal">
 						<v-col cols="4" xs="12">
 							<!-- MetricAlert property switchable field -->
@@ -124,6 +128,7 @@
 						</v-col>	
 					</v-row>					
 				</v-form>		
+				<!-- Showed when validSettings property is true -->
 				<v-row v-if="validSettings">
 					<v-col cols="4" xs="12" class="text-center">
 						<v-switch				
@@ -133,12 +138,13 @@
 						</v-switch>
 					</v-col>
 					<v-col cols="4" xs="12" class="text-center">
-						<!-- Interval property selectionable field -->
+						<!-- SettingsName property input field, used to store the current sessionSettings -->
 						<v-text-field
 							v-model="settingsName"
 							v-if="saveSettings"
 							:label="$t('labels.name')"
 							:rules="requiredRules"
+							:counter="50"
 						>
 						</v-text-field>
 					</v-col>					
@@ -146,8 +152,8 @@
 				<br>
 				<v-divider v-if="principal"></v-divider>	
 				<br>	
-				<!-- Button to save the settings, disabled when there are not at least one selected metric or at least one ConfigureSession form 
-				field is invalid -->
+				<!-- Button to save the current sessionSettings, disabled when there are not at least one selected metric or whent at least one 
+				SettingsForm form field is invalid -->
 				<v-btn
 					class="mt-4 mb-4"
 					color="success"
@@ -188,46 +194,73 @@ export default {
 			saveSettings: false,
 			validSettings: true,
 			settingsName: '',
-			/*Arrays & Rules*/
+			/*Arrays*/
+			alertOptions: [
+				{value: '1', text: this.$t('settings.alertOptions.higher')},
+				{value: '2', text: this.$t('settings.alertOptions.lower')},
+			],
 			timeOptions: [
 				{value: 10, text: '10 ' + this.$t('settings.seconds')},
 				{value: 20, text: '20 ' + this.$t('settings.seconds')},
 				{value: 30, text: '30 ' + this.$t('settings.seconds')},
 				{value: 60, text: '60 ' + this.$t('settings.seconds')}
 			],
-			alertOptions: [
-				{value: '1', text: this.$t('settings.alertOptions.higher')},
-				{value: '2', text: this.$t('settings.alertOptions.lower')},
-			],
+			/*Rules*/
+			limitRules: [
+				v => (!!v && v > 0) || this.$t('rules.limitRule')
+			],			
 			requiredRules: [
         v => !!v || this.$t('rules.requiredRule'),
 				v => (v && (/\S/.test(v))) || this.$t('rules.spacesRule')
 			],
 			selectRules: [
         v => (v && v != null) || this.$t('rules.selectRule')
-			],
-			limitRules: [
-				v => (!!v && v > 0) || this.$t('rules.limitRule')
 			]
 		}
 	},
 
+	/*
+	@fvillarrealcespedes:
+	Invoked before the rendering. Sets initTime property null.
+	*/
 	created(){
 		this.initTime = null;
 	},
 
 	methods: {
+		/*
+		@fvillarrealcespedes:
+		Methods imported from store.
+		*/		
 		...mapActions([
 			'getSessionSettings'
 		]),
 
-		setSimpleLocale(){
-			var locale;
-			locale = this.$i18n.locale.split('-')[0];
-			console.log(locale)
-			return locale;
+		/*
+		@fvillarrealcespedes:
+		Sends a request to store a new sessionSettings object, given the object itself and a name to identify it. If all works correctly,
+		the getSessionSettings method is called to update the sessionSettings array in store. Finally, redirects to Classroom view.
+		*/		
+		async createSettings(name, settings){
+			settings.name = name;
+			await axios
+			.post(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}/session-settings`, settings)
+			.then(response => {
+				this.dispatchNotification('sessionSettings.createSuccess', 'check-circle', 5000, 'success');
+				this.getSessionSettings();
+				this.$router.push('/classroom');
+			})
+			.catch(error => {
+				this.dispatchNotification('sessionSettings.createError', 'check-circle', 5000, 'error');
+				console.log(error.response);
+			})
 		},
 
+		/*
+		@fvillarrealcespedes:
+		Composes and send to store a notification object to be displayed for the user. The icon, text, timeout and color properties depends on the type 
+		of message that want to display.
+		*/
 		dispatchNotification(text, icon, timeout, color){
 			let notification = {
 				show: true,
@@ -237,103 +270,20 @@ export default {
 				color: color
 			}
 			this.$store.dispatch('showNotification', notification)
-		},		
-
-		setHint(){
-			if(this.principal.max){
-				return this.$t('settings.maxHint') + ' ' + this.principal.alias + ': ' + this.principal.max;
-			}else{
-				return this.$t('settings.maxHint') + ' ' + this.principal.alias + ': ' + this.$t('settings.undefined');
-			}
-		},
-
-		validSettingsName(){
-			if(!(/\S/.test(this.settingsName)) || this.settingsName.length < 5){
-				return false;
-			}
-			return true;
-		},
-		
-
-		async processSettings(){
-			if(this.saveSettings){
-				let backendMetrics = [];
-				this.sortMetrics(this.selectedMetrics).forEach(element => {
-					backendMetrics.push(element.name)
-				})
-				let interval = this.interval * 1000;
-				let limit = this.limit;
-				let metrics = backendMetrics;
-				let option = this.option;
-				let principal = this.principal.name;
-				let name = this.settingsName;
-				let settings = {
-					interval,
-					limit,
-					metrics,
-					option,
-					principal, 
-					name
-				};
-				await axios
-				.post(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}/session-settings`, settings)
-				.then(response => {
-					this.dispatchNotification('sessionSettings.createSuccess', 'check-circle', 5000, 'success');
-					this.getSessionSettings();
-					this.goSettings(settings);
-				})
-				.catch(error => {
-					this.dispatchNotification('sessionSettings.createError', 'check-circle', 5000, 'error');
-					console.log(error.response);
-				})
-			}else{
-				this.sendSettings();
-			}
-		},
-
-		async goSettings(settings){
-			console.log(settings, 'go')
-			let interval = settings.interval;
-			let limit = settings.limit;
-			let metrics = settings.metrics;
-			let option = settings.option;
-			let principal = settings.principal;
-			let newSettings = {
-				interval,
-				limit,
-				metrics,
-				option,
-				principal, 
-			};			
-			await axios
-			.post(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/configure`, newSettings)
-			.then(response => {
-				this.settings = {
-					limit: limit,
-					metrics: response.data.metrics,
-					option: option,
-					principal: principal,
-				}
-				localStorage.setItem('settings', JSON.stringify(newSettings));
-				this.$router.push('/classroom');
-			})
-			.catch(error => {
-				console.log(error.response);
-			})
-		},
+		},			
 
 		/*
 		@fvillarrealcespedes:
-		NEURONE-AM original function, sends a request to configure a new session. First composes a settings data object with the 
-		component properties, then sends the request and when the response is recived saves the session settings to store and 
-		finally if everything works redirects to classroom view.
-		*/
-		async sendSettings(){
+		NEURONE-AM original method, sends a request to configure a new session. First composes a settings data object with the component 
+		properties, then sends the request and when the response is recived saves the sessionSettings to store. Additionally for NEURONE-AD, 
+		in case the user want to store the sessionSettings for future sessions the createSettings method is called, if not redirects to 
+		Classroom view.
+		*/		
+		async processSettings(){
 			let backendMetrics = [];
 			this.sortMetrics(this.selectedMetrics).forEach(element => {
-				backendMetrics.push(element.name)
-			})
-			console.log(backendMetrics)
+				backendMetrics.push(element.name);
+			});
 			let interval = this.interval * 1000;
 			let limit = this.limit;
 			let metrics = backendMetrics;
@@ -344,8 +294,9 @@ export default {
 				limit,
 				metrics,
 				option,
-				principal
-			};
+				principal, 
+			}
+			/*Axios requests*/
 			await axios
 			.post(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/configure`, settings)
 			.then(response => {
@@ -356,19 +307,61 @@ export default {
 					principal: principal,
 				}
 				localStorage.setItem('settings', JSON.stringify(settings));
-				this.$router.push('/classroom');
+				/*If user selects to save the sessionSettings*/
+				if(this.saveSettings){
+					this.createSettings(this.settingsName, settings);
+				}else{
+					this.$router.push('/classroom');
+				}
 			})
 			.catch(error => {
 				console.log(error.response);
 			})
 		},
 
+		/*
+		@fvillarrealcespedes:
+		Sets a hint for limit property input field, depending on metrics max property.
+		*/
+		setHint(){
+			if(this.principal.max){
+				return this.$t('settings.maxHint') + ' ' + this.principal.alias + ': ' + this.principal.max;
+			}else{
+				return this.$t('settings.maxHint') + ' ' + this.principal.alias + ': ' + this.$t('settings.undefined');
+			}
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Gets locale from i18n plugin and gets the ISO 639-1 code of it. 
+		*/
+		setSimpleLocale(){
+			var locale;
+			locale = this.$i18n.locale.split('-')[0];
+			return locale;
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Sorts the array metrics elements alphabetically by their alias.
+		*/	
 		sortMetrics(metricsArray){
 			let metrics = [...metricsArray];
 			function compare ( a, b ){ return a.alias > b.alias ? 1 : -1; };
 			return metrics.sort( compare );
-		}
+		},		
 
+		/*
+		@fvillarrealcespedes:
+		Checks if the new sessionSettings object to store has a valid name, two rules are applied: isn't just spaces and its length
+		is at least of 5 characters.
+		*/
+		validSettingsName(){
+			if(!(/\S/.test(this.settingsName)) || this.settingsName.length < 5){
+				return false;
+			}
+			return true;
+		}
 	},
 
 	watch: {
@@ -382,6 +375,10 @@ export default {
 			}
 		},
 
+		/*
+		@fvillarrealcespedes:
+		Watches the principal object max property to update the limit property.
+		*/		
 		principal: function(){
 			if(this.option){
 				if(this.principal.max){
@@ -395,15 +392,23 @@ export default {
 	},
 
 	computed: {
-		settings: {
+		/*
+		@fvillarrealcespedes:
+		Session InitTime, get and set methods are imported from store.
+		*/	
+		initTime: {
 			get () {
-				return this.$store.getters.getSettings;
+				return this.$store.getters.getInitTime;
 			},
 			set (payload) {
-				this.$store.commit('setSettings', payload);
+				this.$store.commit('setInitTime', payload);
 			}
-		},
-
+		},	
+		
+		/*
+		@fvillarrealcespedes:
+		Array that includes all available performance metrics in NEURONE-AM, get and set methods are imported from store.
+		*/
 		metrics: {
 			get () {
 				return this.$store.getters.getMetrics;
@@ -413,14 +418,18 @@ export default {
 			}
 		},		
 
-		initTime: {
+		/*
+		@fvillarrealcespedes:
+		Object that includes all session settings, get and set methods are imported from store.
+		*/
+		settings: {
 			get () {
-				return this.$store.getters.getInitTime;
+				return this.$store.getters.getSettings;
 			},
 			set (payload) {
-				this.$store.commit('setInitTime', payload);
+				this.$store.commit('setSettings', payload);
 			}
-		},		
+		}		
 	}
 }
 </script>

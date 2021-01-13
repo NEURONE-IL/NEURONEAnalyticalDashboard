@@ -9,7 +9,7 @@
 		dark	
 		:color="color"
 	>
-		<!-- List to display the view tabs -->
+		<!-- List to display view tabs -->
 		<v-list
 			dense
 			expand
@@ -46,7 +46,7 @@
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
       </v-list-item>
-			<!-- List items, with a v-for loop display all available tabs, for each one requires the title, the route when clicked and a boolean 
+			<!-- List items, with a v-for loop display all available tabs, for each one requires title, route when clicked and a boolean 
 			property in case it needs to be disabled -->      
 			<v-list-item
 				v-for="tab in tabs"
@@ -56,28 +56,104 @@
 				link
 				dark
 			>
-				<!-- Shows a representative icon for each tab and the the title -->
-				<v-list-item-icon>
+				<!-- Shows a representative icon for each tab and title, also a tooltip is displayed when miniVariant property is true -->
+				<v-tooltip right v-if="miniVariant">
+					<template v-slot:activator="{ on }">
+						<v-list-item-icon v-on="on">
+							<v-icon>{{ tab.icon }}</v-icon>
+						</v-list-item-icon>
+					</template>
+					<span>{{ $t(tab.title) }}</span>
+				</v-tooltip>
+				<!-- If miniVariant property is false, just the icon is displayed -->
+				<v-list-item-icon v-else>
 					<v-icon>{{ tab.icon }}</v-icon>
-				</v-list-item-icon>
+				</v-list-item-icon>				
 				<v-list-item-content>
 					<v-list-item-title>{{ $t(tab.title) }}</v-list-item-title>
 				</v-list-item-content>
 			</v-list-item>
-		</v-list>    
+		</v-list>  
+		<!-- Template to display language indicator and help and logout list items -->  
 		<template v-slot:append>
 			<v-list-item
 				dark
 				v-if="!miniVariant"
 			>
-					<svg height="34" width="34">
-						<g>
-						<circle cx="16" cy="16" r="15" stroke="white" stroke-width="2px" fill="transparent"/>
-						<text x="16" y="16" text-anchor="middle" stroke="#0000" stroke-width="2px" dy=".3em"> {{ getLocale($i18n.locale) }} </text>
-						</g>
-					</svg>
+			</v-list-item>		
+			<!-- Language indicator -->					
+			<v-list-item
+				dark
+				v-if="!miniVariant"
+			>
+				<svg height="34" width="34">
+					<g>
+					<circle cx="16" cy="16" r="15" stroke="white" stroke-width="2px" fill="transparent"/>
+					<text x="16" y="16" text-anchor="middle" stroke="#0000" stroke-width="2px" dy=".3em"> {{ getLocale($i18n.locale) }} </text>
+					</g>
+				</svg>
 				<span class="mb-1 pa-2"> {{ $t('locale.language') }} </span>
-			</v-list-item>			
+			</v-list-item>
+			<!-- List with help and logout list items -->
+			<v-list
+				dense
+				expand
+				nav
+				class="py-0"
+			>
+				<!-- Help list item -->
+				<v-list-item
+					dark
+					link
+					class="help"
+					href="https://github.com/fvillarrealcespedes/NEURONEAnalyticalDashboard/"
+				>
+					<!-- Shows a representative icon for help list item, also a tooltip is displayed when miniVariant property is true -->
+					<v-tooltip right v-if="miniVariant">
+						<template v-slot:activator="{ on }">
+							<v-list-item-icon v-on="on">
+								<v-icon> mdi-help </v-icon>
+							</v-list-item-icon>
+						</template>
+						<span> {{ $t('buttons.help') }} </span>
+					</v-tooltip>
+					<!-- If miniVariant property is false, just the icon is displayed -->
+					<v-list-item-icon v-else>
+						<v-icon> mdi-help </v-icon>
+					</v-list-item-icon>
+					<v-list-item-content>
+						<v-list-item-title> 
+							{{ $t('buttons.help') }}	
+						</v-list-item-title>
+					</v-list-item-content>
+				</v-list-item>	
+				<!-- Logout list item -->
+				<v-list-item
+					dark
+					link
+					class="logout"
+					@click="confirmLogout() && logout()"
+				>	
+					<!-- Shows a representative icon for logout list item, also a tooltip is displayed when miniVariant property is true -->
+					<v-tooltip right v-if="miniVariant">
+						<template v-slot:activator="{ on }">
+							<v-list-item-icon v-on="on">
+								<v-icon> mdi-logout </v-icon>
+							</v-list-item-icon>
+						</template>
+						<span> {{ $t('buttons.logout') }} </span>
+					</v-tooltip>
+					<!-- If miniVariant property is false, just the icon is displayed -->
+					<v-list-item-icon v-else>
+						<v-icon> mdi-logout </v-icon>
+					</v-list-item-icon>
+					<v-list-item-content>
+						<v-list-item-title> 
+							{{ $t('buttons.logout') }}	
+						</v-list-item-title>
+					</v-list-item-content>
+				</v-list-item>	
+			</v-list>			
 		</template>
 	</v-navigation-drawer>
 </template>
@@ -95,6 +171,18 @@ export default {
 	},
 
 	methods: {
+		/*
+		@fvillarrealcespedes:
+		Sets a confirmation message previous the logout action. 
+		*/		
+    confirmLogout(){
+      return confirm(this.$t('login.logoutConfirmation'))
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Gets locale from i18n plugin and shows the ISO 639-1 code of it. 
+		*/		
 		getLocale(locale){
 			var splitted = locale.split('-');
 			if(splitted[0]){
@@ -102,13 +190,23 @@ export default {
 			}else{
 				return locale.toUpperCase();
 			}
-		}
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Trys to authenticate the given credentials. Composes a credentials object and sends it to store where the NEURONE-AUTH login service 
+		is called.
+		*/
+		logout(){
+			this.$store.commit('destroyUser')
+			this.$router.push('/login')
+		}, 
 	},
 
   computed: {
 		/*
 		@fvillarrealcespedes:
-		Condition to show the left drawer, get and set methods are imported from the store.
+		Condition to show the left drawer, get and set methods are imported from store.
 		*/ 		
     leftDrawer: {
       get () {
@@ -121,7 +219,7 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Tabs to to display in the right drawer, get and set methods are imported from the store.
+		Tabs to to display in the left drawer, get and set methods are imported from store.
 		*/ 
 		tabs: {
       get () {
@@ -132,6 +230,10 @@ export default {
       },
 		},
 
+		/*
+		@fvillarrealcespedes:
+		Authenticated user, get and set methods are imported from store.
+		*/		
 		user: {
       get () {
         return this.$store.getters.getUser;
@@ -148,5 +250,11 @@ export default {
 .username{
 	font-size: 16px !important;
 	font-weight: bold;
+}
+.logout{
+	background-color: #FF5252;
+}
+.help{
+	background-color: #006666;
 }
 </style>
