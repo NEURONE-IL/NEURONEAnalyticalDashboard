@@ -60,7 +60,7 @@ export default {
 		*/			
 		setDescription(){
 			var description;
-			header = 'descriptions.' + this.$i18n.locale.split('-')[0];
+			description = 'descriptions.' + this.$i18n.locale.split('-')[0];
 			return description;
 		}
 	},

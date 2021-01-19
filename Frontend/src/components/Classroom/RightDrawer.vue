@@ -44,7 +44,7 @@
       <!-- Participant displayer selector, available options are: all and selected ones from node chart -->
       <v-list-item>
         <v-select
-          v-model="drawerVisualization"
+          v-model="rightDrawerOption"
           :items="drawerOptions"
           item-value="id"
           :item-text="setOptionText()"
@@ -52,6 +52,7 @@
           prepend-icon="mdi-format-list-bulleted"
           required
           :rules="selectRules"
+          :disabled="!classroomChartOn"
         >
         </v-select>	
       </v-list-item>
@@ -121,7 +122,6 @@ export default {
       principal: '',
       limit: '',
       option: '',
-      drawerVisualization: null,
       /*Array*/      
       drawerOptions: [
         { id: 1, name: 'rightDrawer.drawerOptions.all' },				
@@ -143,14 +143,6 @@ export default {
 		this.principal = this.settings.principal;
 		this.limit = this.settings.limit;
     this.option = this.settings.option;
-  },
-
-	/*
-	@fvillarrealcespedes:
-	Invoked when the DOM is mounted and allows to access the reactive component. Sets the drawerVisualization property as 1. 
-	*/
-  mounted(){
-    this.drawerVisualization = 1;
   },
 
   methods:{
@@ -263,40 +255,52 @@ export default {
     }
 	},
 
-	watch: {
-		/*
-		@fvillarrealcespedes:
-		Watches the drawer visualization property to select the participants to show in the drawer.
-    */		
-    allParticipants: function(){
-      if(this.drawerVisualization === 1){
-        this.drawerParticipants = this.allParticipants;
-      }
-    },
-    
+	watch: {   
     /*
 		@fvillarrealcespedes:
-		Watches the drawer visualization property to select the participants to show in the drawer.
+		Watches the rightDrawerOption property to select the participants to show in the drawer.
 		*/		
-		drawerVisualization: function(){
-      this.drawerParticipants = [];
-      switch(this.drawerVisualization){
-        case 1:
-          this.drawerParticipants = this.allParticipants;
-          break;
-        case 2:
-          this.drawerParticipants = this.selectedParticipants;
-          break;
+    rightDrawerOption: function(){
+      if(this.classroomChartOn){
+        this.drawerParticipants = [];
+        switch(this.rightDrawerOption){
+          case 1:
+            this.drawerParticipants = this.allParticipants;
+            break;
+          case 2:
+            this.drawerParticipants = this.selectedParticipants;
+            break;
+        }
+      }else{
+        this.drawerParticipants = [];
       }
-      console.log(this.drawerParticipants)
+    },
+
+    /*
+		@fvillarrealcespedes:
+		Watches the classroomChartOn property to select when the participants can be showed in the drawer.
+		*/		
+    classroomChartOn: function(){
+      if(!this.classroomChartOn){
+        this.drawerParticipants = [];
+      }else{
+        switch(this.rightDrawerOption){
+          case 1:
+            this.drawerParticipants = this.allParticipants;
+            break;
+          case 2:
+            this.drawerParticipants = this.selectedParticipants;
+            break;
+        }        
+      }
     },
 
 		/*
 		@fvillarrealcespedes:
-		Watches the drawer visualization property to select the participants to show in the drawer.
+		Watches the selectedParticipants array to show its content in the drawer.
     */		
     selectedParticipants: function(){
-      if(this.drawerVisualization === 2){
+      if(this.rightDrawerOption === 2){
         this.drawerParticipants = this.selectedParticipants;
       }
     }
@@ -315,6 +319,19 @@ export default {
         this.$store.commit('setAllParticipants', payload);
       }
     },
+
+    /*
+		@fvillarrealcespedes:
+		Boolean property to alert if the node chart is being showed or not, get and set methods are imported from store.
+		*/
+		classroomChartOn: {
+      get () {
+        return this.$store.getters.getClassroomChartOn;
+      },
+      set (payload) {
+        this.$store.commit('setClassroomChartOn', payload);
+      }
+		},    
 
 		/*
 		@fvillarrealcespedes:

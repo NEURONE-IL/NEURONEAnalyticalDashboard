@@ -11,6 +11,8 @@ export default new Vuex.Store({
     initTime: null,
     /*User*/
     user: JSON.parse(localStorage.getItem('currentUser')) || null,
+    /*Classroom chart*/
+    classroomChartOn: null,
     /*AllMetrics*/
     metrics: [],    
     /*Classroom Configurations*/
@@ -162,6 +164,10 @@ export default new Vuex.Store({
       state.user = null;
     },
 
+    setClassroomChartOn(state, payload){
+      state.classroomChartOn = payload;
+    },
+
     setMetrics(state, payload){
       state.metrics = payload;
     },    
@@ -242,6 +248,10 @@ export default new Vuex.Store({
 
     getUser(state){
       return state.user;
+    },
+
+    getClassroomChartOn(state){
+      return state.classroomChartOn;
     },
 
     getMetrics(state){

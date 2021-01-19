@@ -35,7 +35,12 @@
 		"node":{
 			"title": "Aula"
 		}
-	},  
+  },  
+  "chronometer": {
+    "currentTime": "Hora actual",
+    "initTime": "Hora de inicio",
+    "sessionTime": "Tiempo de sesión"
+  },
   "classroom": {
     "classroomConfigurations": {
       "circle": "Circular",
@@ -211,11 +216,6 @@
       "session": "Sesión"      
     }
   },
-  "timer": {
-    "currentTime": "Hora actual",
-    "initTime": "Hora de inicio",
-    "sessionTime": "Tiempo de sesión"
-  },  
   "$vuetify": {
     "dataFooter": {
       "itemsPerPageAll": "Todos",

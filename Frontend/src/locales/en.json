@@ -36,6 +36,11 @@
 			"title": "Classroom"
 		}
 	},	
+	"chronometer": {
+		"currentTime": "Current time",
+		"initTime": "Init time",
+		"sessionTime": "Session time"
+	},	
 	"classroom": {
 		"classroomConfigurations": {
 			"circle": "Circle",
@@ -211,11 +216,7 @@
       "session": "Session"			
     }
 	},
-	"timer": {
-		"currentTime": "Current time",
-		"initTime": "Init time",
-		"sessionTime": "Session time"
-	},	
+
   "$vuetify": {
     "dataFooter": {
 			"itemsPerPageAll": "All",

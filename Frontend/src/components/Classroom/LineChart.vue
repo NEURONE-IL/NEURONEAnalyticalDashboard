@@ -255,7 +255,7 @@ export default {
 			handler: async function(){
 				if(this.lineChartUsername){
 					this.chartData = [];
-					this.interval = 30;
+					this.interval = 10;
 					this.getInitTime();			
 				}			
 			}

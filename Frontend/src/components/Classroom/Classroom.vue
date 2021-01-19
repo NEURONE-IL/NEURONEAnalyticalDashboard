@@ -5,8 +5,8 @@
 				<h2>{{ $t('classroom.header') }}</h2>
 				<v-divider></v-divider>	
 				<br>
-				<!-- Timer component only visible when showTimer property is true -->
-				<Timer v-if="showTimer"/>
+				<!-- Chronometer component only visible when showChronometer property is true -->
+				<Chronometer v-if="showChronometer"/>
 				<!-- Form to set the classroom configuration for the node chart -->
 				<v-form
 					ref="configurationForm"
@@ -225,9 +225,10 @@ Component imports.
 */
 import BarChart from '../Classroom/BarChart';
 import LineChart from '../Classroom/LineChart';
-import Timer from '../Classroom/Timer';
+import Chronometer from '../Classroom/Chronometer';
 import { mapActions, mapState } from 'vuex';
 import axios from 'axios';
+
 /*
 @fvillarrealcespedes:
 Chart library imports.
@@ -245,7 +246,7 @@ export default {
 	components: {
 		BarChart,
 		LineChart,
-		Timer
+		Chronometer
 	},
 
 	data (){
@@ -271,8 +272,8 @@ export default {
 			participants: [],
 			principal: '',
 			sessionMetrics: [],
-			/*Timer component show condition*/
-			showTimer: false,
+			/*Chronometer component show condition*/
+			showChronometer: false,
 			/*Arrays*/
 			allClassroomConfigurations: [
 				//{ id: 1, name: this.$t('classroom.classroomConfigurations.circle'), participants: 50 },
@@ -315,7 +316,7 @@ export default {
 
 	/*
 	@fvillarrealcespedes:
-	Invoked after create, initializes some component properties, mainly the associated to node chart.
+	Invoked after create, initializes some component properties, mainly the related to node chart.
 	*/
 	mounted(){
 		this.fontsize = 13;
@@ -323,6 +324,7 @@ export default {
 		this.separation = 60;
 		this.selectedParticipants = [];
 		this.allParticipants = [];
+		this.classroomChartOn = false;
 	},
 
 	methods: {
@@ -400,14 +402,14 @@ export default {
 		/*
 		@fvillarrealcespedes:
 		NEURONE-AM original method, gets the session init time and sets it to store. 
-		Also the timer component show condition is setted true.
+		Also the Chronometer component show condition is setted true.
 		*/
 		async getInitTime(){
 			await axios
 			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/inittime`)
 			.then(response => {
 				this.initTime = response.data.initTime;
-				this.showTimer = true;
+				this.showChronometer = true;
 			})
       .catch(error => {
         console.log(error.response);
@@ -544,6 +546,9 @@ export default {
 			title.text = this.$t('charts.node.title');
 			title.fontWeight = "bold";
 			title.fontSize = 25;	
+			/*Sets classroomChartOn boolean property true*/
+			this.classroomChartOn = true;
+			this.rightDrawerOption = 1;
 		},
 
 		/*
@@ -849,6 +854,8 @@ export default {
 			}				
 			/*Color update*/
 			if(this.option != ""){
+				/*Used for performance test*/
+				console.time('updateChart');
 				var color;
 				for(var i=0; i<this.users; i++){
 					color = this.setColor(this.participants[i].results[this.principal]);
@@ -857,6 +864,8 @@ export default {
 					this.chart.series.values[0].dataItems.values[i].node.stroke = color;
 					this.chart.series.values[0].dataItems.values[i].node.outerCircle.stroke = color;							
 				}
+				/*Used for performance test*/
+				console.timeEnd('updateChart');
 			}
 		},
 
@@ -871,13 +880,17 @@ export default {
 				this.users = this.participants.length;
 				this.dispatchNotification('classroom.participantsLoaded', 'information', 5000, 'info');
       } else {
+				/*Used for performance test*/
+				console.time('updateMetrics');
         newMetrics.map((metric, i) => {
           this.participants[i].results = Object.assign(
             {},
             this.participants[i].results,
             metric.results
           );
-        });
+				});
+				/*Used for performance test*/
+				console.timeEnd('updateMetrics');
 			}
 			/*Node chart update*/
 			if(this.chart){
@@ -953,6 +966,19 @@ export default {
       }
 		},
 
+    /*
+		@fvillarrealcespedes:
+		Boolean property to alert if the node chart is being showed or not, get and set methods are imported from store.
+		*/
+		classroomChartOn: {
+      get () {
+        return this.$store.getters.getClassroomChartOn;
+      },
+      set (payload) {
+        this.$store.commit('setClassroomChartOn', payload);
+      }
+		},			
+
 		/*
 		@fvillarrealcespedes:
 		Array that includes all custom classroomConfigurations, get and set methods are imported from store.
@@ -1018,6 +1044,19 @@ export default {
 			}
 		},
 
+		/*
+		@fvillarrealcespedes:
+    Option to select the right drawer visualization option, get and set methods are imported from store. 
+    */  
+		rightDrawerOption: {
+			get () {
+				return this.$store.getters.getRightDrawerOption;
+			},
+			set (payload) {
+				this.$store.commit('setRightDrawerOption', payload);
+			},
+		}, 
+		
     /*
 		@fvillarrealcespedes:
 		RightDrawerParticipantUsername to find in node chart the selected participant from left drawer, get and set methods are 

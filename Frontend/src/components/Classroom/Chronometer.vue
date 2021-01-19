@@ -5,19 +5,19 @@
 				<v-col cols="4">
 					<!-- Session init time -->
 					<span>
-						{{ $t('timer.initTime') }}: {{this.sessionInitTime}}
+						{{ $t('chronometer.initTime') }}: {{this.sessionInitTime}}
 					</span>
 				</v-col>
 				<v-col cols="4">
 					<!-- Actual time -->
 					<span>
-						{{ $t('timer.currentTime') }}: {{this.currentTime}}
+						{{ $t('chronometer.currentTime') }}: {{this.currentTime}}
 					</span>
 				</v-col>
 				<v-col cols="4">
 					<!-- Session time -->
 					<span>
-						{{ $t('timer.sessionTime') }}: {{this.sessionTime}}
+						{{ $t('chronometer.sessionTime') }}: {{this.sessionTime}}
 					</span>
 				</v-col>
 			</v-row>
@@ -33,7 +33,7 @@ Component imports.
 import { mapState } from 'vuex';
 
 export default {
-	name: 'Timer', 
+	name: 'Chronometer', 
 
 	data(){
 		return{
@@ -141,7 +141,7 @@ export default {
 .body {
   background: black;
 }
-.timer {
+.chronometer {
 	position: absolute;
 	top: 50%;
 	left: 50%;

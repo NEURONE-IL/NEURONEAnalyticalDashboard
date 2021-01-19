@@ -4,6 +4,15 @@
 			<v-col cols="12" md="6" offset="3" class="text-center">
 				<v-spacer :span="24" class="separator"></v-spacer>
 				<h2>{{ $t('login.header') }}</h2>
+				<v-row class="loginImg">
+					<v-img
+						src="@/assets/neurone-adlogo.png"
+						max-height="60%"
+						max-width="60%"					
+					>
+					</v-img>
+				</v-row>
+				<v-spacer :span="24" class="separator"></v-spacer>
 				<!-- LogIn form -->
 				<v-form
 					ref="loginForm"
@@ -153,6 +162,9 @@ export default {
 
 <style scoped>
 .separator{
-	height: 50%;
+	height: 10%;
+}
+.loginImg{
+	justify-content: center;
 }
 </style>
