@@ -225,6 +225,10 @@ export default {
 	*/
 	created(){
 		this.initTime = null;
+		this.tabs[0].disabled = false;
+		this.tabs[1].disabled = true;
+		this.tabs[2].disabled = false;
+		this.tabs[3].disabled = false;
 	},
 
 	methods: {
@@ -248,7 +252,7 @@ export default {
 			.then(response => {
 				this.dispatchNotification('sessionSettings.createSuccess', 'check-circle', 5000, 'success');
 				this.getSessionSettings();
-				this.$router.push('/classroom');
+				this.$router.replace('/classroom');
 			})
 			.catch(error => {
 				this.dispatchNotification('sessionSettings.createError', 'check-circle', 5000, 'error');
@@ -311,7 +315,7 @@ export default {
 				if(this.saveSettings){
 					this.createSettings(this.settingsName, settings);
 				}else{
-					this.$router.push('/classroom');
+					this.$router.replace('/classroom');
 				}
 			})
 			.catch(error => {
@@ -429,6 +433,19 @@ export default {
 			set (payload) {
 				this.$store.commit('setSettings', payload);
 			}
+		},
+		
+		/*
+		@fvillarrealcespedes:
+		Left drawer tabs, get and set methods are imported from store.
+		*/		
+		tabs: {
+      get () {
+        return this.$store.getters.getTabs;
+      },
+      set (payload) {
+        this.$store.commit('setTabs', payload);
+      },
 		}		
 	}
 }

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import SessionStats from '../components/General/SessionStats';
+import SessionStats from '../components/SessionStats/SessionStats';
 
 export default {
   name: 'SessionStatsView',

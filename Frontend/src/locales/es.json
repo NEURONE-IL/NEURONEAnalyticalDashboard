@@ -16,7 +16,9 @@
 		"login": "Iniciar sesión",
 		"logout": "Cerrar sesión",    
     "configurePositions": "Configurar ubicaciones",
+		"newSession": "Nueva sesión",		
     "reset": "Limpiar",
+    "resumeSession": "Volver a sesión actual",
     "save": "Guardar",
     "saveChanges": "Guardar cambios"
   },
@@ -57,6 +59,7 @@
 		"principal":"Métrica principal",
     "rowsQuantity": "Cantidad de filas",
     "seconds": "segundos",
+		"undefined": "Indefinido",    
     "visualization": "Seleccionar visualización de aula"
   },
   "classroomConfigurations": {
@@ -186,7 +189,10 @@
     "spacesRule": "El campo no puede contener solo espacios"
   },
   "sessionStats": {
-    "newSession": "Configurar nueva sesión"
+    "header": "Resumen de sesión",
+		"participants": "Participantes",
+		"principal": "Métrica principal",
+    "sessionTime": "Tiempo de sesión"
   },
   "settings": {
     "activeAlert": "¿Activar alertas?",

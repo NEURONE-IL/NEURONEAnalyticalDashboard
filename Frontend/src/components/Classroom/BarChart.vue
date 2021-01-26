@@ -43,7 +43,7 @@
 					:disabled="!metric "
 					@click="getData()"
 				>
-					{{ $t('buttons.charts.generate') }}
+					{{ $t('buttons.charts.update') }}
 					<v-icon right>
 						mdi-check
 					</v-icon>
@@ -96,7 +96,50 @@ export default {
 		}
 	},
 
+	mounted(){
+		this.initChart();
+	},
+
 	methods: {
+
+		initChart(){
+			this.metric = this.settings.principal;
+			this.setAlias(this.metric);
+			this.getData();
+			this.setOption();
+			this.setLimit();
+			this.disposeChart();
+			this.getData();			
+		},
+
+		setOption(){
+			var option = Number(this.settings.option);
+			switch(option){
+				case 1:
+					this.option = this.alertOptions[0];
+				case 2:
+					this.option = this.alertOptions[1];
+				default:
+					this.option = this.alertOptions[0];
+			}
+		},
+
+		setLimit(){
+			var limit = Number(this.settings.limit);
+			if(limit){
+				this.limit = limit;
+			}else{
+				this.metrics.forEach(metric => {
+					if(metric.name === this.metric){
+						this.limit = metric.limit/2;
+					}
+				})
+			}
+			if(!this.limit){
+				this.limit = 1;
+			}
+		},
+
 		/*
 		@fvillarrealcespedes:
 		Formates the data from NEURONE-AM Connector component to match the chart format. The final dataset depends on option and limit properties 
@@ -110,7 +153,6 @@ export default {
 			limit property, orange for values that equals the limit and green for values over the limit*/
 			if(this.option === 1){
 				chartData.forEach(element => {
-					console.log(element[this.metric])
 					if(element[this.metric] > this.limit){
 						overLimit++;
 					}
@@ -123,15 +165,15 @@ export default {
 					/*Composes the final dataset*/
 					this.chartData = [
 						{
-							"category": this.$t('charts.bars.underLimit'),
+							"category": this.$t('charts.bar.underLimit'),
 							"participants": underLimit,
 							"color": '#F44336'
 						}, {
-							"category": this.$t('charts.bars.onLimit'),
+							"category": this.$t('charts.bar.onLimit'),
 							"participants": onLimit,
 							"color": '#FF9800'
 						}, {
-							"category": this.$t('charts.bars.overLimit'),
+							"category": this.$t('charts.bar.overLimit'),
 							"participants": overLimit,
 							"color": '#4CAF50'
 						}
@@ -153,19 +195,19 @@ export default {
 					/*Composes the final dataset*/					
 					this.chartData = [
 						{
-							"category": this.$t('charts.bars.underLimit'),
+							"category": this.$t('charts.bar.underLimit'),
 							"participants": underLimit,
 							"color": '#4CAF50'
-						},					
+						},
 						{
-							"category": this.$t('charts.bars.overLimit'),
-							"participants": overLimit,
-							"color": '#F44336'
-						}, 
-						{
-							"category": this.$t('charts.bars.onLimit'),
+							"category": this.$t('charts.bar.onLimit'),
 							"participants": onLimit,
 							"color": '#FF9800'
+						},						
+						{
+							"category": this.$t('charts.bar.overLimit'),
+							"participants": overLimit,
+							"color": '#F44336'
 						}
 					]
 				})
@@ -255,7 +297,7 @@ export default {
 			this.chart.exporting.menu = new am4core.ExportMenu();
 			/*Sets title and colums properties*/
 			let title = this.chart.titles.create();
-			title.text = this.$t('charts.bars.title') + this.metricAlias;
+			title.text = this.$t('charts.bar.title') + this.metricAlias;
 			title.fontSize = 25;
 			title.marginBottom = 30;
 			var columnTemplate = series.columns.template;
@@ -281,6 +323,12 @@ export default {
 		*/			
 		metric: function(){
 			this.setAlias(this.metric);
+		},
+
+		showBarChart: function(){
+			if(this.showBarChart){
+				this.initChart();
+			}
 		}
 	},
 
@@ -296,6 +344,32 @@ export default {
 			set (payload) {
 				this.$store.commit('setMetrics', payload);
 			}
+		},
+		
+		/*
+		@fvillarrealcespedes:
+		Object that includes all sessionsettings, get and set methods are imported from store.
+		*/	
+		settings: {
+			get () {
+				return this.$store.getters.getSettings;
+			},
+			set (payload) {
+				this.$store.commit('setSettings', payload);
+			}
+		},
+		
+		/*
+		@fvillarrealcespedes:
+		Condition to show the line chart, get and set methods are imported from store.
+		*/		
+		showBarChart: {
+			get () {
+				return this.$store.getters.getShowBarChart;
+			},
+      set (payload){
+        this.$store.commit('setShowBarChart', payload);
+      }			
 		}		
 	}
 }

@@ -136,7 +136,7 @@ export default {
 			};
 			this.$store.dispatch('retrieveUser', credentials)
 			.then(response => {
-				this.$router.push('/settings');
+				this.$router.replace('/settings');
 			})
 		},
 

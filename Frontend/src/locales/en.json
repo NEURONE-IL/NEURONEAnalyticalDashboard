@@ -16,7 +16,9 @@
 		"help": "Help?",
 		"login": "Login",
 		"logout": "Logout",
+		"newSession": "New session",		
 		"reset": "Reset",
+		"resumeSession": "Resume current session",
 		"save": "Guardar",
 		"saveChanges": "Save changes"
 	},
@@ -57,6 +59,7 @@
 		"principal":"Principal metric",
 		"rowsQuantity": "Rows quantity",	
 		"seconds": "seconds",	
+		"undefined": "Undefined",
 		"visualization": "Select classroom visualization"
 	},
 	"classroomConfigurations": {
@@ -186,7 +189,10 @@
 		"spacesRule": "The field cannot contain just spaces"
 	},	
 	"sessionStats": {
-		"newSession": "Configure new session"
+		"header": "Session summary",
+		"participants": "Participants",
+		"principal": "Principal metric",
+		"sessionTime": "Session time"
 	},
 	"settings": {
 		"activeAlert": "Active alerts?",

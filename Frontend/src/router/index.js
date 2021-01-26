@@ -13,8 +13,10 @@ import SettingsView from '../views/SettingsView.vue'
 Vue.use(VueRouter)
 
 /*
- 
- */
+@fvillarrealcespedes:
+Verifies with a NEURONE-AM request if a session has been init, if its then defines the store setting object and redirects to 
+classroom view, if not delete the local storage settings.
+*/
 async function isInit(to, from, next){
   await axios
   .get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/ifsession`)
@@ -36,19 +38,20 @@ async function isInit(to, from, next){
     }
   })
   .catch(error => {
-    next()
+    next();
   })
 }
 
+/*
+@fvillarrealcespedes:
+Verifies with a condition if the previous page is the settings view, if its then with a NEURONE-AM request checks if a session 
+has been init, if its not redirects to settings view.
+*/
 async function notInit(to, from, next){
-  console.log('notinit')
-  console.log(from)
-  console.log(to)
   if(from.path !== '/settings'){
     await axios
     .get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/ifsession`)
     .then(response => {
-      console.log(response.data)
       if(response.data.status){
         next();
       }else{
@@ -63,6 +66,18 @@ async function notInit(to, from, next){
   }
 }
 
+/*
+@fvillarrealcespedes:
+Verifies with a condition if the previous page is not the classroom view, if its not then redirects to session settings view
+if its access to session stats view.
+*/
+function goStats (to, from, next){
+  if(from.path !== '/classroom'){
+    next('/settings');
+  }else{
+    next();
+  }
+}
 
 const routes = [
   {
@@ -95,6 +110,7 @@ const routes = [
     path: '/session-stats',
     name: 'SessionStats',
     component: SessionStatsView,
+    beforeEnter: goStats,    
     meta: { requiresAuth: true } 
   },
   {

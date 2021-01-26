@@ -116,6 +116,10 @@ export default {
 	*/
 	created(){
 		this.initTime = null;
+		this.tabs[0].disabled = false;
+		this.tabs[1].disabled = true;
+		this.tabs[2].disabled = false;
+		this.tabs[3].disabled = false;
 	},
 
 	methods: {
@@ -205,7 +209,7 @@ export default {
 					principal: principal,
 				}
 				localStorage.setItem('settings', JSON.stringify(settings));
-				this.$router.push('/classroom');
+				this.$router.replace('/classroom');
 			})
 			.catch(error => {
 				console.log(error.response);
@@ -269,7 +273,6 @@ export default {
 		setSimpleLocale(){
 			var locale;
 			locale = this.$i18n.locale.split('-')[0];
-			console.log(locale)
 			return locale;
 		},
 
@@ -280,7 +283,6 @@ export default {
 		sortMetrics(metricsArray){
 			let metrics = [...metricsArray];
 			function compare ( a, b ){ return a.alias > b.alias ? 1 : -1; };
-			console.log(metrics.sort( compare ), 'sort')
 			return metrics.sort( compare );
 		}
 	},
@@ -336,7 +338,20 @@ export default {
 			set (payload) {
 				this.$store.commit('setSettings', payload);
 			}
-		}	
+		},
+		
+		/*
+		@fvillarrealcespedes:
+		Left drawer tabs, get and set methods are imported from store.
+		*/		
+		tabs: {
+      get () {
+        return this.$store.getters.getTabs;
+      },
+      set (payload) {
+        this.$store.commit('setTabs', payload);
+      },
+		}			
 	}
 }
 </script>

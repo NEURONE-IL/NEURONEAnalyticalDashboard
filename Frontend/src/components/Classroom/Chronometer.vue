@@ -26,12 +26,6 @@
 </template>
 
 <script>
-/*
-@fvillarrealcespedes:
-Component imports.
-*/
-import { mapState } from 'vuex';
-
 export default {
 	name: 'Chronometer', 
 
@@ -58,7 +52,7 @@ export default {
 		/*
 		@fvillarrealcespedes:
 		Gets the actual time in milliseconds, gets the hours, minutes and seconds, then formates it to "hh:mm:ss" to display. Also calculates 
-		the time in session comparing the session init time and the actual time, then formates it to "hh:mm:ss" to display. This method 
+		the session time comparing the session init time and the actual time, then formates it to "hh:mm:ss" to display. This method 
 		is repeated every 1000 milliseconds to update the session time every second. 
 		*/
 		showCurrentTime(){
@@ -71,7 +65,7 @@ export default {
 			m = (m < 10) ? "0" + m : m;
 			s = (s < 10) ? "0" + s : s;
 			this.currentTime = h + ":" + m + ":" + s + " ";
-			/*Gets the session init time and difference with crrent date*/
+			/*Gets the session init time and difference with current date*/
 			var initDate = new Date(this.initTime);
 			var dateDifference = Math.round((currentDate.getTime() - initDate.getTime())/1000);
 			/*Gets the date difference hours, minutes and seconds. Respective division and module operations are apply*/

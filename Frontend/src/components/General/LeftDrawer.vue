@@ -199,7 +199,7 @@ export default {
 		*/
 		logout(){
 			this.$store.commit('destroyUser')
-			this.$router.push('/login')
+			this.$router.replace('/login')
 		}, 
 	},
 

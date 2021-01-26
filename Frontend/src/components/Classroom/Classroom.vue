@@ -156,7 +156,7 @@
 							<v-col cols="4">
 								<!-- Metric limit value -->
 								<span>
-									{{ $t('classroom.limit') }}: {{this.settings.limit}}
+									{{ $t('classroom.limit') }}: {{this.setLimit()}}
 								</span>
 							</v-col>				
 						</v-row>
@@ -316,7 +316,7 @@ export default {
 
 	/*
 	@fvillarrealcespedes:
-	Invoked after create, initializes some component properties, mainly the related to node chart.
+	Invoked after created, initializes some component properties, mainly the related to node chart.
 	*/
 	mounted(){
 		this.fontsize = 13;
@@ -381,12 +381,13 @@ export default {
     async endSession() {
 			(this.participants = []), this.eventSource.close();
 			await axios
-			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/endsession`)
+			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/end`)
 			.then(response => {
-				this.$store.commit('destroySettings');
-				this.$router.push('/session-stats');
-				this.tabs[0].disabled = false;
-				this.tabs[1].disabled = true;				
+				this.tabs[0].disabled = true;
+				this.tabs[1].disabled = false;
+				this.tabs[2].disabled = true;
+				this.tabs[3].disabled = true;			
+				this.$router.replace('/session-stats');
       });
     },		
 
@@ -395,7 +396,6 @@ export default {
 		Filters from allClassroomConfigurations array the classroom configurations where the participants property is equal or lower than current users in session.
 		*/
 		filterConfigurations(configurations){
-			console.log(configurations)
 			return configurations.filter(configuration => configuration.participants >= this.users);
 		},
 
@@ -796,6 +796,17 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
+		Sets the limit property value, if settings object limit property value is not zero return this value, else return a translation for "undefined".
+		*/
+		setLimit(){
+			if(this.settings.limit){
+				return this.settings.limit;
+			}
+			return this.$t('classroom.undefined');
+		},
+
+		/*
+		@fvillarrealcespedes:
 		Sets the maximum possible value for rows and columns depending on users quantity when per rows or per column classroom configurations is selected.
 		*/
 		setMaxValue(){
@@ -848,14 +859,14 @@ export default {
 		option is enabled the nodes color are also updated.
 		*/
 		updateChart(){
+			/*Used for performance test*/
+			/*console.time('updateChart');*/			
 			/*Principal update*/
 			for(var i=0; i<this.users; i++){
 				this.chart.series.values[0].data[i].principal = this.setAlias(this.principal) + ': ' + this.participants[i].results[this.principal];
 			}				
 			/*Color update*/
 			if(this.option != ""){
-				/*Used for performance test*/
-				console.time('updateChart');
 				var color;
 				for(var i=0; i<this.users; i++){
 					color = this.setColor(this.participants[i].results[this.principal]);
@@ -864,9 +875,9 @@ export default {
 					this.chart.series.values[0].dataItems.values[i].node.stroke = color;
 					this.chart.series.values[0].dataItems.values[i].node.outerCircle.stroke = color;							
 				}
-				/*Used for performance test*/
-				console.timeEnd('updateChart');
 			}
+			/*Used for performance test*/
+			/*console.timeEnd('updateChart');*/		
 		},
 
 		/*
@@ -878,10 +889,11 @@ export default {
       if (this.participants.length === 0) {
 				this.participants = [...newMetrics];
 				this.users = this.participants.length;
+				this.sessionParticipants = this.participants.length;
 				this.dispatchNotification('classroom.participantsLoaded', 'information', 5000, 'info');
       } else {
 				/*Used for performance test*/
-				console.time('updateMetrics');
+				/*console.time('updateMetrics');*/
         newMetrics.map((metric, i) => {
           this.participants[i].results = Object.assign(
             {},
@@ -890,7 +902,7 @@ export default {
           );
 				});
 				/*Used for performance test*/
-				console.timeEnd('updateMetrics');
+				/*console.timeEnd('updateMetrics');*/
 			}
 			/*Node chart update*/
 			if(this.chart){
@@ -1082,7 +1094,20 @@ export default {
       set (payload) {
         this.$store.commit('setSelectedParticipants', payload);
       }
-    },
+		},
+		
+    /*
+		@fvillarrealcespedes:
+		SessionParticipants, get and set methods are imported from store.
+		*/	    
+    sessionParticipants: {
+      get () {
+        return this.$store.getters.getSessionParticipants;
+      },
+      set (payload) {
+        this.$store.commit('setSessionParticipants', payload);
+      }
+    },		
 
 		/*
 		@fvillarrealcespedes:

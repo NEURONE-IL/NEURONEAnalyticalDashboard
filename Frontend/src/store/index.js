@@ -49,7 +49,9 @@ export default new Vuex.Store({
       text: null,
       timeout: null,
       color: null
-    }
+    },
+    /*Session Participants*/
+    sessionParticipants: null
   },
 
   actions: {
@@ -234,6 +236,10 @@ export default new Vuex.Store({
       state.snackbar.text = payload.text;
       state.snackbar.timeout = payload.timeout;
       state.snackbar.color = payload.color;
+    },
+
+    setSessionParticipants(state, payload){
+      state.sessionParticipants = payload;
     }
   },
 
@@ -316,6 +322,10 @@ export default new Vuex.Store({
 
     getSnackbar(state){
       return state.snackbar;
+    },
+
+    getSessionParticipants(state){
+      return state.sessionParticipants;
     }
   }
 })

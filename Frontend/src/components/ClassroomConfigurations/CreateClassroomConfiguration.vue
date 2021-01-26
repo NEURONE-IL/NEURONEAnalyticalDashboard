@@ -156,16 +156,6 @@ export default {
 		*/
 		async createConfiguration(){
 			this.setClassroomProperties();
-			console.log(8978)
-			console.log(this.user, 'user')
-			console.log({
-				name: this.name,
-				createdBy: this.user.username,
-				participants: this.participants,
-				positions: this.positions,
-				height: this.saveHeight,
-				width: this.saveWidth
-			})
 			await axios
 			.post(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/classroom-configuration', {
 				name: this.name,
@@ -359,7 +349,6 @@ export default {
 		setCustomClassroom(data){
 			var nodesPer = Math.ceil(Math.sqrt(this.participants));
 			var offset = this.setOffset(nodesPer);
-			console.log(offset)
 			for(var i = 0; i < this.participants; i++){
 				var x = this.separation + ((i % nodesPer) * this.separation) + offset;
 				var y = this.separation + this.separation * Math.trunc(i/nodesPer);
