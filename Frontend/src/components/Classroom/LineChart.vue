@@ -1,5 +1,16 @@
 <template>
   <v-container>
+		<div class="loading" v-if="loading">
+			<p class="text-center mt-12">
+				{{ $t('charts.loading') }}
+			</p>
+			<!-- Progress linear-->
+			<v-progress-linear 
+				indeterminate
+				color="primary"
+			>
+			</v-progress-linear>			
+		</div>				
 		<!-- Line chart -->
 		<div class="lineChart" ref="chartdiv"></div>
   </v-container>
@@ -32,6 +43,7 @@ export default {
 			chartData: [],
 			counter: 0,
 			interval: 0,
+			loading: null,
 			max: 0,
 		}
 	},
@@ -122,6 +134,7 @@ export default {
 		data objects quantity to compose the line chart.
 		*/
 		async getInitTime(){
+			this.loading = true;
 			await axios
 			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/initstage/${this.lineChartUsername}`)
 			.then(response => {
@@ -206,6 +219,7 @@ export default {
 			title.fontWeight = "bold";
 			title.fontSize = 25;
 			title.marginBottom = 30;
+			this.loading = false;
 		},
 
 		/*
@@ -325,5 +339,9 @@ export default {
 .amcharts-amexport-top .amcharts-amexport-item > .amcharts-amexport-menu {
   top: -3px!important;
   left: 2px!important;
+}
+.loading{
+	width: 80%;
+	margin-left: 10%;
 }
 </style>

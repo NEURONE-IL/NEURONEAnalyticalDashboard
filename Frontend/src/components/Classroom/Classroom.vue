@@ -162,6 +162,17 @@
 						</v-row>
 					</v-card>					
 				</div>
+				<div class="loading" v-if="loading">
+					<p class="text-center mt-12">
+						{{ $t('charts.loading') }}
+					</p>
+					<!-- Progress linear-->
+					<v-progress-linear 
+						indeterminate
+						color="primary"
+					>
+					</v-progress-linear>			
+				</div>								
 				<!-- Node chart -->
 				<div class="classroom" ref="chartdiv"></div>
 				<!-- Line chart dialog -->
@@ -234,7 +245,6 @@ import axios from 'axios';
 Chart library imports.
 */
 import * as am4core from "@amcharts/amcharts4/core";
-import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 import * as am4plugins_forceDirected from "@amcharts/amcharts4/plugins/forceDirected";
 
@@ -255,6 +265,7 @@ export default {
 			chart: null,
 			classroomConfiguration: '',
 			columns: '',
+			loading: null,
 			rows: '',
 			users: 0,
 			validConfiguration: true,
@@ -316,7 +327,7 @@ export default {
 
 	/*
 	@fvillarrealcespedes:
-	Invoked after created, initializes some component properties, mainly the related to node chart.
+	Invoked after created(), initializes some component properties, mainly the related to node chart.
 	*/
 	mounted(){
 		this.fontsize = 13;
@@ -475,9 +486,9 @@ export default {
 			networkSeries.nodes.template.label.text = "{id}"
 			networkSeries.nodes.template.label.fill = "#000000";
 			networkSeries.nodes.template.maxX = this.$refs.chartdiv.clientWidth;
-			networkSeries.nodes.template.maxY = this.$refs.chartdiv.clientHeight;
+			networkSeries.nodes.template.maxY = this.$refs.chartdiv.clientHeight - 25;
 			networkSeries.nodes.template.minX = 0;
-			networkSeries.nodes.template.minY = 0;			
+			networkSeries.nodes.template.minY = 25;			
 			/*Sets node properties as x and y to set position in chart and the tooltip text to show when node is on hover*/
 			networkSeries.nodes.template.label.dx = 20;
 			networkSeries.nodes.template.label.dy = 20;
@@ -549,6 +560,7 @@ export default {
 			/*Sets classroomChartOn boolean property true*/
 			this.classroomChartOn = true;
 			this.rightDrawerOption = 1;
+			this.loading = false;
 		},
 
 		/*
@@ -559,6 +571,7 @@ export default {
 		setClassroom(index){
 			this.selectedParticipants = [];		
 			this.allParticipants = [];	
+			this.loading = true;
 			var data = [];
 			switch(index){
 				case 1: /*Just for tests*/
@@ -1170,5 +1183,9 @@ export default {
 }
 .theme--light.v-divider {
   border-color: rgba(33,150,243,0.5) !important; 
+}
+.loading{
+	width: 80%;
+	margin-left: 10%;
 }
 </style>

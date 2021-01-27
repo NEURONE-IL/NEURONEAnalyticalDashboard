@@ -26,19 +26,14 @@
 						</v-col>
 						<v-col cols="12" md="5" class="text-center ms-12">
               <!-- Participants quantity property selectionable field -->
-							<v-slider
+							<v-text-field
 								v-model="classroomConfiguration.participants"
-								thumb-label="always"
-								:thumb-size="16"              
-								thumb-color="primary"
-								:label="$t('labels.usersQuantity')"
-								:min= 1
-								:max= 100
-								required
-								:rules="requiredRules"
-								class="mt-4"
+								:label="$t('labels.participantsQuantity')"
+								class="participantsField"
+								readonly
+								flat
 							>
-							</v-slider> 
+							</v-text-field> 
 						</v-col>
 					</v-row>
 				</v-form>	
@@ -82,13 +77,12 @@
 Component imports.
 */
 import axios from 'axios';
-import { mapState, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 /*
 @fvillarrealcespedes:
 Chart library imports.
 */
 import * as am4core from "@amcharts/amcharts4/core";
-import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 import * as am4plugins_forceDirected from "@amcharts/amcharts4/plugins/forceDirected";
 
@@ -125,8 +119,8 @@ export default {
 
 	/*
 	@fvillarrealcespedes:
-	Invoked after create, initializes the specific nodes properties and calls the getter method for a specific classroom configuration by the computed 
-	property classroomConfigurationId.
+	Invoked when the DOM is mounted and allows to access the reactive component, initializes the specific nodes properties and calls the getter method for a 
+	specific classroom configuration by the computed property classroomConfigurationId.
 	*/
 	mounted(){
 		this.fontsize = 13;
@@ -418,5 +412,14 @@ export default {
 }
 .theme--light.v-divider {
   border-color: rgba(33,150,243,0.5) !important; 
+}
+.participantsField >>> input{
+	cursor: auto;
+}
+.participantsField .v-text-field fieldset, .v-text-field .v-input__control{
+	cursor: auto;
+}
+.participantsField >>> .v-input__slot::before {
+  border-style: none !important;
 }
 </style>

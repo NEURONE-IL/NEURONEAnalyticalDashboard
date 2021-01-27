@@ -31,7 +31,7 @@
 								thumb-label="always"
 								:thumb-size="16"              
 								thumb-color="primary"
-								:label="$t('labels.usersQuantity')"
+								:label="$t('labels.participantsQuantity')"
 								:min= 1
 								:max= 100
 								required
@@ -84,13 +84,12 @@
 Component imports.
 */
 import axios from 'axios';
-import { mapState, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 /*
 @fvillarrealcespedes:
 Chart library imports.
 */
 import * as am4core from "@amcharts/amcharts4/core";
-import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 import * as am4plugins_forceDirected from "@amcharts/amcharts4/plugins/forceDirected";
 
@@ -131,7 +130,7 @@ export default {
 
 	/*
 	@fvillarrealcespedes:
-	Invoked after create, initializes the specific nodes properties.
+	Invoked when the DOM is mounted and allows to access the reactive component, initializes the specific nodes properties.
 	*/
 	mounted(){
 		this.fontsize = 13;
@@ -326,17 +325,20 @@ export default {
 			this.saveHeight = this.$refs.chartdiv.clientHeight;
 			/*Sets saveWidth*/
 			var maxWidth = 0;
+			/*Gets the maximum x value from positions array elements*/
 			this.positions.forEach(element => {
 				if(element[0] > maxWidth){
 					maxWidth = element[0];
 				}
 			});
+			/*Gets the minimum x value from positions array elements*/			
 			var minWidth = this.$refs.chartdiv.clientWidth;
 			this.positions.forEach(element => {
 				if(element[0] < minWidth){
 					minWidth = element[0];
 				}
-			})			
+			})
+			/*Gets the saveWidth value by subtract the minimum x value from the maximum*/
 			this.saveWidth = maxWidth - minWidth;
 		},		
 
@@ -377,7 +379,7 @@ export default {
 					height = element.y;
 				}
 			})
-			this.height = height + this.separation;
+			this.height = height + this.separation*2;
 		},		
 
 		/*

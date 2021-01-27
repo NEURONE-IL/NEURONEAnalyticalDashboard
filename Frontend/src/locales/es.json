@@ -33,7 +33,8 @@
 			"timeLabel": "Tiempo (s)",
 			"title": "Desempeño de: ",
 			"titleConnector": " en "
-		}	,		
+    },	
+    "loading": "Cargando gráfico, por favor espere...",	
 		"node":{
 			"title": "Aula"
 		}
@@ -101,8 +102,8 @@
     "interval": "Intervalo",
     "max": "Valor máximo",
     "name": "Nombre",
-    "tableSearch": "Buscar",
-    "usersQuantity": "Cantidad de usuarios"
+		"participantsQuantity": "Cantidad de participantes",
+    "tableSearch": "Buscar"  
   },
   "leftDrawer": {
     "classroom": "Aula",

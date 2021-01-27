@@ -82,7 +82,7 @@
 							:items="classroomConfigurations"
 							:search="search"
 						>
-							<template v-slot:item="{ item }">		
+							<template v-slot:[`item.action`]="{ item }">	
 								<!-- Button to show the selected classroomConfiguration in the UpdateClassroomConfiguration component -->
 								<v-btn
 									icon
@@ -127,8 +127,7 @@ Component imports.
 import CreateClassroomConfiguration from '../ClassroomConfigurations/CreateClassroomConfiguration';
 import UpdateClassroomConfiguration from '../ClassroomConfigurations/UpdateClassroomConfiguration';
 import axios from 'axios';
-import { mapState, mapActions } from 'vuex';
-import { create } from '@amcharts/amcharts4/core';
+import { mapActions } from 'vuex';
 
 export default {
 	name: 'ClassroomConfigurations',

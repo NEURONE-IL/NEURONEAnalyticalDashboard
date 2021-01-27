@@ -1,91 +1,94 @@
 <template>
 	<v-container>
-		<v-row>
-			<v-col cols="12" md="6" offset="3" class="text-center">
+		<v-row justify="center">
+			<v-col cols="12" md="4" class="text-center">
 				<v-spacer :span="24" class="separator"></v-spacer>
-				<h2>{{ $t('login.header') }}</h2>
-				<v-row class="loginImg">
-					<v-img
-						src="@/assets/neurone-adlogo.png"
-						max-height="60%"
-						max-width="60%"					
+				<v-card>
+					<br>
+					<h2>{{ $t('login.header') }}</h2>
+					<!-- LogIn imagen -->
+					<v-row class="loginImg">
+						<v-col cols="10">
+							<v-img
+								src="@/assets/neurone-adlogo.png"		
+							>
+							</v-img>
+						</v-col>
+					</v-row>
+					<v-spacer :span="24" class="separator"></v-spacer>
+					<!-- LogIn form -->
+					<v-form
+						ref="loginForm"
+						v-model="validLogin"	
 					>
-					</v-img>
-				</v-row>
-				<v-spacer :span="24" class="separator"></v-spacer>
-				<!-- LogIn form -->
-				<v-form
-					ref="loginForm"
-					v-model="validLogin"	
-				>
-					<!-- Username property input field -->
-					<v-text-field
-						v-model="username"
-						:label="$t('login.username')"	
-						required
-						:rules="requiredRules"
-						:counter="20"
-					>
-					</v-text-field>
-					<!-- Password property input field -->
-					<v-text-field
-						v-model="password"
-						:append-icon="visible ? 'mdi-eye' : 'mdi-eye-off'"
-						:type="visible ? 'text' : 'password'"
-						name="input-10-1"
-						:label="$t('login.password')"           
-						@click:append="visible = !visible"
-						:rules="requiredRules"
-						:counter="20"
-					>
-					</v-text-field> 
-					<!-- SignIn button -->
-					<v-btn
-						color="success"
-						class="mb-4 ms-4"
-						@click="login()"
-					>
-						{{ $t('login.signin') }}
-						<v-icon right>
-							mdi-login
-						</v-icon>
-					</v-btn>
-					<!-- Clear button -->
-					<v-btn
-						class="mb-4 ms-4 white--text"
-						color="yellow darken-3"   
-						@click="resetForm()"
-					>
-						{{ $t('buttons.clear') }}
-						<v-icon right>
-							mdi-eraser
-						</v-icon>              
-					</v-btn>
-					<!-- SignUp button -->
-					<v-btn
-						class="mb-4 ms-4 white--text"
-						color="#006666"   
-						:href="setAuthLink()"
-					>
-						{{ $t('login.signup') }}
-						<v-icon right>
-							mdi-account-plus
-						</v-icon>              
-					</v-btn>
-				</v-form>
+					<v-row justify="center">
+						<!-- Username property input field -->
+						<v-col cols="10">
+							<v-text-field
+								v-model="username"
+								:label="$t('login.username')"	
+								required
+								:rules="requiredRules"
+								:counter="20"
+							>
+							</v-text-field>
+						</v-col>
+						<!-- Password property input field -->
+						<v-col cols="10">
+							<v-text-field
+								v-model="password"
+								:append-icon="visible ? 'mdi-eye' : 'mdi-eye-off'"
+								:type="visible ? 'text' : 'password'"
+								name="input-10-1"
+								:label="$t('login.password')"           
+								@click:append="visible = !visible"
+								:rules="requiredRules"
+								:counter="20"
+							>
+							</v-text-field>
+						</v-col> 
+						<!-- SignIn button -->
+						<v-btn
+							color="success"
+							class=" mt-8 mb-8 ms-4"
+							@click="login()"
+						>
+							{{ $t('login.signin') }}
+							<v-icon right>
+								mdi-login
+							</v-icon>
+						</v-btn>
+						<!-- Clear button -->
+						<v-btn
+							class=" mt-8 mb-8 ms-4 white--text"
+							color="yellow darken-3"   
+							@click="resetForm()"
+						>
+							{{ $t('buttons.clear') }}
+							<v-icon right>
+								mdi-eraser
+							</v-icon>              
+						</v-btn>
+						<!-- SignUp button -->
+						<v-btn
+							class=" mt-8 mb-8 ms-4 white--text"
+							color="#006666"   
+							:href="setAuthLink()"
+						>
+							{{ $t('login.signup') }}
+							<v-icon right>
+								mdi-account-plus
+							</v-icon>              
+						</v-btn>
+						</v-row>
+					</v-form>
+				</v-card>
 			</v-col>
 		</v-row>
 	</v-container>
 </template>
 
 <script>
-/*
-@fvillarrealcespedes:
-Component imports.
-*/
-import axios from 'axios';
-import { mapActions, mapState } from 'vuex';
-
 export default {
 	name: 'Login',
 

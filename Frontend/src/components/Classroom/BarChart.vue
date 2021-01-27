@@ -49,7 +49,18 @@
 					</v-icon>
 				</v-btn>
 			</v-col>					
-		</v-row>		
+		</v-row>
+		<div class="loading" v-if="loading">
+			<p class="text-center mt-12">
+				{{ $t('charts.loading') }}
+			</p>
+			<!-- Progress linear-->
+			<v-progress-linear 
+				indeterminate
+				color="primary"
+			>
+			</v-progress-linear>			
+		</div>		
 		<!-- Bar chart -->
 		<div class="barChart" ref="chartdiv"></div>
   </v-container>
@@ -81,6 +92,7 @@ export default {
 			chart: null,
 			chartData: null,
 			limit: 0,
+			loading: null,
 			metric: '',
 			metricAlias: '',
 			option : '',
@@ -96,55 +108,21 @@ export default {
 		}
 	},
 
+	/*
+	@fvillarrealcespedes:
+	Invoked when the DOM is mounted and allows to access the reactive component, calls the initChart method.
+	*/
 	mounted(){
 		this.initChart();
 	},
 
 	methods: {
-
-		initChart(){
-			this.metric = this.settings.principal;
-			this.setAlias(this.metric);
-			this.getData();
-			this.setOption();
-			this.setLimit();
-			this.disposeChart();
-			this.getData();			
-		},
-
-		setOption(){
-			var option = Number(this.settings.option);
-			switch(option){
-				case 1:
-					this.option = this.alertOptions[0];
-				case 2:
-					this.option = this.alertOptions[1];
-				default:
-					this.option = this.alertOptions[0];
-			}
-		},
-
-		setLimit(){
-			var limit = Number(this.settings.limit);
-			if(limit){
-				this.limit = limit;
-			}else{
-				this.metrics.forEach(metric => {
-					if(metric.name === this.metric){
-						this.limit = metric.limit/2;
-					}
-				})
-			}
-			if(!this.limit){
-				this.limit = 1;
-			}
-		},
-
 		/*
 		@fvillarrealcespedes:
 		Formates the data from NEURONE-AM Connector component to match the chart format. The final dataset depends on option and limit properties 
 		selected by the user and its composed by three sub datasets: one for values over the limit property, one for values that equals the limit and 
-		one for values under the limit. Finally calls setChart method.*/
+		one for values under the limit. Finally calls setChart method.
+		*/
 		composeData(chartData){
 			var overLimit = 0;
 			var onLimit = 0;
@@ -244,6 +222,21 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
+		Inits the component properties and calls the necessary methods to compose and display the bar chart.
+		*/
+		initChart(){
+			this.loading = true;
+			this.metric = this.settings.principal;
+			this.setAlias(this.metric);
+			this.getData();
+			this.setOption();
+			this.setLimit();
+			this.disposeChart();
+			this.getData();			
+		},
+
+		/*
+		@fvillarrealcespedes:
 		Searches in the metrics array the metric object where the name equals the given name param, then assigns that object alias to metricAlias property.
 		*/
 		setAlias(metric){
@@ -303,6 +296,28 @@ export default {
 			var columnTemplate = series.columns.template;
 			columnTemplate.strokeWidth = 2;
 			columnTemplate.strokeOpacity = 1;
+			this.loading = false;
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Gets the setting object limit property, parses into a Number and then if it is not null assignes it to component limit property, if it is null gets 
+		the metric object limit property and divides it by two, finally if the limit value have not been assignet yet, assigns the value 1.
+		*/
+		setLimit(){
+			var limit = Number(this.settings.limit);
+			if(limit){
+				this.limit = limit;
+			}else{
+				this.metrics.forEach(metric => {
+					if(metric.name === this.metric){
+						this.limit = metric.limit/2;
+					}
+				})
+			}
+			if(!this.limit){
+				this.limit = 1;
+			}
 		},
 
 		/*
@@ -313,6 +328,22 @@ export default {
 			let metrics = [...this.metrics];
 			function compare ( a, b ){ return a.alias > b.alias ? 1 : -1; };
 			return metrics.sort( compare );
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Gets the settings object option property, parses into a Number and then assignes it to component option property.
+		*/
+		setOption(){
+			var option = Number(this.settings.option);
+			switch(option){
+				case 1:
+					this.option = this.alertOptions[0];
+				case 2:
+					this.option = this.alertOptions[1];
+				default:
+					this.option = this.alertOptions[0];
+			}
 		}
 	},
 
@@ -379,5 +410,9 @@ export default {
 .barChart {
   width: 100%;
 	height: 375px;
+}
+.loading{
+	width: 80%;
+	margin-left: 10%;
 }
 </style>
