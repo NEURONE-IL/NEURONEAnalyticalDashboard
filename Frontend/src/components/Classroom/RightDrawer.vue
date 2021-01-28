@@ -89,23 +89,24 @@
           </v-list-item>
           <!-- Displays all selected participants, the session selected metrics and the result for each one, sets the metric item 
           clickable to set the line chart -->           
-          <v-tooltip left v-if="!miniVariant">
-            <template v-slot:activator="{ on }">
-              <v-list-item
-                v-for="(value, metric, index) in participant.results"
-                :key="index"
-                link
-                @click="setLineChart(participant.username, metric)"
-                v-on="on"
-              >            
-                <v-list-item-icon>
-                  <v-icon left>mdi-chart-line</v-icon>
-                </v-list-item-icon>
-                <v-list-item-title class="metricDisplay">{{ setAlias(metric) }}: {{ value }}</v-list-item-title>          
-              </v-list-item>
-            </template>
-            {{ $t('rightDrawer.viewChart')}}               
-          </v-tooltip>          
+          <v-list-item
+            v-for="(value, metric, index) in participant.results"
+            :key="index"
+            link
+            @click="setLineChart(participant.username, metric)"
+          >    
+            <v-tooltip left v-if="!miniVariant">
+              <template v-slot:activator="{ on }">        
+                <v-list-content v-on="on">
+                  <v-list-item-icon >
+                    <v-icon left>mdi-chart-line</v-icon>
+                    <v-list-item-title class="metricDisplay">{{ setAlias(metric) }}: {{ value }}</v-list-item-title>
+                  </v-list-item-icon>
+                </v-list-content>
+              </template>
+              {{ $t('rightDrawer.viewChart')}}               
+            </v-tooltip> 
+          </v-list-item>
         </v-card>  
         <v-divider dark/>
       </v-list-group>
