@@ -24,12 +24,17 @@
 	},
 	"charts":{
 		"bar": {
+			"limit": "Limit",
+			"metric": "Metric",			
 			"onLimit": "On the limit",
 			"overLimit": "Over the limit",
+			"successful": "Successful case",			
 			"title": "Students according to performance category in the metric: ",
 			"underLimit": "Under the limit"
 		},
 		"line":{
+			"metric": "Metric",
+			"participant": "Participant",
 			"timeLabel": "Time (s)",
 			"title": "Performance of: ",
 			"titleConnector": " at "
@@ -162,13 +167,8 @@
 			"createSuccess": "The new session settings were successfully saved",
 			"deleteError": "Error: The session settings were not deleted",
 			"deleteSuccess": "The session settings were successfully deleted"
-    }
+		}
 	},
-	"performance": {
-		"limit": "Limit",
-		"metric": "Metric",
-		"successful": "Successful case"
-	},	
 	"rightDrawer": {
 		"drawerOptions": {
 			"all": "All",
@@ -176,7 +176,8 @@
 		},
 		"findInChart": "Find in chart",
 		"header": "Full metrics",
-		"participantsDisplay": "Show participants"
+		"participantsDisplay": "Show participants",
+		"viewChart": "View chart"
 	},
 	"rules":{
 		"limitRule": "Limit value must be greater than zero",

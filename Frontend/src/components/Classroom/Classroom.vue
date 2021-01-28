@@ -91,6 +91,7 @@
 								color="purple darken-2"
 								dark
 								@click="showBarChart = true"
+								v-if="chart"
 							>
 								{{ $t('buttons.charts.barChart') }}	
 								<v-icon right>
@@ -103,6 +104,7 @@
 								color="purple darken-2"
 								dark
 								@click="showLineChart = true"
+								v-if="chart"								
 							>
 								{{ $t('buttons.charts.lineChart') }}	
 								<v-icon right>

@@ -24,12 +24,17 @@
   },
 	"charts":{
     "bar":{
-			"onLimit": "En el límite",
+      "limit": "Límite",
+      "metric": "Métrica",
+      "onLimit": "En el límite",
 			"overLimit": "Sobre el límite", 
+      "successful": "Caso exitoso",
       "title": "Estudiantes según categoría de desempeño en la métrica: ",
-      "underLimit": "Bajo el límite"
+      "underLimit": "Bajo el límite"      
     },
 		"line":{
+      "metric": "Métrica",
+      "participant": "Participante",
 			"timeLabel": "Tiempo (s)",
 			"title": "Desempeño de: ",
 			"titleConnector": " en "
@@ -164,11 +169,6 @@
 			"deleteSuccess": "La configuración de aula fue borrada éxitosamente"
     }
   },
-	"performance": {
-		"limit": "Límite",
-		"metric": "Métrica",
-		"successful": "Caso exitoso"
-	},   
   "rightDrawer": {
     "drawerOptions": {
       "all": "Todos",
@@ -176,7 +176,8 @@
     },
     "findInChart": "Ver en el gráfico",
     "header": "Métricas completas",
-    "participantsDisplay": "Mostrar participantes"
+    "participantsDisplay": "Mostrar participantes",
+		"viewChart": "Ver gráfico"
   },
   "rules":{
     "limitRule": "El valor límite debe ser mayor que cero",

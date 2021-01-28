@@ -1,5 +1,43 @@
 <template>
   <v-container>
+		<v-row class="ms-8">
+			<v-col cols="4">
+				<!-- Metric selector -->
+				<v-select
+					v-model="lineChartSelectedMetric"
+					:items="sortMetrics()"
+					item-text="alias"
+					item-value="name"
+					:label="$t('charts.line.metric')"				
+				>
+				</v-select>
+			</v-col>
+			<v-col cols="4">
+				<!-- Participant selector -->
+				<v-select
+					v-model="lineChartUsername"
+					:items="allParticipants"
+					:label="$t('charts.line.participant')"
+					item-text="username"
+					required
+					:rules="selectRules"									
+				>
+				</v-select>				
+			</v-col>
+			<v-col cols="4" class="text-center">
+				<!-- Line chart displayer button -->
+				<v-btn
+					color="success"
+					:disabled="!lineChartSelectedMetric || !lineChartUsername"
+					@click="getInitTime()"
+				>
+					{{ $t('buttons.charts.update') }}
+					<v-icon right>
+						mdi-check
+					</v-icon>
+				</v-btn>
+			</v-col>	
+		</v-row>
 		<div class="loading" v-if="loading">
 			<p class="text-center mt-12">
 				{{ $t('charts.loading') }}
@@ -21,7 +59,6 @@
 @fvillarrealcespedes:
 Component imports.
 */
-import { mapActions, mapState } from 'vuex';
 import axios from 'axios';
 /*
 @fvillarrealcespedes:
@@ -45,8 +82,21 @@ export default {
 			interval: 0,
 			loading: null,
 			max: 0,
+			/*Rules*/
+			selectRules: [
+        v => (v && v != null) || this.$t('rules.selectRule')
+			]			
 		}
 	},
+
+	/*
+	@fvillarrealcespedes:
+	Invoked when the DOM is mounted and allows to access the reactive component, calls the initChart method.
+	*/
+	mounted(){
+		this.initChart();
+
+	},	
 
 	methods: {
 		/*
@@ -72,8 +122,6 @@ export default {
 		disposeChart(){
 			if(this.chart){
 				this.chart.dispose();
-				this.lineChartUsername = null;
-				this.lineChartSelectedMetric = null;
 			}
 		},	
 
@@ -118,10 +166,14 @@ export default {
 			await axios
 			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/detail/${url}`)
 			.then(response => {
+				var value = response.data[0][this.lineChartSelectedMetric];
+				if(!value){
+					value = 0;
+				}
 				this.chartData.push({
 					time: tf,
-					value: response.data[0][this.lineChartSelectedMetric]
-				})
+					value: value
+				});
 			})
       .catch(error => {
         console.log(error.response);
@@ -134,7 +186,9 @@ export default {
 		data objects quantity to compose the line chart.
 		*/
 		async getInitTime(){
+			this.disposeChart();
 			this.loading = true;
+			this.chartData = [];			
 			await axios
 			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/initstage/${this.lineChartUsername}`)
 			.then(response => {
@@ -147,6 +201,24 @@ export default {
       .catch(error => {
         console.log(error.response);
       });
+		},
+
+
+		/*
+		@fvillarrealcespedes:
+		Inits the component properties and calls the necessary methods to compose and display the bar chart.
+		*/
+		initChart(){
+			this.interval = 10;
+			if(!this.lineChartSelectedMetric){
+				this.lineChartSelectedMetric = this.settings.principal;
+			}
+			if(!this.lineChartUsername){
+				this.lineChartUsername = this.allParticipants[0].username;
+			}
+			this.setAlias(this.lineChartSelectedMetric);
+			this.disposeChart();
+			this.getInitTime();
 		},
 
 		/*
@@ -243,7 +315,17 @@ export default {
 		*/	
 		sleep(ms) {
 			return new Promise(resolve => setTimeout(resolve, ms));
-		}
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Sorts the array metrics elements alphabetically by their alias.
+		*/		
+		sortMetrics(){
+			let metrics = [...this.metrics];
+			function compare ( a, b ){ return a.alias > b.alias ? 1 : -1; };
+			return metrics.sort( compare );
+		}		
 	},
 
 	watch: {
@@ -261,23 +343,30 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Watches the lineChartUsername property to eventually update the line chart.
+		Watches the showLineChart property to call the getInitTime method.
 		*/			
-		lineChartUsername: {
-			immediate: true,
-
-			handler: async function(){
-				if(this.lineChartUsername){
-					this.chartData = [];
-					this.interval = 10;
-					this.getInitTime();			
-				}			
+		showLineChart: function(){
+			if(this.showLineChart){
+				this.initChart();
 			}
 		}
 	},
 
 
 	computed: {
+    /*
+		@fvillarrealcespedes:
+		AllParticipants to display in the right drawer, get and set methods are imported from store.
+		*/	    
+    allParticipants: {
+      get () {
+        return this.$store.getters.getAllParticipants;
+      },
+      set (payload) {
+        this.$store.commit('setAllParticipants', payload);
+      }
+    },
+
 		/*
 		@fvillarrealcespedes:
 		Helper method that gets the chartData array lenght.
@@ -285,6 +374,19 @@ export default {
 		chartDataLength() {
 			return this.chartData.length;
 		},
+
+		/*
+		@fvillarrealcespedes:
+		Session InitTime, get and set methods are imported from store.
+		*/	
+		initTime: {
+			get () {
+				return this.$store.getters.getInitTime;
+			},
+			set (payload) {
+				this.$store.commit('setInitTime', payload);
+			}
+		},	
 
 		/*
 		@fvillarrealcespedes:
@@ -323,7 +425,33 @@ export default {
 			set (payload) {
 				this.$store.commit('setMetrics', payload);
 			}
-		}	
+		},
+		
+		/*
+		@fvillarrealcespedes:
+		Object that includes all sessionsettings, get and set methods are imported from store.
+		*/	
+		settings: {
+			get () {
+				return this.$store.getters.getSettings;
+			},
+			set (payload) {
+				this.$store.commit('setSettings', payload);
+			}
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Condition to show the line chart, get and set methods are imported from store.
+		*/		
+		showLineChart: {
+			get () {
+				return this.$store.getters.getShowLineChart;
+			},
+      set (payload){
+        this.$store.commit('setShowLineChart', payload);
+      }			
+		}		
 	}
 }
 </script>

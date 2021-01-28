@@ -8,7 +8,7 @@
 					:items="sortMetrics()"
 					item-text="alias"
 					item-value="name"
-					:label="$t('performance.metric')"				
+					:label="$t('charts.bar.metric')"				
 				>
 				</v-select>
 			</v-col>
@@ -17,7 +17,7 @@
 				<v-select
 					v-model="option"
 					:items="alertOptions"
-					:label="$t('performance.successful')"
+					:label="$t('charts.bar.successful')"
 					item-text="text"
 					item-value="value"
 					required
@@ -29,7 +29,7 @@
 				<!-- Limit value input -->
 				<v-text-field
 					v-model="limit"
-					:label="$t('performance.limit')"
+					:label="$t('charts.bar.limit')"
 					min="0"								
 					type="number"
 					step="0.01"
@@ -94,7 +94,6 @@ export default {
 			limit: 0,
 			loading: null,
 			metric: '',
-			metricAlias: '',
 			option : '',
 			/*Arrays*/			
 			alertOptions: [
@@ -104,7 +103,7 @@ export default {
 			/*Rules*/
 			selectRules: [
         v => (v && v != null) || this.$t('rules.selectRule')
-			],			
+			]	
 		}
 	},
 
@@ -228,7 +227,6 @@ export default {
 			this.loading = true;
 			this.metric = this.settings.principal;
 			this.setAlias(this.metric);
-			this.getData();
 			this.setOption();
 			this.setLimit();
 			this.disposeChart();
@@ -237,16 +235,12 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Searches in the metrics array the metric object where the name equals the given name param, then assigns that object alias to metricAlias property.
+		Searches in metrics array the metric object where name property equals the given name param, then returns that object alias.
 		*/
-		setAlias(metric){
-			let metrics = [...this.metrics];
-			metrics.forEach(element => {
-				if(element.name === metric){
-					this.metricAlias = element.alias;
-				}
-			})
-		},
+    setAlias(name){
+      var metric = this.metrics.find(metric => metric.name === name);
+      return metric.alias;
+    },
 
 		/*
 		@fvillarrealcespedes:
@@ -290,7 +284,7 @@ export default {
 			this.chart.exporting.menu = new am4core.ExportMenu();
 			/*Sets title and colums properties*/
 			let title = this.chart.titles.create();
-			title.text = this.$t('charts.bar.title') + this.metricAlias;
+			title.text = this.$t('charts.bar.title') + this.setAlias(this.metric);
 			title.fontSize = 25;
 			title.marginBottom = 30;
 			var columnTemplate = series.columns.template;
@@ -322,28 +316,28 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Sorts the array metrics elements alphabetically by their alias.
-		*/		
-		sortMetrics(){
-			let metrics = [...this.metrics];
-			function compare ( a, b ){ return a.alias > b.alias ? 1 : -1; };
-			return metrics.sort( compare );
-		},
-
-		/*
-		@fvillarrealcespedes:
 		Gets the settings object option property, parses into a Number and then assignes it to component option property.
 		*/
 		setOption(){
 			var option = Number(this.settings.option);
 			switch(option){
 				case 1:
-					this.option = this.alertOptions[0];
+					this.option = this.alertOptions[0].value;
 				case 2:
-					this.option = this.alertOptions[1];
+					this.option = this.alertOptions[1].value;
 				default:
-					this.option = this.alertOptions[0];
+					this.option = this.alertOptions[0].value;
 			}
+		},		
+
+		/*
+		@fvillarrealcespedes:
+		Sorts the array metrics elements alphabetically by their alias.
+		*/		
+		sortMetrics(){
+			let metrics = [...this.metrics];
+			function compare ( a, b ){ return a.alias > b.alias ? 1 : -1; };
+			return metrics.sort( compare );
 		}
 	},
 
@@ -356,6 +350,10 @@ export default {
 			this.setAlias(this.metric);
 		},
 
+		/*
+		@fvillarrealcespedes:
+		Watches the showBarChart property to call the initChart method.
+		*/			
 		showBarChart: function(){
 			if(this.showBarChart){
 				this.initChart();

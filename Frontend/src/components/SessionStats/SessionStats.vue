@@ -110,7 +110,6 @@ export default {
 			/*Gets the session init time and difference with current date*/
 			var initDate = new Date(this.initTime);
 			var dateDifference = Math.round((currentDate.getTime() - initDate.getTime())/1000);
-			console.log(dateDifference)
 			/*Gets the date difference hours, minutes and seconds. Respective division and module operations are apply*/
 			var sh = parseInt((dateDifference/3600));
 			var sm = parseInt((dateDifference/60)%60);
