@@ -45,7 +45,7 @@
 				>
 					{{ $t('buttons.charts.update') }}
 					<v-icon right>
-						mdi-check
+						mdi-refresh
 					</v-icon>
 				</v-btn>
 			</v-col>					
