@@ -208,6 +208,9 @@ export default {
 		Gets the performace value in a specific metric for all students from NEURONE-AM Connector component.
 		*/		
 		async getData(){
+			this.disposeChart();
+			this.loading = true;
+			this.chartData = [];			
 			await axios
 			.get(`${process.env.VUE_APP_NEURONE_AM_CONNECTOR_API_URL}/${this.metric}`)
 			.then(response => {

@@ -97,12 +97,12 @@
           >    
             <v-tooltip left v-if="!miniVariant">
               <template v-slot:activator="{ on }">        
-                <v-list-content v-on="on">
+                <v-list-item-content v-on="on">
                   <v-list-item-icon >
                     <v-icon left>mdi-chart-line</v-icon>
                     <v-list-item-title class="metricDisplay">{{ setAlias(metric) }}: {{ value }}</v-list-item-title>
                   </v-list-item-icon>
-                </v-list-content>
+                </v-list-item-content>
               </template>
               {{ $t('rightDrawer.viewChart')}}               
             </v-tooltip> 
