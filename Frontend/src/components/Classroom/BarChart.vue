@@ -325,11 +325,11 @@ export default {
 			var option = Number(this.settings.option);
 			switch(option){
 				case 1:
-					this.option = this.alertOptions[0].value;
-				case 2:
 					this.option = this.alertOptions[1].value;
-				default:
+				case 2:
 					this.option = this.alertOptions[0].value;
+				default:
+					this.option = this.alertOptions[1].value;
 			}
 		},		
 
