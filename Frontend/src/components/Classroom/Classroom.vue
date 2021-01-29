@@ -743,7 +743,7 @@ export default {
 			for(var i = 0; i < this.users; i++){
 				var value = this.participants[i].results[this.principal];
 				var color = this.setColor(value);
-				var x = customConfiguration.positions[i][0];
+				var x = customConfiguration.positions[i][0] + offset - this.separation/2;
 				var y = customConfiguration.positions[i][1];
 				data.push(
 					{

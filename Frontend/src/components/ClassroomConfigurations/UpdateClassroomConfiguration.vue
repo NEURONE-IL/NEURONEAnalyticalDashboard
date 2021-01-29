@@ -308,20 +308,6 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-    Sets an offset to align the nodes to node chart center, there are two cases: in the first one current node chart's HTML div is wider 
-    than the classroomConfiguration actual width, in the second the classroom configuration actual width is wider than current node chart's 
-    HTML div. 
-		*/
-		setOffset(){
-			if(this.$refs.chartdiv.clientWidth > this.classroomConfiguration.width){
-				return (this.$refs.chartdiv.clientWidth - this.classroomConfiguration.width)/2;
-			}else{
-				return (this.classroomConfiguration.width - this.$refs.chartdiv.clientWidth)/2;
-			}
-		},
-
-		/*
-		@fvillarrealcespedes:
 		Helper method to wait for a given time in milliseconds.
 		*/	
 		sleep(ms) {

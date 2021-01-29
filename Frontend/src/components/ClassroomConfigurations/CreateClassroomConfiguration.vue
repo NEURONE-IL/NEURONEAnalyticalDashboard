@@ -352,7 +352,7 @@ export default {
 			var nodesPer = Math.ceil(Math.sqrt(this.participants));
 			var offset = this.setOffset(nodesPer);
 			for(var i = 0; i < this.participants; i++){
-				var x = this.separation + ((i % nodesPer) * this.separation) + offset;
+				var x = this.separation/2 + ((i % nodesPer) * this.separation) + offset;
 				var y = this.separation + this.separation * Math.trunc(i/nodesPer);
 				data.push(
 					{
