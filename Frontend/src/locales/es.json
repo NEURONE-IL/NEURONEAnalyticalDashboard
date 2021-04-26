@@ -12,6 +12,8 @@
 		},    
     "clear": "Limpiar",
     "close": "Cerrar",
+    "createUser": "Crear usuario",
+    "goLogin": "Inicio de sesión",
     "help": "¿Ayuda?",
 		"login": "Iniciar sesión",
 		"logout": "Cerrar sesión",    
@@ -20,7 +22,11 @@
     "reset": "Limpiar",
     "resumeSession": "Volver a sesión actual",
     "save": "Guardar",
-    "saveChanges": "Guardar cambios"
+    "saveChanges": "Guardar cambios",
+    "signin": "Ingresar",
+    "signup": "Registrarse",
+    "useAD": "Ir a inicio de sesión estándar",
+    "useAuth": "Iniciar sesión con NEURONE-Auth"
   },
 	"charts":{
     "bar":{
@@ -121,8 +127,6 @@
     "header": "Inicio de sesión",
     "logoutConfirmation": "¿Está segur@ que desea salir de NEURONE-AD?", 
     "password": "Contraseña",
-    "signin": "Ingresar",
-    "signup": "Registrarse",
     "username": "Nombre de usuario"
   },
   "metrics": {
@@ -180,12 +184,17 @@
 		"viewChart": "Ver gráfico"
   },
   "rules":{
+    "emailRule": "Ingrese un e-mail válido",
     "limitRule": "El valor límite debe ser mayor que cero",
+    "maxLength20": "El campo puede tener como máximo 20 caracteres",
+    "maxLength40": "El campo puede tener como máximo 40 caracteres",
     "maxLength50": "El campo puede tener como máximo 50 caracteres",
     "maxLength200": "El campo puede tener como máximo 200 caracteres",
     "minLength2": "El campo debe tener como mínimo 2 caracteres",
     "minLength5": "El campo debe tener como mínimo 5 caracteres",
+    "minLength8": "La contraseña debe tener como mínimo 8 caracteres",
     "minLength10": "El campo debe tener como mínimo 10 caracteres",
+    "passwordMatch": "Las contraseñas deben ser iguales",
     "requiredRule": "El campo es requerido",
     "selectRule": "Debe seleccionar una opción",
     "spacesRule": "El campo no puede contener solo espacios"
@@ -215,7 +224,15 @@
 			"saved": "Ajustes guardados"
 		},		
     "undefined": "Indefinido"
-  },  
+  },
+  "signup":{
+    "email": "E-mail",
+    "header": "Registro de usuarios",
+    "password": "Contraseña",
+    "passwordConfirmation": "Confirmación de contraseña",
+    "signup": "Registrarse",
+    "username":"Nombre de usuario"
+  },
   "store": {
     "tabs": {
       "classroom": "Aula",

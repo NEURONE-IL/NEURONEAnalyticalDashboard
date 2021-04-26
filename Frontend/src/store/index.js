@@ -11,6 +11,8 @@ export default new Vuex.Store({
     initTime: null,
     /*User*/
     user: JSON.parse(localStorage.getItem('currentUser')) || null,
+    /*Login Service*/
+    loginService: 0,
     /*Classroom chart*/
     classroomChartOn: null,
     /*AllMetrics*/
@@ -76,7 +78,7 @@ export default new Vuex.Store({
 		*/    
     async getClassroomConfigurations(context){
       await axios
-      .get(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/classroom-configurations')
+      .get(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/classroom-configurations', { headers: { 'x-access-token': context.getters.getUser.accessToken }})
       .then(response => {
         context.commit('setClassroomConfigurations', response.data.classroomConfigurations);
       })
@@ -91,7 +93,7 @@ export default new Vuex.Store({
 		*/    
     async getSessionSettings(context){
       await axios
-      .get(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/session-settings')
+      .get(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/session-settings', { headers: { 'x-access-token': context.getters.getUser.accessToken }})
       .then(response => {
         context.commit('setSessionSettings', response.data.sessionSettings);
       })
@@ -100,10 +102,10 @@ export default new Vuex.Store({
       })
     },    
 
-    async retrieveUser(context, credentials){
+    async retrieveUser(context, authObject){
       return new Promise((resolve, reject) => {
         axios
-        .post(`http://${process.env.VUE_APP_HOST}:${process.env.VUE_APP_NEURONE_AUTH_BACK}/api/credential/signin`, credentials)
+        .post(authObject.urlService, authObject.credentials)
         .then(response => {
           const user = response.data;
           localStorage.setItem('currentUser', JSON.stringify(user));
@@ -129,6 +131,16 @@ export default new Vuex.Store({
         })
       })
     },
+
+/*    async createUser(context, user){
+      return new Promise((resolve, reject) => {
+        axios
+        .post(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}/`, credentials)
+
+      })
+    },
+*/
+    
     refreshSession(state){
       state.user = JSON.parse(localStorage.getItem('currentUser'));
     },
@@ -148,11 +160,6 @@ export default new Vuex.Store({
       state.settings = null;
     },    
 
-    destroyUser(state){
-      localStorage.removeItem('currentUser');
-      state.user = null;
-    },    
-
     setInitTime(state, payload){
       state.initTime = payload;
     },
@@ -164,6 +171,10 @@ export default new Vuex.Store({
     destroyUser(state){
       localStorage.removeItem('currentUser');
       state.user = null;
+    },
+
+    setLoginService(state, payload){
+      state.loginService = payload;
     },
 
     setClassroomChartOn(state, payload){
@@ -255,6 +266,10 @@ export default new Vuex.Store({
     getUser(state){
       return state.user;
     },
+
+    getLoginService(state){
+      return state.loginService;
+    },    
 
     getClassroomChartOn(state){
       return state.classroomChartOn;

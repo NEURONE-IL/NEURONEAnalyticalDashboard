@@ -355,7 +355,7 @@ export default {
 		configurations.
 		*/
 		appendClassroomConfigurations(){
-			for(var i=0; i<this.classroomConfigurations.length; i++){
+			for(var i = 0; i<this.classroomConfigurations.length; i++){
 				this.allClassroomConfigurations.push(this.classroomConfigurations[i]);
 			}
 		},
@@ -877,13 +877,13 @@ export default {
 			/*Used for performance test*/
 			/*console.time('updateChart');*/			
 			/*Principal update*/
-			for(var i=0; i<this.users; i++){
+			for(var i = 0; i<this.users; i++){
 				this.chart.series.values[0].data[i].principal = this.setAlias(this.principal) + ': ' + this.participants[i].results[this.principal];
 			}				
 			/*Color update*/
 			if(this.option != ""){
 				var color;
-				for(var i=0; i<this.users; i++){
+				for(var i = 0; i<this.users; i++){
 					color = this.setColor(this.participants[i].results[this.principal]);
 					this.chart.series.values[0].dataItems.values[i].color = color; 
 					this.chart.series.values[0].dataItems.values[i].node.fill = color;
@@ -966,7 +966,7 @@ export default {
 		*/	
 		rightDrawerParticipantUsername: function(){
 			if(this.rightDrawerParticipantUsername){
-				for(var i=0; i<this.users; i++){
+				for(var i = 0; i<this.users; i++){
 					if(this.rightDrawerParticipantUsername === this.chart.series.values[0].dataItems.values[i].name){
 						this.chart.series.values[0].dataItems.values[i].node.showTooltipOn = "always";
 					}else{

@@ -6,6 +6,7 @@ import store from '../store'
 import ClassroomConfigurationsView from '../views/ClassroomConfigurationsView.vue'
 import ClassroomView from '../views/ClassroomView.vue'
 import LoginView from '../views/LoginView.vue'
+import SignUpView from '../views/SignUpView.vue'
 import MetricsDisplayView from '../views/MetricsDisplayView.vue'
 import SessionStatsView from '../views/SessionStatsView.vue'
 import SettingsView from '../views/SettingsView.vue'
@@ -119,6 +120,12 @@ const routes = [
     component: LoginView,
     meta: { requiresVisitor: true } 
   },
+  {
+    path: '/signup',
+    name: 'SignUp',
+    component: SignUpView,
+    meta: { requiresVisitor: true } 
+  },  
   {
     path: '*',
     redirect: '/settings'

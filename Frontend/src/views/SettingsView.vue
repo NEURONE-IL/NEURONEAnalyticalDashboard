@@ -12,7 +12,6 @@
             <v-icon left>mdi-plus-circle</v-icon>
             {{ $t('settings.tabs.new') }}
         </v-tab>
-  
         <v-tab
           @click="setValue(1)">
           <v-icon left>mdi-content-save-all</v-icon>
@@ -27,6 +26,7 @@
 <script>
 import FastSettings from '../components/SessionSettings/FastSettings';
 import Settings from '../components/SessionSettings/Settings';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'SettingsView',
@@ -42,7 +42,24 @@ export default {
     }
   },
 
+  created(){
+    this.getSessionSettings();
+    this.$store.dispatch('refreshSession');
+  },
+
   methods: {
+		/*
+		@fvillarrealcespedes:
+		Methods imported from store.
+		*/
+    ...mapActions([
+      'getSessionSettings'
+    ]),
+
+		/*
+		@fvillarrealcespedes:
+		Sets the value property to display the selected session settings tab.
+		*/
     setValue(value){
       this.value = value;
     }

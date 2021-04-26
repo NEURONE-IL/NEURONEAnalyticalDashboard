@@ -10,7 +10,7 @@
 					<v-row class="loginImg">
 						<v-col cols="10">
 							<v-img
-								src="@/assets/neurone-adlogo.png"		
+								src="@/assets/neurone-authlogo.png"		
 							>
 							</v-img>
 						</v-col>
@@ -48,7 +48,7 @@
 								</v-text-field>
 							</v-col> 
 							<v-col cols="12">
-								<!-- LogIn button -->
+							<!-- LogIn button -->
 								<v-btn
 									color="success"
 									class=" mt-8 mb-8 ms-4"
@@ -75,7 +75,7 @@
 								<v-btn
 									class=" mt-8 mb-8 ms-4 white--text"
 									color="#006666"   
-									:href="'/signup'"
+									:href="setAuthLink()"
 								>
 									{{ $t('buttons.signup') }}
 									<v-icon right>
@@ -85,13 +85,13 @@
 							</v-col>
 						</v-row>
 						<v-divider></v-divider>
-						<!-- Go to NEURONE-Auth authentication service button -->
+						<!-- Go to NEURONE-AD authentication service button -->
 						<v-btn
 							class=" mt-8 mb-8 ms-4 white--text"
 							color="primary"   
-							@click="setValue(1)"
+							@click="setValue(0)"
 						>
-							{{ $t('buttons.useAuth') }}
+							{{ $t('buttons.useAD') }}
 							<v-icon right>
 								mdi-account
 							</v-icon>              
@@ -105,7 +105,7 @@
 
 <script>
 export default {
-	name: 'Login',
+	name: 'LoginNEURONEAuth',
 
 	data () {
 		return {
@@ -146,12 +146,14 @@ export default {
 		login(){
 			let username = this.username;
 			let password = this.password;
+			let service = process.env.VUE_APP_SERVICE_NAME;
 			let credentials = {
 				username,
-				password
+				password,
+				service
 			};
 			this.$store.dispatch('retrieveUser', {
-				urlService: `${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}/auth/login`,
+				urlService: `${process.env.VUE_APP_NEURONE_AUTH_BACK_API_URL}/api/credential/signin`,
 				credentials: credentials
 			})
 			.then(response => {
@@ -165,6 +167,14 @@ export default {
 		*/		
 		resetForm(){
 			this.$refs.loginForm.reset();
+		},
+
+		/*
+		@fvillarrealcespedes:
+		Returns the NEURONE-Auth frontend URL to redirect the user and allow them to sign up with its service.
+		*/
+		setAuthLink(){
+			return process.env.VUE_APP_NEURONE_AUTH_FRONT_URL;
 		},
 
 		/*
@@ -189,7 +199,7 @@ export default {
         this.$store.commit('setLoginService', payload);
       }
 		}
-	}	
+	}
 }
 </script>
 

@@ -2,10 +2,13 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors'
+import dotenv from 'dotenv';
+import bcryptjs from 'bcryptjs';
 import classroomConfigurationRoutes from './routes/classroomConfiguration.routes';
 import sessionSettingsRoutes from './routes/sessionSettings.routes';
 import userRoutes from './routes/user.routes';
-import dotenv from 'dotenv';
+import User from './models/user.model';
+import Role from './models/role.model';
 
 /*
 @fvillarrealcespedes:
@@ -68,13 +71,71 @@ mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${
     */
     if(process.env.NODE_ENV !== 'test'){
       console.log('DB connected');
+      populateDatabase();
     }
   })
   .catch(err => {
+    console.error('DB connection error', err);
     process.exit(1);
   })
 mongoose.set('debug', false);
 
+async function populateDatabase(){
+  /*Role collection*/
+  Role.estimatedDocumentCount((err, count) => {
+    if(!err && count === 0){
+      /*Admin role*/
+      const roleAdmin = new Role({
+        name: 'admin'
+      });
+      roleAdmin.save((err) => {
+        if(err){
+          console.log('Error on save roles', err);
+        }
+        console.log('"admin" added to roles collection');
+      });
+      /*User role*/
+      const roleUser = new Role({
+        name: 'user'
+      });
+      roleUser.save((err) => {
+        if(err){
+          console.log('Error on save roles', err);
+        }
+        console.log('"user" added to roles collection');
+      });
+    }
+  });
+  /*User collection*/
+  User.estimatedDocumentCount((err, count) => {
+    if(!err && count === 0){
+      /*Admin role*/
+      const user = new User({
+        username: 'neuroneadadmin',
+        password: bcryptjs.hashSync('neuronead2020', 8),
+        email: 'admin@neuronead.com'
+      });
+      user.save((err) => {
+        if(err){
+          console.log('Error on save "admin" user', err);
+        }
+        Role.findOne({ name: 'admin' }, (err, role) => {
+          if(err){
+            console.log('Error on find "admin" role', err)
+          }
+          user.roles = [role._id];
+          user.save(err => {
+            if(err){
+              console.log('Error on save "admin" user after roles assignment', err);
+            }
+            console.log('neuroneadadmin added to users collection');
+          });
+        });
+      });
+    }
+  });
+}
+ 
 /*
 @fvillarrealcespedes:
 Message to verify the app is running and the listening port, not showed on test environment..
