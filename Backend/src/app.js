@@ -37,8 +37,6 @@ Sets the app components:
 The bodyParser to receive requests in JSON format, the CORS to set the allowed origins to send requests 
 and the ClassroomConfiguration, SessionSettings and User routes to access the CRUD operations of all models.
 */
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors(corsOptions));
 app.use(classroomConfigurationRoutes);
 app.use(sessionSettingsRoutes);
@@ -80,24 +78,30 @@ mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${
   })
 mongoose.set('debug', false);
 
+/*
+@fvillarrealcespedes:
+Function to populate the DB when it has no documents on 'roles' or 'users' collections.
+*/
 async function populateDatabase(){
   /*Role collection*/
   Role.estimatedDocumentCount((err, count) => {
     if(!err && count === 0){
-      /*Admin role*/
+      /*Creates 'admin' role*/
       const roleAdmin = new Role({
         name: 'admin'
       });
+      /*Saves 'admin' role*/
       roleAdmin.save((err) => {
         if(err){
           console.log('Error on save roles', err);
         }
         console.log('"admin" added to roles collection');
       });
-      /*User role*/
+      /*Creates 'user' role*/
       const roleUser = new Role({
         name: 'user'
       });
+      /*Saves 'user' role*/
       roleUser.save((err) => {
         if(err){
           console.log('Error on save roles', err);
@@ -109,21 +113,24 @@ async function populateDatabase(){
   /*User collection*/
   User.estimatedDocumentCount((err, count) => {
     if(!err && count === 0){
-      /*Admin role*/
+      /*Creates 'neuroneadadmin' user*/
       const user = new User({
         username: 'neuroneadadmin',
         password: bcryptjs.hashSync('neuronead2020', 8),
         email: 'admin@neuronead.com'
       });
+      /*Saves 'neuroneadadmin' user*/
       user.save((err) => {
         if(err){
           console.log('Error on save "admin" user', err);
         }
+        /*Assigns 'admin' role to 'neuroneadadmin' user*/
         Role.findOne({ name: 'admin' }, (err, role) => {
           if(err){
             console.log('Error on find "admin" role', err)
           }
           user.roles = [role._id];
+          /*Saves 'neuroneadadmin' user roles assignation*/
           user.save(err => {
             if(err){
               console.log('Error on save "admin" user after roles assignment', err);

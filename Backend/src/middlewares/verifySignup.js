@@ -19,8 +19,9 @@ export default{
                 );
             }
             if(user){
-                return res.status(400).send({ 
-                    message: 'USERNAME_ALREADY_IN_USE' 
+                return res.status(400).send({
+                    message: 'Username already in use!', 
+                    code: 'usernameAlreadyInUse' 
                 });
             }
         });
@@ -33,20 +34,26 @@ export default{
             }
             if(user){
                 return res.status(400).send({ 
-                    message: 'EMAIL_ALREADY_IN_USE' 
+                    message: 'Email already in use!', 
+                    code: 'emailAlreadyInUse' 
                 });
             }
             next();
         });
     },
 
-    checkRolesExists(req, res, next){
-        const allRoles = Role.find({});
+    /*
+    @fvillarrealcespedes:
+    Verifies if roles from a request body exists, if not returns a error with that message, else validates the request and calls next().
+    */   
+    verifyRolesExists(req, res, next){
+        const roles = Role.find({});
         if(req.body.roles){
             for(let i = 0; i < req.body.roles.length; i++){
-                if(!allRoles.includes(req.body.roles[i])){
+                if(!roles.includes(req.body.roles[i])){
                     res.status(400).send({
-                        message: 'ROLE_DOESNT_EXIST'
+                        message: `Role "${req.body.roles[i]}" doesn't exist!`,
+                        code: 'roleDoesntExist'
                     });
                     return;
                 }

@@ -103,7 +103,7 @@ export default new Vuex.Store({
     },    
 
     async retrieveUser(context, authObject){
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         axios
         .post(authObject.urlService, authObject.credentials)
         .then(response => {
@@ -123,11 +123,10 @@ export default new Vuex.Store({
           context.dispatch('showNotification', {
             show: true, 
             icon: 'mdi-check-close', 
-            text: 'notifications.login.error', 
+            text: 'notifications.login.errors.' + error.response.data.code, 
             timeout: 5000, 
             color: 'error'
           });
-          reject(error);
         })
       })
     },

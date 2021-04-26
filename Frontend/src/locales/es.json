@@ -163,7 +163,10 @@
       "alert": "El participante aún no ha entrado al motor de búsqueda de NEURONE, el gráfico no puede ser generado"
     },    
     "login": {
-      "error": "Error: Nombre de usuario o contraseña incorrectos, por favor intente nuevamente",
+      "errors": {
+        "userNotFound": "Error: No se ha encontrado un usuario con este nombre",
+        "wrongPassword": "Error: La contraseña ingresada es incorrecta, por favor intente nuevamente"
+      },
       "success": "¡Bienvenid@ a NEURONE-AD!"
     },    
     "sessionSettings": {

@@ -42,6 +42,7 @@ export default{
                     err
                 );
             }
+            /*Verifies if request body contains the 'roles' property to assign them*/
             if(req.body.roles){
                 Role.find({ name: {$in: req.body.roles }}), function(err, roles){
                     if(err){
@@ -61,7 +62,9 @@ export default{
                         });
                     });
                 }
-            } else{
+            } 
+            /*If request body doesn't contain the 'roles' property, assigns by the default the 'user' role*/
+            else{
                 Role.find({ name: 'user' }, function(err, role){
                     if(err){
                         return res.status(500).send(
@@ -169,22 +172,28 @@ export default{
                         err
                     );
                 }
+                /*If no user is found, returns a error with that message*/
                 if(!user){
                     return res.status(404).send({
-                        message: 'USER_NOT_FOUND'
+                        message: 'User not found!',
+                        code: 'userNotFound'
                     });                
                 }
                 user.populate('roles', '-__v');
+                /*If user exists, compares its password with the request body password*/
                 var passwordIsValid = bcryptjs.compareSync(
                     req.body.password,
                     user.password
                 );
+                /*If passwords don't match, returns a error with a message of wrong password*/
                 if(!passwordIsValid){
                     return res.status(401).send({
                         accessToken: null,
-                        message: 'WRONG_PASSWORD'
+                        message: 'Wrong password!',
+                        code: 'wrongPassword'
                     });                  
                 }
+                /*If passwords match, creates a JWT with 24 hours duration and puts the user data on it*/
                 var token = jwt.sign({ id: user.id}, process.env.SECRET_KEY, {
                     expiresIn: 86400 /*24 Hours*/ 
                 });

@@ -12,7 +12,7 @@ Defines the controller method for each user CRUD operation and Login.
 /*For NEURONE-Auth requests*/
 router.post('/auth/signup', controller.createUserNEURONEAuth);
 /*For NEURONE-AD requests*/
-router.post('/user', [verifySignup.checkDuplicateUsernameOrEmail, verifySignup.checkRolesExists], controller.createUser);
+router.post('/user', [verifySignup.checkDuplicateUsernameOrEmail, verifySignup.verifyRolesExists], controller.createUser);
 router.get('/user', [authJwt.verifyToken], controller.readUsers);
 router.put('/user/:id', [authJwt.verifyToken], controller.updateUser);
 router.delete('/user/:id', [authJwt.verifyToken], controller.deleteUser);

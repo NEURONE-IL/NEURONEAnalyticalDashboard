@@ -53,7 +53,6 @@
 									color="success"
 									class=" mt-8 mb-8 ms-4"
 									@click="login()"
-									:disabled="!validLogin"
 								>
 									{{ $t('buttons.signin') }}
 									<v-icon right>
@@ -154,7 +153,7 @@ export default {
 				urlService: `${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}/auth/login`,
 				credentials: credentials
 			})
-			.then(response => {
+			.then(() => {
 				this.$router.replace('/settings');
 			})
 		},
