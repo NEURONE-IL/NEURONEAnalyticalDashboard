@@ -12,19 +12,19 @@
 		},    
     "clear": "Limpiar",
     "close": "Cerrar",
-    "createUser": "Crear usuario",
-    "goLogin": "Inicio de sesión",
-    "help": "¿Ayuda?",
-		"login": "Iniciar sesión",
-		"logout": "Cerrar sesión",    
     "configurePositions": "Configurar ubicaciones",
+    "createUser": "Crear usuario",
+    "goLogIn": "Ir a nicio de sesión",
+    "help": "¿Ayuda?",
+		"logIn": "Iniciar sesión",
+		"logOut": "Cerrar sesión",    
 		"newSession": "Nueva sesión",		
     "reset": "Limpiar",
     "resumeSession": "Volver a sesión actual",
     "save": "Guardar",
     "saveChanges": "Guardar cambios",
-    "signin": "Ingresar",
-    "signup": "Registrarse",
+    "signIn": "Ingresar",
+    "signUp": "Registrarse",
     "useAD": "Ir a inicio de sesión estándar",
     "useAuth": "Iniciar sesión con NEURONE-Auth"
   },
@@ -123,9 +123,9 @@
     "metrics": "Métricas",
     "session": "Sesión"
   },
-  "login": {
+  "logIn": {
     "header": "Inicio de sesión",
-    "logoutConfirmation": "¿Está segur@ que desea salir de NEURONE-AD?", 
+    "logOutConfirmation": "¿Está segur@ que desea salir de NEURONE-AD?", 
     "password": "Contraseña",
     "username": "Nombre de usuario"
   },
@@ -149,31 +149,41 @@
 			"createError": "Error: La nueva configuración de aula no fue guardada",
 			"createSuccess": "La nueva configuración de aula fue guardada éxitosamente",
 			"deleteError": "Error: La configuración de aula no fue borrada",
-			"deleteSuccess": "La configuración de aula fue borrada éxitosamente",
+      "deleteSuccess": "La configuración de aula fue borrada éxitosamente",
+      "readError": "Error: Las configuraciones de aula no fueron encontradas",
+      "readOneError": "Error: La configuración de aula no fue encontrada",
 			"updateError": "Error: La configuración de aula no fue actualizada",
 			"updateSuccess": "La configuración de aula fue actualizada éxitosamente"
-    },
-    "fastSettings": {
-			"createError": "Error: Los nuevos ajustes de sesión no fueron guardados",
-			"createSuccess": "Los nuevos ajustes de sesión fueron guardados éxitosamente",
-			"deleteError": "Error: Los ajustes de sesión no fueron borrados",
-			"deleteSuccess": "Los ajustes de sesión fueron borrados éxitosamente"
     },
     "lineChart": {
       "alert": "El participante aún no ha entrado al motor de búsqueda de NEURONE, el gráfico no puede ser generado"
     },    
-    "login": {
+    "logIn": {
       "errors": {
-        "userNotFound": "Error: No se ha encontrado un usuario con este nombre",
+        "unexpectedError": "Error: Ha ocurrido un error inesperado en la autenticación, por favor intente nuevamente",
+        "userNotFound": "Error: No se ha encontrado un usuario con este nombre, por favor intente nuevamente",
         "wrongPassword": "Error: La contraseña ingresada es incorrecta, por favor intente nuevamente"
       },
       "success": "¡Bienvenid@ a NEURONE-AD!"
-    },    
+    },
     "sessionSettings": {
 			"createError": "Error: Los nuevos ajustes de sesión no fueron guardados",
 			"createSuccess": "Los nuevos ajustes de sesión fueron guardados éxitosamente",
-			"deleteError": "Error: La configuración de aula no fue borrada",
-			"deleteSuccess": "La configuración de aula fue borrada éxitosamente"
+			"deleteError": "Error: Los ajustes de sesión no fueron borrados",
+      "deleteSuccess": "Los ajustes de sesión fueron borrados éxitosamente",
+      "readError": "Error: Los ajustes de sesión no fueron encontrados",
+      "readOneError": "Error: Los ajustes de sesión no fueron encontrados",
+			"updateError": "Error: Los ajustes de sesión no fueron actualizados",
+			"updateSuccess": "Los ajustes de sesión fueron actualizados éxitosamente"
+    },
+    "signUp": {
+			"createSuccess": "¡Se ha registrado éxitosamente en NEURONE-AD!",
+      "errors":{
+        "createError": "Error: Ha ocurrido un error durante el registro de usuario, por favor intente nuevamente",
+        "emailAlreadyInUse": "Error: El email ingresado ya está asociado a un usuario, por favor intente nuevamente con uno diferente",
+        "usernameAlreadyInUse": "Error: El nombre de usuario ingresado ya está en uso, por favor intente nuevamente con uno diferente",
+        "unexpectedError": "Error: Ha ocurrido un error inesperado durante el registro de usuario, por favor intente nuevamente"
+      }
     }
   },
   "rightDrawer": {
@@ -228,12 +238,12 @@
 		},		
     "undefined": "Indefinido"
   },
-  "signup":{
+  "signUp":{
     "email": "E-mail",
     "header": "Registro de usuarios",
     "password": "Contraseña",
     "passwordConfirmation": "Confirmación de contraseña",
-    "signup": "Registrarse",
+    "signUp": "Registrarse",
     "username":"Nombre de usuario"
   },
   "store": {

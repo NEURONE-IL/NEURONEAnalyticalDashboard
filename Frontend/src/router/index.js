@@ -5,7 +5,7 @@ import store from '../store'
 /*Views*/
 import ClassroomConfigurationsView from '../views/ClassroomConfigurationsView.vue'
 import ClassroomView from '../views/ClassroomView.vue'
-import LoginView from '../views/LoginView.vue'
+import LogInView from '../views/LogInView.vue'
 import SignUpView from '../views/SignUpView.vue'
 import MetricsDisplayView from '../views/MetricsDisplayView.vue'
 import SessionStatsView from '../views/SessionStatsView.vue'
@@ -116,8 +116,8 @@ const routes = [
   },
   {
     path: '/login',
-    name: 'Login',
-    component: LoginView,
+    name: 'LogIn',
+    component: LogInView,
     meta: { requiresVisitor: true } 
   },
   {

@@ -5,7 +5,7 @@ import Role from '../models/role.model';
 
 /*
 @fvillarrealcespedes:
-Exports seven methods for user CRUD operations and Login.
+Exports seven methods for user CRUD operations and Log in.
 */ 
 export default{
     /*
@@ -18,12 +18,15 @@ export default{
         );
         await user.save((err, user) => {
             if(err){
-                return res.status(500).send(
-                    err
-                );
+                return res.status(500).send({
+                    err,
+                    code: 'createError'
+                });
             }
             res.status(200).json({
-                message: 'User successfully created!', user
+                message: 'User successfully created!', 
+                code: 'createSuccess',
+                user
             });
         });
     },
@@ -32,60 +35,72 @@ export default{
     @fvillarrealcespedes:
     POST a new user given a NEURONE-AD request body.
     */ 
-    async createUser(req, res){
-        const user = new User(
-            req.body
-        );
-        await user.save((err, user) => {
+    createUser(req, res){
+        const user = new User({
+            username: req.body.username,
+            email: req.body.email,
+            password: bcryptjs.hashSync(req.body.password, 8)
+        });
+        user.save((err, user) => {
             if(err){
-                return res.status(500).send(
-                    err
-                );
+                return res.status(500).send({
+                    err,
+                    code: 'createError'
+                });
             }
             /*Verifies if request body contains the 'roles' property to assign them*/
             if(req.body.roles){
-                Role.find({ name: {$in: req.body.roles }}), function(err, roles){
+                Role.find({ name: {$in: req.body.roles }}).exec((err, roles) => {
                     if(err){
-                        return res.status(500).send(
-                            err
-                        );
+                        return res.status(500).send({
+                            err,
+                            code: 'createError'
+                        });
                     }
                     user.roles = roles.map(role => role._id);
                     user.save(err => {
                         if(err){
-                            return res.status(500).send(
-                                err
-                            );
+                            return res.status(500).send({
+                                err,
+                                code: 'createError'
+                            });
                         }
                         res.status(200).json({
-                            message: 'User successfully created!', user
+                            message: 'User successfully created!', 
+                            code: 'createSuccess',                            
+                            user
                         });
                     });
-                }
+                });
             } 
             /*If request body doesn't contain the 'roles' property, assigns by the default the 'user' role*/
             else{
-                Role.find({ name: 'user' }, function(err, role){
+                Role.findOne({ name: 'user' }).exec((err, role) => {
                     if(err){
-                        return res.status(500).send(
-                            err
-                        );
+                        return res.status(500).send({
+                            err,
+                            code: 'createError'
+                        });
                     }
                     user.roles = [role._id];
                     user.save(err => {
                         if(err){
-                            return res.status(500).send(
-                                err
-                            );
+                            return res.status(500).send({
+                                err,
+                                code: 'createError'
+                            });
                         }
                         res.status(200).json({
-                            message: 'User successfully created!', user
+                            message: 'User successfully created!', 
+                            code: 'createSuccess',
+                            user
                         });
                     });
-                })
+                });
             }
         });
     },
+
 
     /*
     @fvillarrealcespedes:
@@ -94,9 +109,10 @@ export default{
     async readUsers(req, res){
         await User.find((err, users) => {
             if(err){
-                return res.status(500).send(
-                    err
-                );
+                return res.status(500).send({
+                    err,
+                    code: 'readError'
+                });
             }
             res.status(200).json({
                 users
@@ -113,12 +129,15 @@ export default{
         const id = req.params.id;
         await User.findByIdAndUpdate({_id: id}, req.body, {new: true}, (err, user) => {
             if(err){
-                return res.status(404).send(
-                    err
-                );
+                return res.status(500).send({
+                    err,
+                    code: 'updateError'
+                });
             }
             res.status(200).json({
-                message: 'User successfully updated!', user
+                message: 'User successfully updated!', 
+                code: 'updateSuccess',
+                user
             });
         });
     },    
@@ -131,12 +150,15 @@ export default{
         const id = req.params.id;
         await User.findByIdAndDelete({_id: id}, (err, user) => {
             if(err){
-                return res.status(500).send(
-                    err
-                );
+                return res.status(500).send({
+                    err,
+                    code: 'deleteError'
+                });
             }
             res.status(200).json({
-                message: 'User successfully deleted!', user
+                message: 'User successfully deleted!', 
+                code: 'deleteSuccess',                
+                user
             });
         });
     },
@@ -149,9 +171,10 @@ export default{
         const id = req.params.id;
         await User.findOne({_id: id}, (err, user) => {
             if(err){
-                return res.status(500).send(
-                    err
-                );
+                return res.status(404).send({
+                    err,
+                    code: 'readOneError'
+                });
             }
             res.status(200).json({
                 user
@@ -163,14 +186,15 @@ export default{
     @fvillarrealcespedes:
     Allows or denies user access given a request body that includes a JWT.
     */
-    async login(req, res){
+    async logIn(req, res){
         await User.findOne({ username: req.body.username })
             .populate('roles', '-__v')
             .exec((err, user) => {
                 if(err){
-                    return res.status(500).send(
-                        err
-                    );
+                    return res.status(500).send({
+                        err,
+                        code: 'unexpectedError'
+                    });
                 }
                 /*If no user is found, returns a error with that message*/
                 if(!user){

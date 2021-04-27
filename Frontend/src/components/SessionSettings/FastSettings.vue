@@ -156,11 +156,11 @@ export default {
 			.delete(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}` + '/session-settings/' + payload)
 			.then(response => {
 				this.getSessionSettings();
-				this.dispatchNotification('fastSettings.deleteSuccess', 'check-circle', 5000, 'success');
+				this.dispatchNotification('sessionSettings.deleteSuccess', 'check-circle', 5000, 'success');
 			})	
       .catch(error => {
 				console.log(error.response);
-				this.dispatchNotification('fastSettings.deleteError', 'close-circle', 5000, 'error');
+				this.dispatchNotification('sessionSettings.deleteError', 'close-circle', 5000, 'error');
       })
 		},
 

@@ -5,9 +5,9 @@
 				<v-spacer :span="24" class="separator"></v-spacer>
 				<v-card>
 					<br>
-					<h2>{{ $t('login.header') }}</h2>
+					<h2>{{ $t('logIn.header') }}</h2>
 					<!-- NEURONE-AD logo -->
-					<v-row class="loginImg">
+					<v-row class="logInImg">
 						<v-col cols="10">
 							<v-img
 								src="@/assets/neurone-authlogo.png"		
@@ -16,17 +16,17 @@
 						</v-col>
 					</v-row>
 					<v-spacer :span="24" class="separator"></v-spacer>
-					<!-- LogIn form -->
+					<!-- Log in form -->
 					<v-form
-						ref="loginForm"
-						v-model="validLogin"	
+						ref="logInForm"
+						v-model="validLogIn"	
 					>
 						<v-row justify="center">
 							<!-- Username property input field -->
 							<v-col cols="10">
 								<v-text-field
 									v-model="username"
-									:label="$t('login.username')"	
+									:label="$t('logIn.username')"	
 									required
 									:rules="requiredRules"
 									:counter="20"
@@ -40,7 +40,7 @@
 									:append-icon="visible ? 'mdi-eye' : 'mdi-eye-off'"
 									:type="visible ? 'text' : 'password'"
 									name="input-10-1"
-									:label="$t('login.password')"           
+									:label="$t('logIn.password')"           
 									@click:append="visible = !visible"
 									:rules="requiredRules"
 									:counter="20"
@@ -48,13 +48,13 @@
 								</v-text-field>
 							</v-col> 
 							<v-col cols="12">
-							<!-- LogIn button -->
+							<!-- Log in button -->
 								<v-btn
 									color="success"
 									class=" mt-8 mb-8 ms-4"
-									@click="login()"
+									@click="logIn()"
 								>
-									{{ $t('buttons.signin') }}
+									{{ $t('buttons.signIn') }}
 									<v-icon right>
 										mdi-login
 									</v-icon>
@@ -70,13 +70,13 @@
 										mdi-eraser
 									</v-icon>              
 								</v-btn>
-								<!-- SignUp button -->
+								<!-- Sign up button -->
 								<v-btn
 									class=" mt-8 mb-8 ms-4 white--text"
 									color="#006666"   
 									:href="setAuthLink()"
 								>
-									{{ $t('buttons.signup') }}
+									{{ $t('buttons.signUp') }}
 									<v-icon right>
 										mdi-account-plus
 									</v-icon>              
@@ -104,14 +104,14 @@
 
 <script>
 export default {
-	name: 'LoginNEURONEAuth',
+	name: 'LogInNEURONEAuth',
 
 	data () {
 		return {
 			/*Component properties*/
 			password: '',
 			username: '',
-			validLogin: true,
+			validLogIn: true,
 			visible: false,
 			/*Rules*/
 			requiredRules: [
@@ -123,26 +123,10 @@ export default {
 	methods: {
 		/*
 		@fvillarrealcespedes:
-		Composes and send to store a notification object to be displayed for the user. The icon, text, timeout and color properties depends on the type 
-		of message that want to display.
-		*/
-		dispatchNotification(text, icon, timeout, color){
-			let notification = {
-				show: true,
-				icon: 'mdi-' + icon,
-				text: 'notifications.' + text,
-				timeout: timeout,
-				color: color
-			}
-			this.$store.dispatch('showNotification', notification)
-		},
-
-		/*
-		@fvillarrealcespedes:
-		Trys to authenticate the given credentials. Composes a credentials object and sends it to store where the NEURONE-AUTH login service 
+		Tries to authenticate a user given their credentials. Composes a credentials object and sends it to store where the NEURONE-AUTH log in service 
 		is called.
-		*/		
-		login(){
+		*/
+		logIn(){
 			let username = this.username;
 			let password = this.password;
 			let service = process.env.VUE_APP_SERVICE_NAME;
@@ -162,10 +146,10 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Reset the create login form.
+		Reset the log in form.
 		*/		
 		resetForm(){
-			this.$refs.loginForm.reset();
+			this.$refs.logInForm.reset();
 		},
 
 		/*
@@ -178,27 +162,27 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Sets the loginService property to display the selected authentication service form.
+		Sets the logInService property to display the selected authentication service form.
 		*/
 		setValue(value){
-			this.loginService = value;
+			this.logInService = value;
 		}
 	},
 
 	computed: {
     /*
 		@fvillarrealcespedes:
-		LoginService property to check if user uses or not NEURONE-Auth, get and set methods are imported from store.
+		LogInService property to check if user uses or not NEURONE-Auth, get and set methods are imported from store.
 		*/	    
-    loginService: {
+    logInService: {
       get () {
-        return this.$store.getters.getLoginService;
+        return this.$store.getters.getLogInService;
       },
       set (payload) {
-        this.$store.commit('setLoginService', payload);
+        this.$store.commit('setLogInService', payload);
       }
 		}
-	}
+	}	
 }
 </script>
 
@@ -206,7 +190,7 @@ export default {
 .separator{
 	height: 2%;
 }
-.loginImg{
+.logInImg{
 	justify-content: center;
 }
 </style>

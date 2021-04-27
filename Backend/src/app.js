@@ -37,6 +37,8 @@ Sets the app components:
 The bodyParser to receive requests in JSON format, the CORS to set the allowed origins to send requests 
 and the ClassroomConfiguration, SessionSettings and User routes to access the CRUD operations of all models.
 */
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors(corsOptions));
 app.use(classroomConfigurationRoutes);
 app.use(sessionSettingsRoutes);

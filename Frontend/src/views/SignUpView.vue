@@ -8,7 +8,7 @@
 import SignUp from '../components/Auth/SignUp';
 
 export default {
-  name: 'LoginView',
+  name: 'SignUpView',
   
   components: {
     SignUp
@@ -17,10 +17,10 @@ export default {
 </script>
 
 <style scoped>
-.loginContainer.fill-height { 
+.signUpContainer.fill-height { 
   flex-wrap: wrap; 
 } 
-.loginContainer.fill-height > .row { 
+.signUpContainer.fill-height > .row { 
   flex: 1 1 100%;
 }
 </style>

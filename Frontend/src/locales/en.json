@@ -13,14 +13,20 @@
 		"clear": "Clear",
 		"close": "Close",
 		"configurePositions": "Configure positions",
+		"createUser": "Create user",
+    "goLogIn": "Go to log in",
 		"help": "Help?",
-		"login": "Login",
-		"logout": "Logout",
+		"logIn": "Log in",
+		"logOut": "Log out",
 		"newSession": "New session",		
 		"reset": "Reset",
 		"resumeSession": "Resume current session",
 		"save": "Guardar",
-		"saveChanges": "Save changes"
+		"saveChanges": "Save changes",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "useAD": "Go to standard log in",
+    "useAuth": "Log in with NEURONE-Auth"		
 	},
 	"charts":{
 		"bar": {
@@ -39,7 +45,7 @@
 			"title": "Performance of: ",
 			"titleConnector": " at "
 		}	,	
-    "loading": "Cargando gráfico, por favor espere...",	
+    "loading": "Loading chart, please wait...",	
 		"node":{
 			"title": "Classroom"
 		}
@@ -69,7 +75,7 @@
 		"visualization": "Select classroom visualization"
 	},
 	"classroomConfigurations": {
-		"alert": "In the main view only the classroom configurations where the number of participants is less than or equal to the number of participants in the session will be shown",
+		"alert": "In the main view only the classroom configurations where the participants number is less than or equal to participants in the session will be shown",
 		"createHeader": "New classroom configuration",
 		"createConfiguration": "Create new configuration",
 		"deleteConfigurationConfirmation": "Are you sure you want to delete this classroom configuration?",
@@ -117,12 +123,10 @@
 		"metrics": "Metrics",
 		"session": "Session"
 	},
-  "login": {
-		"header": "Login",
-    "logoutConfirmation": "Are you sure you want to logout from NEURONE-AD?", 
+  "logIn": {
+		"header": "Log in",
+    "logOutConfirmation": "Are you sure you want to log out from NEURONE-AD?", 
 		"password": "Password",
-		"signin": "Sign in",
-		"signup": "Sign up",
     "username": "Username"		
   },	
 	"metrics": {
@@ -137,38 +141,51 @@
 	},
 	"notifications": {
 		"classroom": {
-			"chartUpdated": "The chart was successfully updated",
-			"lineChartWarning": "This chart can't be loaded yet, the session time must be at least 30 seconds",
+			"chartUpdated": "Chart successfully updated",
+			"lineChartWarning": "This chart can't be loaded yet, session time must be at least 30 seconds",
 			"participantsLoaded": "NEURONE participants successfully loaded"
 		},
 		"classroomConfigurations": {
-			"createError": "Error: The new classroom configuration was not saved",
-			"createSuccess": "The new classroom configuration was successfully saved",
-			"deleteError": "Error: The classroom configuration was not deleted",
-			"deleteSuccess": "The classroom configuration was successfully deleted",
-			"updateError": "Error: The classroom configuration was not updated",
-			"updateSuccess": "The classroom configuration was successfully updated"
-		},
-    "fastSettings": {
-			"createError": "Error: The new session settings were not saved",
-			"createSuccess": "The new session setting were sucessfully saved",
-			"deleteError": "Error: The session settings were not deleted",
-			"deleteSuccess": "THe session settings were successfully saved"
-    },		
+			"createError": "Error: Classroom configuration was not saved",
+			"createSuccess": "New classroom configuration was successfully saved",
+			"deleteError": "Error: Classroom configuration was not deleted",
+			"deleteSuccess": "Classroom configuration was successfully deleted",
+      "readError": "Error: Classroom configurations not found",
+      "readOneError": "Error: Classroom configuration not found",
+			"updateError": "Error: Classroom configuration was not updated",
+			"updateSuccess": "Classroom configuration was successfully updated"
+		},		
 		"lineChart": {
 			"alert": "The participant has not yet entered the NEURONE search engine, the graphic cannot be generated"
 		},
-		"login": {
-			"error": "Error: Wrong username or password, please try again",
+		"logIn": {
+			"errors":{
+        "unexpectedError": "Error: An unexpected authentication error has occurred, please try again",
+        "userNotFound": "Error: No user with this name was found, please try again",
+        "wrongPassword": "Error: The password entered is incorrect, please try again"				
+			},
 			"success": "Welcome to NEURONE-AD!"
-		},		
+		},
     "sessionSettings": {
-			"createError": "Error: The new session settings were not saved",
-			"createSuccess": "The new session settings were successfully saved",
-			"deleteError": "Error: The session settings were not deleted",
-			"deleteSuccess": "The session settings were successfully deleted"
-		}
-	},
+			"createError": "Error: New session settings were not saved",
+			"createSuccess": "New session settings were successfully saved",
+			"deleteError": "Error: Session settings were not deleted",
+			"deleteSuccess": "Session settings were successfully deleted",
+      "readError": "Error: Session settings not found",
+      "readOneError": "Error: Session settings not found",
+			"updateError": "Error: Session settings were not updated",
+			"updateSuccess": "Session settings were successfully updated"			
+		},
+    "signUp": {
+			"createSuccess": "Successfully registered in NEURONE-AD!",
+      "errors":{
+        "createError": "Error: An error occurred during user registration, please try again",
+        "emailAlreadyInUse": "Error: The email entered is already associated with a user, please try again with a different one",
+        "usernameAlreadyInUse": "Error: The username entered is already in use, please try again with a different one",
+        "unexpectedError": "Error: An unexpected error occurred during user registration, please try again"
+      }
+    }
+  },		
 	"rightDrawer": {
 		"drawerOptions": {
 			"all": "All",
@@ -180,12 +197,17 @@
 		"viewChart": "View chart"
 	},
 	"rules":{
+		"emailRule": "Please enter a valid email",
 		"limitRule": "Limit value must be greater than zero",
+		"maxLength20": "The field can have a maximum of 20 characters",
+		"maxLength40": "The field can have a maximum of 40 characters",
 		"maxLength50": "The field can have a maximum of 50 characters",
 		"maxLength200": "The field can have a maximum of 200 characters",
 		"minLength2": "The field must be at least 2 characters long",
 		"minLength5": "The field must be at least 5 characters long",
+    "minLength8": "The password must be at least 8 characters long",
 		"minLength10": "The field must be at least 10 characters long",
+    "passwordMatch": "Passwords must be the same",
 		"requiredRule": "The field is required",
 		"selectRule": "You must select an option",
 		"spacesRule": "The field cannot contain just spaces"
@@ -216,6 +238,14 @@
 		},
 		"undefined": "Undefined"
 	},	
+  "signUp":{
+    "email": "E-mail",
+    "header": "Sign up",
+    "password": "Password",
+    "passwordConfirmation": "Password confirmation",
+    "signUp": "Sign up",
+    "username":"Username"
+  },	
   "store": {
     "tabs": {
       "classroom": "Classroom",
@@ -224,7 +254,6 @@
       "session": "Session"			
     }
 	},
-
   "$vuetify": {
     "dataFooter": {
 			"itemsPerPageAll": "All",

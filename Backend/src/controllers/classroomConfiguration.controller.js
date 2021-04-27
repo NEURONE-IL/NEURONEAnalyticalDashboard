@@ -15,12 +15,15 @@ export default{
         );
         await classroomConfiguration.save((err, classroomConfiguration) => {
             if(err){
-                return res.status(500).send(
-                    err
-                );
+                return res.status(500).send({
+                    err,
+                    code: 'createError'
+                });
             }
             res.status(200).json({
-                message: 'ClassroomConfiguration successfully created!', classroomConfiguration
+                message: 'ClassroomConfiguration successfully created!', 
+                code: 'createSuccess',
+                classroomConfiguration
             });
         });
     },
@@ -32,9 +35,10 @@ export default{
     async readClassroomConfigurations(req, res){
         await ClassroomConfiguration.find((err, classroomConfigurations) => {
             if(err){
-                return res.status(500).send(
-                    err
-                );
+                return res.status(500).send({
+                    err,
+                    code: 'readError'
+                });
             }
             res.status(200).json({
                 classroomConfigurations
@@ -50,12 +54,15 @@ export default{
         const id = req.params.id;
         await ClassroomConfiguration.findByIdAndUpdate({_id: id}, req.body, {new: true}, (err, classroomConfiguration) => {
             if(err){
-                return res.status(500).send(
-                    err
-                );
+                return res.status(500).send({
+                    err,
+                    code: 'updateError'
+                });
             }
             res.status(200).json({
-                message: 'ClassroomConfiguration successfully updated!', classroomConfiguration
+                message: 'ClassroomConfiguration successfully updated!', 
+                code: 'updateSuccess',
+                classroomConfiguration
             });
         });
     },
@@ -68,12 +75,15 @@ export default{
         const id = req.params.id;
         await ClassroomConfiguration.findByIdAndDelete({_id: id}, (err, classroomConfiguration) => {
             if(err){
-                return res.status(500).send(
-                    err
-                );
+                return res.status(500).send({
+                    err,
+                    code: 'deleteError'
+                });
             }
             res.status(200).json({
-                message: 'ClassroomConfiguration successfully deleted!', classroomConfiguration
+                message: 'ClassroomConfiguration successfully deleted!', 
+                code: 'deleteSuccess',
+                classroomConfiguration
             });
         });
     },
@@ -86,9 +96,10 @@ export default{
         const id = req.params.id;
         await ClassroomConfiguration.findOne({_id: id}, (err, classroomConfiguration) => {
             if(err){
-                return res.status(500).send(
-                    err
-                );
+                return res.status(404).send({
+                    err,
+                    code: 'readOneError'
+                });
             }
             res.status(200).json({
                 classroomConfiguration

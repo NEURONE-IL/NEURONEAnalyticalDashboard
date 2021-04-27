@@ -5,9 +5,9 @@
 				<v-spacer :span="24" class="separator"></v-spacer>
 				<v-card>
 					<br>
-					<h2>{{ $t('signup.header') }}</h2>
+					<h2>{{ $t('signUp.header') }}</h2>
 					<!-- NEURONE-AD logo -->
-					<v-row class="signupImg">
+					<v-row class="signUpImg">
 						<v-col cols="10">
 							<v-img
 								src="@/assets/neurone-adlogo.png"
@@ -18,17 +18,17 @@
 						</v-col>
 					</v-row>
 					<v-spacer :span="24" class="separator"></v-spacer>
-					<!-- SignUp form -->
+					<!-- Sign up form -->
 					<v-form
-						ref="signupForm"
-						v-model="validSignup"	
+						ref="signUpForm"
+						v-model="validSignUp"	
 					>
 						<v-row justify="center">
 							<!-- Username property input field -->
 							<v-col cols="10">
 								<v-text-field
 									v-model="username"
-									:label="$t('signup.username')"	
+									:label="$t('signUp.username')"	
 									required
 									:rules="requiredLengthRules"
 									:counter="20"
@@ -39,7 +39,7 @@
 							<v-col cols="10">
 								<v-text-field
 									v-model="email"
-									:label="$t('signup.email')"	
+									:label="$t('signUp.email')"	
 									required
 									:rules="emailRules"
 									:counter="40"
@@ -53,7 +53,7 @@
 									:append-icon="visiblePassword ? 'mdi-eye' : 'mdi-eye-off'"
 									:type="visiblePassword ? 'text' : 'password'"
 									name="input-10-1"
-									:label="$t('signup.password')"           
+									:label="$t('signUp.password')"           
 									@click:append="visiblePassword = !visiblePassword"
 									:rules="passwordRules"
 									:counter="20"
@@ -67,19 +67,19 @@
 									:append-icon="visiblePasswordValidation ? 'mdi-eye' : 'mdi-eye-off'"
 									:type="visiblePasswordValidation ? 'text' : 'password'"
 									name="input-10-1"
-									:label="$t('signup.passwordConfirmation')"           
+									:label="$t('signUp.passwordConfirmation')"           
 									@click:append="visiblePasswordValidation = !visiblePasswordValidation"
 									:rules="passwordValidationRules"
 									:counter="20"
 								>
 								</v-text-field>
 							</v-col> 
-							<!-- SignUp button -->
+							<!-- Signup button -->
 							<v-btn
 								color="success"
 								class=" mt-8 mb-8 ms-4"
-								@click="signup()"
-								:disabled="!validSignup"
+								@click="signUp()"
+								:disabled="!validSignUp"
 							>
 								{{ $t('buttons.createUser') }}
 								<v-icon right>
@@ -97,13 +97,13 @@
 									mdi-eraser
 								</v-icon>              
 							</v-btn>
-							<!-- SignUp button -->
+							<!-- Sign up button -->
 							<v-btn
 								class=" mt-8 mb-8 ms-4 white--text"
 								color="#006666"   
 								:href="'/'"
 							>
-								{{ $t('buttons.goLogin') }}
+								{{ $t('buttons.goLogIn') }}
 								<v-icon right>
 									mdi-login
 								</v-icon>              
@@ -119,7 +119,7 @@
 
 <script>
 export default {
-	name: 'Login',
+	name: 'SignUp',
 
 	data () {
 		return {
@@ -129,7 +129,7 @@ export default {
 			passwordConfirmation: '',
 			roles: ['user'],
 			username: '',
-			validSignup: true,
+			validSignUp: true,
 			visiblePassword: false,
 			visiblePasswordValidation: false,
 			/*Rules*/
@@ -165,25 +165,9 @@ export default {
 	methods: {
 		/*
 		@fvillarrealcespedes:
-		Composes and send to store a notification object to be displayed for the user. The icon, text, timeout and color properties depends on the type 
-		of message that want to display.
-		*/
-		dispatchNotification(text, icon, timeout, color){
-			let notification = {
-				show: true,
-				icon: 'mdi-' + icon,
-				text: 'notifications.' + text,
-				timeout: timeout,
-				color: color
-			}
-			this.$store.dispatch('showNotification', notification)
-		},
-
-		/*
-		@fvillarrealcespedes:
-		Trys to authenticate the given credentials. Composes a credentials object and sends it to store where the NEURONE-AUTH login service 
+		Tries to sign up a user given their selected credentials. Composes a user object and sends it to store where the NEURONE-AD sign up service 
 		is called.
-		*/		
+		*/
 		signUp(){
 			let username = this.username;
 			let email = this.email;
@@ -196,17 +180,17 @@ export default {
 				roles,
 			};
 			this.$store.dispatch('createUser', user)
-			.then(response => {
+			.then(() => {
 				this.$router.replace('/login');
 			})
 		},
 
 		/*
 		@fvillarrealcespedes:
-		Reset the create login form.
+		Reset the sign up form.
 		*/		
 		resetForm(){
-			this.$refs.signupForm.reset();
+			this.$refs.signUpForm.reset();
 		}
 	}
 }
@@ -216,7 +200,7 @@ export default {
 .separator{
 	height: 2%;
 }
-.signupImg{
+.signUpImg{
 	justify-content: center;
 	margin-left: 20%;
 }

@@ -176,7 +176,7 @@ export default {
 		Sets a confirmation message previous the logout action. 
 		*/		
     confirmLogout(){
-      return confirm(this.$t('login.logoutConfirmation'))
+      return confirm(this.$t('logIn.logOutConfirmation'))
 		},
 
 		/*
@@ -194,12 +194,11 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Trys to authenticate the given credentials. Composes a credentials object and sends it to store where the NEURONE-AUTH login service 
-		is called.
+		Calls for user remotion from LocalStorage and redirects to log in view.
 		*/
-		logout(){
-			this.$store.commit('destroyUser')
-			this.$router.replace('/login')
+		logOut(){
+			this.$store.commit('destroyUser');
+			this.$router.replace('/login');
 		}, 
 	},
 

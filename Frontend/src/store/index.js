@@ -11,8 +11,8 @@ export default new Vuex.Store({
     initTime: null,
     /*User*/
     user: JSON.parse(localStorage.getItem('currentUser')) || null,
-    /*Login Service*/
-    loginService: 0,
+    /*Log in Service*/
+    logInService: 0,
     /*Classroom chart*/
     classroomChartOn: null,
     /*AllMetrics*/
@@ -102,6 +102,10 @@ export default new Vuex.Store({
       })
     },    
 
+		/*
+		@fvillarrealcespedes:
+		Sends a request to authenticate a user given an object with its credentials and the API URL to do the authentication. 
+		*/      
     async retrieveUser(context, authObject){
       return new Promise((resolve) => {
         axios
@@ -113,7 +117,7 @@ export default new Vuex.Store({
           context.dispatch('showNotification', {
             show: true, 
             icon: 'mdi-check-circle', 
-            text: 'notifications.login.success', 
+            text: 'notifications.logIn.success', 
             timeout: 5000, 
             color: 'success'
           });
@@ -123,7 +127,7 @@ export default new Vuex.Store({
           context.dispatch('showNotification', {
             show: true, 
             icon: 'mdi-check-close', 
-            text: 'notifications.login.errors.' + error.response.data.code, 
+            text: 'notifications.logIn.errors.' + error.response.data.code, 
             timeout: 5000, 
             color: 'error'
           });
@@ -131,14 +135,36 @@ export default new Vuex.Store({
       })
     },
 
-/*    async createUser(context, user){
-      return new Promise((resolve, reject) => {
+		/*
+		@fvillarrealcespedes:
+		Sends a request to register a new user with the NEURONE-AD signUp service given a request body. 
+		*/     
+    async createUser(context, user){
+      return new Promise((resolve) => {
+        console.log(user)
         axios
-        .post(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}/`, credentials)
-
+        .post(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}/user`, user)
+        .then(response => {
+          context.dispatch('showNotification', {
+            show: true, 
+            icon: 'mdi-check-circle', 
+            text: 'notifications.signUp.' + response.data.code, 
+            timeout: 5000, 
+            color: 'success'
+          });
+          resolve(response);
+        })
+        .catch(error => {
+          context.dispatch('showNotification', {
+            show: true, 
+            icon: 'mdi-check-close', 
+            text: 'notifications.signUp.errors.' + error.response.data.code, 
+            timeout: 5000, 
+            color: 'error'
+          });
+        })
       })
     },
-*/
     
     refreshSession(state){
       state.user = JSON.parse(localStorage.getItem('currentUser'));
@@ -172,8 +198,8 @@ export default new Vuex.Store({
       state.user = null;
     },
 
-    setLoginService(state, payload){
-      state.loginService = payload;
+    setLogInService(state, payload){
+      state.logInService = payload;
     },
 
     setClassroomChartOn(state, payload){
@@ -266,8 +292,8 @@ export default new Vuex.Store({
       return state.user;
     },
 
-    getLoginService(state){
-      return state.loginService;
+    getLogInService(state){
+      return state.logInService;
     },    
 
     getClassroomChartOn(state){

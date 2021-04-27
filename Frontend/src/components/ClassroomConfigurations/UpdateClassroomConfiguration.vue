@@ -358,7 +358,7 @@ export default {
 	computed: {
 		/*
 		@fvillarrealcespedes:
-		ClassroomConfigurationId to get an specific classroomConfiguration by its _id property, get method is imported from store.
+		ClassroomConfigurationId to get a specific classroomConfiguration by its _id property, get method is imported from store.
 		*/    
     classroomConfigurationId: {
       get () {

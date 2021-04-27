@@ -156,7 +156,7 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Sends a request to get an user specific metric value, between ti and tf, both in seconds. Before the call, composes the query 
+		Sends a request to get a user specific metric value, between ti and tf, both in seconds. Before the call, composes the query 
 		URL based on the lineChartUsername, the lineChartSelectedMetric, ti and tf. Finally composes an object to match the line chart 
 		data format and pushes it to the data set.
 		*/
