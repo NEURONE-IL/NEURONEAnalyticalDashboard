@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import cors from 'cors'
 import dotenv from 'dotenv';
 import bcryptjs from 'bcryptjs';
+import authRoutes from './routes/auth.routes';
 import classroomConfigurationRoutes from './routes/classroomConfiguration.routes';
 import sessionSettingsRoutes from './routes/sessionSettings.routes';
 import userRoutes from './routes/user.routes';
@@ -40,6 +41,7 @@ and the ClassroomConfiguration, SessionSettings and User routes to access the CR
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors(corsOptions));
+app.use(authRoutes);
 app.use(classroomConfigurationRoutes);
 app.use(sessionSettingsRoutes);
 app.use(userRoutes);
@@ -71,8 +73,8 @@ mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${
     */
     if(process.env.NODE_ENV !== 'test'){
       console.log('DB connected');
-      populateDatabase();
     }
+    populateDatabase();
   })
   .catch(err => {
     console.error('DB connection error', err);
@@ -86,7 +88,7 @@ Function to populate the DB when it has no documents on 'roles' or 'users' colle
 */
 async function populateDatabase(){
   /*Role collection*/
-  Role.estimatedDocumentCount((err, count) => {
+  await Role.estimatedDocumentCount((err, count) => {
     if(!err && count === 0){
       /*Creates 'admin' role*/
       const roleAdmin = new Role({
@@ -97,7 +99,9 @@ async function populateDatabase(){
         if(err){
           console.log('Error on save roles', err);
         }
-        console.log('"admin" added to roles collection');
+        if(process.env.NODE_ENV !== 'test'){
+          console.log('"admin" added to roles collection');
+        }
       });
       /*Creates 'user' role*/
       const roleUser = new Role({
@@ -108,12 +112,14 @@ async function populateDatabase(){
         if(err){
           console.log('Error on save roles', err);
         }
-        console.log('"user" added to roles collection');
+        if(process.env.NODE_ENV !== 'test'){
+          console.log('"user" added to roles collection');
+        }
       });
     }
   });
   /*User collection*/
-  User.estimatedDocumentCount((err, count) => {
+  await User.estimatedDocumentCount((err, count) => {
     if(!err && count === 0){
       /*Creates 'neuroneadadmin' user*/
       const user = new User({
@@ -137,7 +143,9 @@ async function populateDatabase(){
             if(err){
               console.log('Error on save "admin" user after roles assignment', err);
             }
-            console.log('neuroneadadmin added to users collection');
+            if(process.env.NODE_ENV !== 'test'){
+              console.log('neuroneadadmin added to users collection');
+            }
           });
         });
       });

@@ -10,6 +10,9 @@ https://www.digitalocean.com/community/tutorials/test-a-node-restful-api-with-mo
 chai.should();
 chai.use(chaiHttp);
 
+/*JWT to allow requests from registered users*/
+let token;
+
 /*
 @fvillarrealcespedes:
 Test suite for ClassroomConfiguration API.
@@ -17,7 +20,7 @@ Test suite for ClassroomConfiguration API.
 describe('ClassroomConfiguration API', () => {
     /*
     @fvillarrealcespedes:
-    Cleans the classroomconfiguration collection from DB before the tests.
+    Cleans the classroomconfigurations collection from DB before the tests.
     */
     before((done) => {
         ClassroomConfiguration.deleteMany({}, (err) => {
@@ -25,10 +28,28 @@ describe('ClassroomConfiguration API', () => {
         })
     });
 
-    /**
-     * @fvillarrealcespedes:
-     * Successful test for POST route
-     */
+    /*
+    @fvillarrealcespedes:
+    Tries to authenticate the default user to get a JWT before apply each test.
+    */    
+    beforeEach((done) => {
+        chai.request(app)
+        .post('/auth/login')
+        .send({
+            username: 'neuroneadadmin',
+            password: 'neuronead2020'
+        })
+        .end((err, res) => {
+            token = res.body.accessToken;
+            res.should.have.status(200);
+            done();
+        });
+    });
+
+    /*
+    @fvillarrealcespedes:
+    Successful test for POST route    
+    */
     describe('/POST classroomConfiguration', () => {
         it('It should POST a classroomConfiguration', (done) => {
             let classroomConfiguration = new ClassroomConfiguration({
@@ -42,6 +63,7 @@ describe('ClassroomConfiguration API', () => {
             })
             chai.request(app)
             .post('/classroom-configuration')
+            .set({ 'x-access-token': token })
             .send(classroomConfiguration)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -59,14 +81,15 @@ describe('ClassroomConfiguration API', () => {
         });
     });
 
-    /**
-     * @fvillarrealcespedes:
-     * Successful test for GET route
-     */    
+    /*
+    @fvillarrealcespedes:
+    Successful test for GET route
+    */    
     describe('/GET classroomConfigurations', () => {
         it('It should GET all classroomConfigurations', (done) => {
             chai.request(app)
             .get('/classroom-configurations')
+            .set({ 'x-access-token': token })
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object');
@@ -76,11 +99,10 @@ describe('ClassroomConfiguration API', () => {
         });
     });
 
-
-    /**
-     * @fvillarrealcespedes:
-     * Successful test for PUT route
-     */     
+    /*
+    @fvillarrealcespedes:
+    Successful test for PUT route
+    */     
     describe('/PUT/:id classroomConfiguration', () => {
         it('It should UPDATE a classroomConfiguration given the id', (done) => {
             let classroomConfiguration = new ClassroomConfiguration({
@@ -95,6 +117,7 @@ describe('ClassroomConfiguration API', () => {
             classroomConfiguration.save((err, classroomConfiguration) => {
                 chai.request(app)
                 .put('/classroom-configuration/' + classroomConfiguration._id)
+                .set({ 'x-access-token': token })
                 .send({
                     name: 'PUT Updated test classroomConfiguration',
                     createdBy: 'PUT Updated test creator',
@@ -119,10 +142,10 @@ describe('ClassroomConfiguration API', () => {
         });
     });
 
-    /**
-     * @fvillarrealcespedes:
-     * Successful test for DELETE route
-     */
+    /*
+    @fvillarrealcespedes:
+    Successful test for DELETE route
+    */
     describe('/DELETE/:id classroomConfiguration', () => {
         it('It should DELETE a classroomConfiguration given the id', (done) => {
             let classroomConfiguration = new ClassroomConfiguration({
@@ -137,6 +160,7 @@ describe('ClassroomConfiguration API', () => {
             classroomConfiguration.save((err, classroomConfiguration) => {
                 chai.request(app)
                 .delete('/classroom-configuration/' + classroomConfiguration._id)
+                .set({ 'x-access-token': token })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
@@ -148,10 +172,10 @@ describe('ClassroomConfiguration API', () => {
         });
     });    
 
-    /**
-     * @fvillarrealcespedes:
-     * Successful test for GET by id route
-     */
+    /*
+    @fvillarrealcespedes:
+    Successful test for GET by id route
+    */
     describe('/GET/:id classroomConfiguration', () => {
         it('It should GET a classroomConfiguration given the id', (done) => {
             let classroomConfiguration = new ClassroomConfiguration({
@@ -166,6 +190,7 @@ describe('ClassroomConfiguration API', () => {
             classroomConfiguration.save((err, classroomConfiguration) => {
                 chai.request(app)
                 .get('/classroom-configuration/' + classroomConfiguration._id)
+                .set({ 'x-access-token': token })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
@@ -183,10 +208,10 @@ describe('ClassroomConfiguration API', () => {
         });
     });
 
-    /**
-     * @fvillarrealcespedes:
-     * Unsuccessful test for POST route
-     */
+    /*
+    @fvillarrealcespedes:
+    Unsuccessful test for POST route
+    */
     describe('/POST classroomConfiguration', () => {
         it('It should not POST a classroomConfiguration without participants field', (done) => {
             let classroomConfiguration = new ClassroomConfiguration({
@@ -199,13 +224,14 @@ describe('ClassroomConfiguration API', () => {
             })
             chai.request(app)
             .post('/classroom-configuration')
+            .set({ 'x-access-token': token })
             .send(classroomConfiguration)
             .end((err, res) => {
                 res.should.have.status(500);
                 res.body.should.be.a('object');
-                res.body.should.have.property('errors');
-                res.body.errors.should.have.property('participants');
-                res.body.errors.participants.should.have.property('kind').eql('required');
+                res.body.should.have.property('err');
+                res.body.err.errors.should.have.property('participants');
+                res.body.err.errors.participants.should.have.property('kind').eql('required');
             done();
             });
         });
@@ -213,7 +239,7 @@ describe('ClassroomConfiguration API', () => {
 
     /*
     @fvillarrealcespedes:
-    Cleans the classroomconfiguration collection from DB after the tests.
+    Cleans the classroomconfigurations collection from DB after the tests.
     */   
     after((done) => {
         ClassroomConfiguration.deleteMany({}, (err) => {

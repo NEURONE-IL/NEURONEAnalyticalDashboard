@@ -179,7 +179,7 @@ export default {
 				password,
 				roles,
 			};
-			this.$store.dispatch('createUser', user)
+			this.$store.dispatch('signUp', user)
 			.then(() => {
 				this.$router.replace('/login');
 			})

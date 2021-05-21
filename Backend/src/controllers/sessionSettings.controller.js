@@ -90,7 +90,7 @@ export default{
 
     /*
     @fvillarrealcespedes:
-    DELETE a sessionSettings given the id.
+    GET a sessionSettings given the id.
     */        
     async readOneSessionSettings(req, res){
         const id = req.params.id;
@@ -104,6 +104,6 @@ export default{
             res.status(200).json({
                 sessionSettings
             });
-        })
+        });
     }
 }

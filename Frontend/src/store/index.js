@@ -139,11 +139,11 @@ export default new Vuex.Store({
 		@fvillarrealcespedes:
 		Sends a request to register a new user with the NEURONE-AD signUp service given a request body. 
 		*/     
-    async createUser(context, user){
+    async signUp(context, user){
       return new Promise((resolve) => {
         console.log(user)
         axios
-        .post(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}/user`, user)
+        .post(`${process.env.VUE_APP_NEURONE_AD_BACKEND_API_URL}/auth/signup-ad`, user)
         .then(response => {
           context.dispatch('showNotification', {
             show: true, 
