@@ -218,7 +218,7 @@ export default {
 				this.composeData(chartData);
 			})
 			.catch(error => {
-				console.log(error.response);
+				console.log(error);
 			})
 		},
 

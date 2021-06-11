@@ -417,15 +417,15 @@ export default {
 		NEURONE-AM original method, gets the session init time and sets it to store. 
 		Also the Chronometer component show condition is setted true.
 		*/
-		async getInitTime(){
+		async getSessionInitTime(){
 			await axios
 			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/inittime`)
 			.then(response => {
-				this.initTime = response.data.initTime;
+				this.sessionInitTime = response.data.initTime;
 				this.showChronometer = true;
 			})
       .catch(error => {
-        console.log(error.response);
+        console.log(error);
       })
 		},
 
@@ -928,11 +928,11 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Helper method to wait for a request and then gets the session init time.
+		Helper method to wait for a request and then gets the sessionInitTime.
 		*/
 		async waitInitTime() {
 			await this.sleep(3000);
-			this.getInitTime();
+			this.getSessionInitTime();
 		}	
 	},		
 
@@ -1021,19 +1021,6 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Session InitTime, get and set methods are imported from store.
-		*/	
-		initTime: {
-			get () {
-				return this.$store.getters.getInitTime;
-			},
-			set (payload) {
-				this.$store.commit('setInitTime', payload);
-			}
-		},		
-
-		/*
-		@fvillarrealcespedes:
 		LineChartSelectedMetric for the line chart, get and set methods are imported from store.
 		*/	
     lineChartSelectedMetric: {
@@ -1111,6 +1098,19 @@ export default {
       }
 		},
 		
+		/*
+		@fvillarrealcespedes:
+		SessionInitTime, get and set methods are imported from store.
+		*/	
+		sessionInitTime: {
+			get () {
+				return this.$store.getters.getSessionInitTime;
+			},
+			set (payload) {
+				this.$store.commit('setSessionInitTime', payload);
+			}
+		},		
+
     /*
 		@fvillarrealcespedes:
 		SessionParticipants, get and set methods are imported from store.

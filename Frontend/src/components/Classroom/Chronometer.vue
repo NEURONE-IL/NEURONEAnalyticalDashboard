@@ -5,7 +5,7 @@
 				<v-col cols="4">
 					<!-- Session init time -->
 					<span>
-						{{ $t('chronometer.initTime') }}: {{this.sessionInitTime}}
+						{{ $t('chronometer.sessionInitTime') }}: {{this.sessionInitTimeString}}
 					</span>
 				</v-col>
 				<v-col cols="4">
@@ -33,7 +33,7 @@ export default {
 		return{
 			/*Component properties*/
 			currentTime: '',
-			sessionInitTime: '',
+			sessionInitTimeString: '',
 			sessionTime: '',
 			totalSeconds: 0
 		}
@@ -66,8 +66,8 @@ export default {
 			s = (s < 10) ? "0" + s : s;
 			this.currentTime = h + ":" + m + ":" + s + " ";
 			/*Gets the session init time and difference with current date*/
-			var initDate = new Date(this.initTime);
-			var dateDifference = Math.round((currentDate.getTime() - initDate.getTime())/1000);
+			var sessionInitDate = new Date(this.sessionInitTime);
+			var dateDifference = Math.round((currentDate.getTime() - sessionInitDate.getTime())/1000);
 			/*Gets the date difference hours, minutes and seconds. Respective division and module operations are apply*/
 			var sh = parseInt((dateDifference/3600));
 			var sm = parseInt((dateDifference/60)%60);
@@ -87,39 +87,39 @@ export default {
 		display. 
 		*/
 		showInitTime(){
-			var initDate = new Date(this.initTime);
-			var h = initDate.getHours(); 
-			var m = initDate.getMinutes(); 
-			var s = initDate.getSeconds(); 			
+			var sessionInitDate = new Date(this.sessionInitTime);
+			var h = sessionInitDate.getHours(); 
+			var m = sessionInitDate.getMinutes(); 
+			var s = sessionInitDate.getSeconds(); 			
 			/*Add a zero before the value of hours, minutes or seconds in case any of this values is under 10 to keep the format*/
 			h = (h < 10) ? "0" + h : h;
 			m = (m < 10) ? "0" + m : m;
 			s = (s < 10) ? "0" + s : s;
-			this.sessionInitTime = h + ":" + m + ":" + s + " ";
+			this.sessionInitTimeString = h + ":" + m + ":" + s + " ";
 		}
 	},
 
 	computed: {
 		/*
 		@fvillarrealcespedes:
-		Session init time, get and set methods are imported from store.
-		*/		
-		initTime: {
+		SessionInitTime, get and set methods are imported from store.
+		*/
+		sessionInitTime: {
 			get () {
-				return this.$store.getters.getInitTime;
+				return this.$store.getters.getSessionInitTime;
 			},
 			set (payload) {
-				this.$store.commit('setInitTime', payload);
-			},
+				this.$store.commit('setSessionInitTime', payload);
+			}
 		}
 	},
-
+	
 	watch: {
 		/*
 		@fvillarrealcespedes:
-		Watches the session init time property to calculate and display the three time values.
+		Watches the sessionInitTime property to calculate and display the three time values.
 		*/				
-		initTime: {
+		sessionInitTime: {
 			immediate: true, 
 
 			handler: function(){

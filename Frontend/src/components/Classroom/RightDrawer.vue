@@ -241,15 +241,15 @@ export default {
 			await axios
 			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/initstage/${this.lineChartUsername}`)
 			.then(response => {
-        let initTime = response.data.inittime;
-				if(initTime === 0){
+        let sessionInitTime = response.data.inittime;
+				if(sessionInitTime === 0){
 					this.dispatchNotification('lineChart.alert', 'alert', 5000, 'yellow darken-3');
 					return;
 				}
         this.showLineChart = true;
 			})
       .catch(error => {
-        console.log(error.response);
+        console.log(error);
       });
     },
 

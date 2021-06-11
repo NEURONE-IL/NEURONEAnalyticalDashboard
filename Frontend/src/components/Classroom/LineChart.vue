@@ -29,13 +29,26 @@
 				<v-btn
 					color="success"
 					:disabled="!lineChartSelectedMetric || !lineChartUsername"
-					@click="getInitTime()"
+					@click="getSessionInitTime()"
+				>
+					{{ $t('buttons.charts.update') }}
+					<v-icon right>
+						mdi-refresh
+					</v-icon>
+				</v-btn>				
+				<!-- Use this button instead of the one above when working with cumulative sessions -->
+				<!--
+				<v-btn
+					color="success"
+					:disabled="!lineChartSelectedMetric || !lineChartUsername"
+					@click="getSessionInitTime()"
 				>
 					{{ $t('buttons.charts.update') }}
 					<v-icon right>
 						mdi-refresh
 					</v-icon>
 				</v-btn>
+				-->
 			</v-col>	
 		</v-row>
 		<div class="loading" v-if="loading">
@@ -82,6 +95,7 @@ export default {
 			interval: 0,
 			loading: null,
 			max: 0,
+			userInitTime: 0,
 			/*Rules*/
 			selectRules: [
         v => (v && v != null) || this.$t('rules.selectRule')
@@ -95,7 +109,6 @@ export default {
 	*/
 	mounted(){
 		this.initChart();
-
 	},	
 
 	methods: {
@@ -176,33 +189,56 @@ export default {
 				});
 			})
       .catch(error => {
-        console.log(error.response);
+        console.log(error);
       })
 		},
 
 		/*
 		@fvillarrealcespedes:
-		NEURONE-AM original method, gets the init stage time for a specific user, also sets the maximum time value and the necessary 
-		data objects quantity to compose the line chart.
+		NEURONE-AM original method, gets the session init time and sets it to store. 
+		Also the Chronometer component show condition is setted true.
 		*/
-		async getInitTime(){
+		async getSessionInitTime(){
 			this.disposeChart();
 			this.loading = true;
-			this.chartData = [];			
+			this.chartData = [];	
 			await axios
-			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/initstage/${this.lineChartUsername}`)
+			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/inittime`)
 			.then(response => {
 				let actualTime = Date.now();
-				let initTime = response.data.inittime;
-				this.max = Math.round((actualTime - initTime)/1000);
+				this.sessionInitTime = response.data.initTime;
+				this.max = Math.round((actualTime - this.sessionInitTime)/1000);
 				this.setCounter();
 				this.getData();
 			})
       .catch(error => {
-        console.log(error.response);
+        console.log(error);
       });
 		},
 
+		/*
+		@fvillarrealcespedes:
+		NEURONE-AM original method, gets the init stage time for a specific user, also sets the maximum time value and the necessary 
+		data objects quantity to compose the line chart. 
+		Use this method instead getSessionInitTime() when working with cumulative sessions.
+		*/
+		async getUserInitTime(){
+			this.disposeChart();
+			this.loading = true;
+			this.chartData = [];	
+			await axios
+			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/initstage/${this.lineChartUsername}`)
+			.then(response => {
+				let actualTime = Date.now();
+				this.userInitTime = response.data.inittime;
+				this.max = Math.round((actualTime - this.userInitTime)/1000);
+				this.setCounter();
+				this.getData();
+			})
+      .catch(error => {
+        console.log(error);
+      });
+		},
 
 		/*
 		@fvillarrealcespedes:
@@ -218,7 +254,9 @@ export default {
 			}
 			this.setAlias(this.lineChartSelectedMetric);
 			this.disposeChart();
-			this.getInitTime();
+			this.getSessionInitTime();
+			/*Use this method instead getSessionInitTime() when working with cumulative sessions.*/
+			/*this.getUserInitTime();*/
 		},
 
 		/*
@@ -307,7 +345,7 @@ export default {
 				queries = Math.trunc(this.max/this.interval) - 1;
 			}
 			this.counter = queries;
-		},		
+		},			
 
 		/*
 		@fvillarrealcespedes:
@@ -343,7 +381,7 @@ export default {
 
 		/*
 		@fvillarrealcespedes:
-		Watches the showLineChart property to call the getInitTime method.
+		Watches the showLineChart property to call the initChart method.
 		*/			
 		showLineChart: function(){
 			if(this.showLineChart){
@@ -374,19 +412,6 @@ export default {
 		chartDataLength() {
 			return this.chartData.length;
 		},
-
-		/*
-		@fvillarrealcespedes:
-		Session InitTime, get and set methods are imported from store.
-		*/	
-		initTime: {
-			get () {
-				return this.$store.getters.getInitTime;
-			},
-			set (payload) {
-				this.$store.commit('setInitTime', payload);
-			}
-		},	
 
 		/*
 		@fvillarrealcespedes:
@@ -426,7 +451,7 @@ export default {
 				this.$store.commit('setMetrics', payload);
 			}
 		},
-		
+
 		/*
 		@fvillarrealcespedes:
 		Object that includes all sessionsettings, get and set methods are imported from store.

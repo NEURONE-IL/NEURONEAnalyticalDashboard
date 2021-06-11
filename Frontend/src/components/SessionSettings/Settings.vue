@@ -221,10 +221,11 @@ export default {
 
 	/*
 	@fvillarrealcespedes:
-	Invoked before the rendering. Sets initTime property null.
+	Invoked before the rendering. Sets sessionInitTime and settings properties null.
 	*/
 	created(){
-		this.initTime = null;
+		this.sessionInitTime = null;
+		this.$store.commit('destroySettings');
 		this.tabs[0].disabled = false;
 		this.tabs[1].disabled = true;
 		this.tabs[2].disabled = false;
@@ -256,7 +257,7 @@ export default {
 			})
 			.catch(error => {
 				this.dispatchNotification('sessionSettings.createError', 'check-circle', 5000, 'error');
-				console.log(error.response);
+				console.log(error);
 			})
 		},
 
@@ -319,7 +320,7 @@ export default {
 				}
 			})
 			.catch(error => {
-				console.log(error.response);
+				console.log(error);
 			})
 		},
 
@@ -398,14 +399,14 @@ export default {
 	computed: {
 		/*
 		@fvillarrealcespedes:
-		Session InitTime, get and set methods are imported from store.
+		SessionInitTime, get and set methods are imported from store.
 		*/	
-		initTime: {
+		sessionInitTime: {
 			get () {
-				return this.$store.getters.getInitTime;
+				return this.$store.getters.getSessionInitTime;
 			},
 			set (payload) {
-				this.$store.commit('setInitTime', payload);
+				this.$store.commit('setSessionInitTime', payload);
 			}
 		},	
 		

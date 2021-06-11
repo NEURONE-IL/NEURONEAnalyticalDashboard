@@ -52,7 +52,7 @@
 	},	
 	"chronometer": {
 		"currentTime": "Current time",
-		"initTime": "Init time",
+		"sessionInitTime": "Init time",
 		"sessionTime": "Session time"
 	},	
 	"classroom": {

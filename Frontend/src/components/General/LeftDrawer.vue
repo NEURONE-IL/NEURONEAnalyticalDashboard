@@ -74,7 +74,7 @@
 				</v-list-item-content>
 			</v-list-item>
 		</v-list>  
-		<!-- Template to display language indicator and help and logout list items -->  
+		<!-- Template to display language indicator and help and logOut list items -->  
 		<template v-slot:append>
 			<v-list-item
 				dark
@@ -94,7 +94,7 @@
 				</svg>
 				<span class="mb-1 pa-2"> {{ $t('locale.language') }} </span>
 			</v-list-item>
-			<!-- List with help and logout list items -->
+			<!-- List with help and logOut list items -->
 			<v-list
 				dense
 				expand
@@ -131,17 +131,17 @@
 				<v-list-item
 					dark
 					link
-					class="logout"
-					@click="confirmLogout() && logout()"
+					class="logOut"
+					@click="confirmLogOut() && logOut()"
 				>	
-					<!-- Shows a representative icon for logout list item, also a tooltip is displayed when miniVariant property is true -->
+					<!-- Shows a representative icon for logOut list item, also a tooltip is displayed when miniVariant property is true -->
 					<v-tooltip right v-if="miniVariant">
 						<template v-slot:activator="{ on }">
 							<v-list-item-icon v-on="on">
 								<v-icon> mdi-logout </v-icon>
 							</v-list-item-icon>
 						</template>
-						<span> {{ $t('buttons.logout') }} </span>
+						<span> {{ $t('buttons.logOut') }} </span>
 					</v-tooltip>
 					<!-- If miniVariant property is false, just the icon is displayed -->
 					<v-list-item-icon v-else>
@@ -149,7 +149,7 @@
 					</v-list-item-icon>
 					<v-list-item-content>
 						<v-list-item-title> 
-							{{ $t('buttons.logout') }}	
+							{{ $t('buttons.logOut') }}	
 						</v-list-item-title>
 					</v-list-item-content>
 				</v-list-item>	
@@ -173,9 +173,9 @@ export default {
 	methods: {
 		/*
 		@fvillarrealcespedes:
-		Sets a confirmation message previous the logout action. 
+		Sets a confirmation message previous the logOut action. 
 		*/		
-    confirmLogout(){
+    confirmLogOut(){
       return confirm(this.$t('logIn.logOutConfirmation'))
 		},
 
@@ -250,7 +250,7 @@ export default {
 	font-size: 16px !important;
 	font-weight: bold;
 }
-.logout{
+.logOut{
 	background-color: #FF5252;
 }
 .help{

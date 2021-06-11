@@ -172,7 +172,7 @@ export default {
 				this.height = 0;
 			})
       .catch(error => {
-				console.log(error.response);
+				console.log(error);
 				this.dispatchNotification('classroomConfigurations.createError', 'close-circle', 5000, 'error');
       })
 		},

@@ -112,10 +112,10 @@ export default {
 
 	/*
 	@fvillarrealcespedes:
-	Invoked before the rendering. Sets initTime property null.
+	Invoked before the rendering. Sets sessionInitTime property null.
 	*/
 	created(){
-		this.initTime = null;
+		this.sessionInitTime = null;
 		this.tabs[0].disabled = false;
 		this.tabs[1].disabled = true;
 		this.tabs[2].disabled = false;
@@ -159,7 +159,7 @@ export default {
 				this.dispatchNotification('sessionSettings.deleteSuccess', 'check-circle', 5000, 'success');
 			})	
       .catch(error => {
-				console.log(error.response);
+				console.log(error);
 				this.dispatchNotification('sessionSettings.deleteError', 'close-circle', 5000, 'error');
       })
 		},
@@ -212,7 +212,7 @@ export default {
 				this.$router.replace('/classroom');
 			})
 			.catch(error => {
-				console.log(error.response);
+				console.log(error);
 			})
 		},
 
@@ -290,19 +290,6 @@ export default {
 	computed: {
 		/*
 		@fvillarrealcespedes:
-		Session InitTime, get and set methods are imported from store.
-		*/
-		initTime: {
-			get () {
-				return this.$store.getters.getInitTime;
-			},
-			set (payload) {
-				this.$store.commit('setInitTime', payload);
-			}
-		},	
-
-		/*
-		@fvillarrealcespedes:
 		Array that includes all available performance metrics in NEURONE-AM, get and set methods are imported from store.
 		*/
 		metrics: {
@@ -327,6 +314,19 @@ export default {
 			}
 		},
 
+		/*
+		@fvillarrealcespedes:
+		SessionInitTime, get and set methods are imported from store.
+		*/
+		sessionInitTime: {
+			get () {
+				return this.$store.getters.getSessionInitTime;
+			},
+			set (payload) {
+				this.$store.commit('setSessionInitTime', payload);
+			}
+		},	
+		
 		/*
 		@fvillarrealcespedes:
 		Object that includes all session settings, get and set methods are imported from store.

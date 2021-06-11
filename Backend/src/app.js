@@ -144,7 +144,7 @@ async function populateDatabase(){
               console.log('Error on save "admin" user after roles assignment', err);
             }
             if(process.env.NODE_ENV !== 'test'){
-              console.log('neuroneadadmin added to users collection');
+              console.log('"neuroneadadmin" added to users collection');
             }
           });
         });

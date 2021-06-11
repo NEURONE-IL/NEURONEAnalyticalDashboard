@@ -176,7 +176,7 @@ export default {
 				this.classroomConfiguration = response.data.classroomConfiguration;
       })
       .catch(error => {
-        console.log(error.response);
+        console.log(error);
       })
 		},		
 
@@ -349,7 +349,7 @@ export default {
 				this.height = 0;
 			})
       .catch(error => {
-				console.log(error.response);
+				console.log(error);
 				this.dispatchNotification('classroomConfigurations.updateError', 'close-circle', 5000, 'error');
       })
 		}	

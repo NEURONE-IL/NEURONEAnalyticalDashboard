@@ -108,8 +108,8 @@ export default {
 		showSessionTime(){
 			var currentDate = new Date();
 			/*Gets the session init time and difference with current date*/
-			var initDate = new Date(this.initTime);
-			var dateDifference = Math.round((currentDate.getTime() - initDate.getTime())/1000);
+			var sessionInitDate = new Date(this.sessionInitTime);
+			var dateDifference = Math.round((currentDate.getTime() - sessionInitDate.getTime())/1000);
 			/*Gets the date difference hours, minutes and seconds. Respective division and module operations are apply*/
 			var sh = parseInt((dateDifference/3600));
 			var sm = parseInt((dateDifference/60)%60);
@@ -129,7 +129,6 @@ export default {
 			await axios
 			.get(`${process.env.VUE_APP_NEURONE_AM_COORDINATOR_API_URL}/endsession`)
 			.then(response => {
-				this.$store.commit('destroySettings');
 				this.$router.replace('/settings');
       });
     }
@@ -138,14 +137,14 @@ export default {
 	computed: {
 		/*
 		@fvillarrealcespedes:
-		Session init time, get and set methods are imported from store.
+		SessionInitTime, get and set methods are imported from store.
 		*/		
-		initTime: {
+		sessionInitTime: {
 			get () {
-				return this.$store.getters.getInitTime;
+				return this.$store.getters.getSessionInitTime;
 			},
 			set (payload) {
-				this.$store.commit('setInitTime', payload);
+				this.$store.commit('setSessionInitTime', payload);
 			},
 		},
 

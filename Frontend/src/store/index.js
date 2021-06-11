@@ -8,7 +8,7 @@ export default new Vuex.Store({
   state: {
     /*NEURONE-AM*/
     settings: JSON.parse(localStorage.getItem('settings')) || null,
-    initTime: null,
+    sessionInitTime: null,
     /*User*/
     user: JSON.parse(localStorage.getItem('currentUser')) || null,
     /*Log in Service*/
@@ -68,7 +68,7 @@ export default new Vuex.Store({
         context.commit('setMetrics', response.data);
       })
       .catch(error => {
-        console.log(error.response);
+        console.log(error);
       })
     },
 
@@ -83,7 +83,7 @@ export default new Vuex.Store({
         context.commit('setClassroomConfigurations', response.data.classroomConfigurations);
       })
       .catch(error => {
-        console.log(error.response);
+        console.log(error);
       })
     },
 
@@ -98,7 +98,7 @@ export default new Vuex.Store({
         context.commit('setSessionSettings', response.data.sessionSettings);
       })
       .catch(error => {
-        console.log(error.response);
+        console.log(error);
       })
     },    
 
@@ -165,11 +165,19 @@ export default new Vuex.Store({
         })
       })
     },
-    
+
+		/*
+		@fvillarrealcespedes:    
+    Gets the currentUser value from LocalStorage and assings it to user.
+    */
     refreshSession(state){
       state.user = JSON.parse(localStorage.getItem('currentUser'));
     },
 
+		/*
+		@fvillarrealcespedes:    
+    Makes the call to display a information snackbar given the payload param.
+    */
     showNotification(context, payload){
       context.commit('setSnackbar', payload);
     }
@@ -180,19 +188,27 @@ export default new Vuex.Store({
       state.settings = payload;
     },
 
+		/*
+		@fvillarrealcespedes:    
+    Removes the settings value from LocalStorage and sets settings null.
+    */    
     destroySettings(state){
       localStorage.removeItem('settings');
       state.settings = null;
     },    
 
-    setInitTime(state, payload){
-      state.initTime = payload;
+    setSessionInitTime(state, payload){
+      state.sessionInitTime = payload;
     },
 
     setUser(state, payload){
       state.user = payload;
     },
 
+		/*
+		@fvillarrealcespedes:    
+    Removes the currentUser value from LocalStorage and sets user null.
+    */
     destroyUser(state){
       localStorage.removeItem('currentUser');
       state.user = null;
@@ -284,8 +300,8 @@ export default new Vuex.Store({
       return state.settings;
     },
 
-    getInitTime(state){
-      return state.initTime;
+    getSessionInitTime(state){
+      return state.sessionInitTime;
     },
 
     getUser(state){

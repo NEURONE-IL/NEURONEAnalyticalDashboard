@@ -183,7 +183,7 @@ export default {
 				this.dispatchNotification('classroomConfigurations.deleteSuccess', 'check-circle', 5000, 'success');
 			})	
       .catch(error => {
-				console.log(error.response);
+				console.log(error);
 				this.dispatchNotification('classroomConfigurations.deleteError', 'close-circle', 5000, 'error');
       })
 		},

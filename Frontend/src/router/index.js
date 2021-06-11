@@ -45,7 +45,7 @@ async function isInit(to, from, next){
 
 /*
 @fvillarrealcespedes:
-Verifies with a condition if the previous page is the settings view, if its then with a NEURONE-AM request checks if a session 
+Verifies with a condition if the previous view is the settings view, if its then with a NEURONE-AM request checks if a session 
 has been init, if its not redirects to settings view.
 */
 async function notInit(to, from, next){
@@ -69,7 +69,7 @@ async function notInit(to, from, next){
 
 /*
 @fvillarrealcespedes:
-Verifies with a condition if the previous page is not the classroom view, if its not then redirects to session settings view
+Verifies with a condition if the previous view is not the classroom view, if its not then redirects to session settings view
 if its access to session stats view.
 */
 function goStats (to, from, next){
