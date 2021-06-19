@@ -37,7 +37,7 @@ Although it is not a requirement for the correct functioning of NEURONE-AD, the 
 9. As in Backend case, when changes are made to the Frontend code, the program recompiles automatically.
 
 #### Database
-A docker-compose.yml file is included to setup a MongoDB database server with three databases:
+A docker-compose.yml file is included in 'MongoDB Docker' folder to setup a MongoDB database server with three databases:
 - test: Used by the NEURONE Seach Engine, NEURONE-AM and NEURONE-AM-Simulator. Stores users data and all its interactions in NEURONE, NEURONE-AM-Simulator stores the simulated data here. 
 - neurone-ad: Used by NEURONE-AD. Stores the module users data, quick session settings and classroom renderings.
 - neurone-auth: Used by NEURONE-AUth. Stores the module users data and credentials for others NEURONE modules.
@@ -110,7 +110,7 @@ For the authentication credentials to work correctly and for NEURONE-AD to be ab
 Finally, it is of equal importance that when adding the NEURONE-AD service to NEURONE-Auth, the name given is equal to the variable 'VUE_APP_SERVICE_NAME' of the NEURONE-AD Frontend .env file and that the Frontend and Backend URLs are the ones that are actually being used, and must be of the style 'http://HOST:PORT' and 'http://HOST:PORT'.
 
 
-#### License
+## License
 NEURONE-AD's source code is released under the GNU Affero General Public License (Version 3), meaning that:
 
 - NEURONE-AD is free to use, analyze, distribute and modify by anyone.
